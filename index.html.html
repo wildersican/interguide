@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTERGUIDE 1.7 - ETRF & PREVS Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f5f6f8; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 60px; }
+
+        .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+        .top-bar { 
+            background-color: #ffc800; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px 30px; 
+            height: 60px; 
+            /* 👇 CÓDIGO NUEVO 👇 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1001; /* Z-index alto para que flote por encima de todo */
+        }
+        .logo { font-size: 22px; font-weight: bold; color: #333; display: flex; align-items: center; }
+        .logo span { font-weight: 300; font-size: 20px; margin-left: 5px; color: #555; }
+        .top-links { display: flex; gap: 20px; align-items: center; font-size: 14px; color: #333; }
+        .top-links i { margin-right: 5px; font-size: 16px; }
+
+        .sub-nav { 
+            background-color: #2b2b2b; 
+            display: flex; 
+            padding: 0 30px; 
+            height: 40px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            /* 👇 CÓDIGO NUEVO 👇 */
+            position: fixed;
+            top: 60px; /* Se ancla justo debajo de los 60px de la barra amarilla */
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .nav-tab { color: #aaa; padding: 0 20px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; border-bottom: 3px solid transparent; letter-spacing: 0.5px; transition: all 0.2s ease;}
+        .nav-tab:hover, .nav-tab:focus-visible { color: #fff; background-color: rgba(255, 255, 255, 0.05); }
+        .nav-tab.active { color: #fff; border-bottom: 3px solid #ffc800; }
+        .nav-tab:focus-visible { outline: 2px solid #ffc800; outline-offset: -2px; }
+
+        main { 
+            flex: 1; 
+            /* 👇 Modificamos el padding: 130px arriba, 50px derecha, 30px abajo, 50px izquierda 👇 */
+            padding: 130px 50px 30px 50px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+        }
+
+        .view-wrapper { width: 100%; display: none; flex-direction: column; align-items: center; gap: 25px; }
+        .view-wrapper.active { display: flex; }
+
+        .dashboard-cards { display: flex; gap: 25px; width: 100%; max-width: 1200px; justify-content: center; }
+        .card { background-color: white; flex: 1; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-height: 350px; display: flex; flex-direction: column; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; font-size: 14px; }
+        .card-header .title-icon { color: #ffc800; margin-right: 8px; font-size: 16px; }
+        .card-content { padding: 20px; flex: 1; overflow-y: auto; }
+
+        .pdf-controls { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        input[type="file"] { border: 1px solid #ccc; padding: 5px; border-radius: 4px; font-size: 12px; width: 100%; }
+        input[type="file"]:focus-visible { outline: 2px solid #ffc800; }
+        .btn-analizar { background-color: #2b2b2b; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
+        .btn-analizar:hover { background-color: #000; }
+        .btn-analizar:focus-visible { outline: 2px solid #ffc800; outline-offset: 2px; }
+        .btn-analizar:disabled { background-color: #999; cursor: not-allowed; }
+
+        .progress-bar { height: 3px; background: #eee; border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #ffc800; width: 0%; transition: width 0.3s ease; }
+
+        .inline-alert { display:none; background:#fff3cd; border:1px solid #ffe082; color:#7b5800; font-size:12px; padding:8px 10px; border-radius:4px; margin-bottom:8px; }
+        .inline-alert.show { display:block; }
+        .inline-alert.error { background:#ffebee; border-color:#ef9a9a; color:#b71c1c; }
+        .inline-alert i { margin-right:5px; }
+
+        .viewer-tabs { display: flex; gap: 0; margin-bottom: 10px; }
+        .viewer-tabs button { background: #eee; border: 1px solid #ccc; padding: 6px 16px; font-size: 12px; cursor: pointer; font-weight: 600; }
+        .viewer-tabs button:first-child { border-radius: 4px 0 0 4px; }
+        .viewer-tabs button:last-child { border-radius: 0 4px 4px 0; }
+        .viewer-tabs button.active { background: #2b2b2b; color: white; border-color: #2b2b2b; }
+        .viewer-tabs button:focus-visible { outline: 2px solid #ffc800; outline-offset: -2px; }
+
+        #resultados, .resultados-prev { background-color: #f9f9f9; border: 1px solid #e0e0e0; padding: 10px; border-radius: 4px; font-size: 12px; color: #333; min-height: 200px; max-height: 500px; overflow-y: auto; }
+        .pdf-pages { text-align: center; }
+        .pdf-text-view { white-space: pre-wrap; font-family: monospace; font-size: 11px; display: none; }
+
+        .search-controls { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+        .search-controls input[type="text"] { flex: 1; border: 1px solid #ccc; padding: 6px 10px; border-radius: 4px; font-size: 12px; }
+        .search-controls input[type="text"]:focus-visible { outline: 2px solid #ffc800; }
+        .match-info { font-size: 12px; color: #666; white-space: nowrap; }
+        .zoom-hint { font-size: 11px; color: #aaa; text-align: center; margin-top: 6px; }
+
+        /* Details panel */
+        .det-section { background: #fff3cd; margin: 10px 0 4px 0; padding: 5px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; color: #6d4c00; }
+        .det-section i { margin-right: 5px; }
+        .det-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f0f0f0; padding: 4px 0; gap: 8px; }
+        .det-label { color: #888; font-size: 12px; flex-shrink: 0; }
+        .det-val { font-weight: 600; font-size: 12px; text-align: right; word-break: break-word; color: #222; }
+        .det-val.found { color: #1a6e1a; }
+        .det-val.empty { color: #767676; font-weight: 400; font-style: italic; }
+        .det-val.lowconf { color: #8a6d00; }
+        .lowconf-tag { font-size: 10px; font-weight: 700; color: #8a6d00; border: 1px solid #ffe082; background: #fff8e1; border-radius: 8px; padding: 0 5px; margin-left: 5px; vertical-align: middle; }
+
+        .check-pill { display: inline-block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+        .check-pill.fail-pill { background: #ffebee; color: #c62828; border-color: #ef9a9a; }
+        .check-pill.data-pill { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
+        .check-pill.na-pill { background: #f5f5f5; color: #616161; border-color: #e0e0e0; }
+        .cond-alert { background: #fff3cd; border: 1px solid #ffe082; border-radius: 4px; padding: 6px 10px; font-size: 12px; color: #7b5800; margin-top: 4px; }
+        .cond-alert i { margin-right: 4px; }
+        .pfas-row { background: #f3f3f3; border-radius: 4px; padding: 5px 8px; margin-top: 2px; font-size: 12px; }
+        .fiber-chip { display: inline-block; background: #e3f2fd; border-radius: 10px; padding: 2px 9px; margin: 2px 4px 2px 0; font-size: 12px; color: #0d47a1; font-weight: 600; }
+
+        .debug-toggle { background: none; border: 1px solid #ddd; padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; color: #767676; margin-top: 8px; }
+        #debug-panel, #debug-panel-prev { display: none; background: #111; color: #0f0; font-family: monospace; font-size: 10px; padding: 8px; border-radius: 4px; max-height: 120px; overflow-y: auto; margin-top: 4px; white-space: pre-wrap; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; cursor: zoom-out; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { max-width: 90vw; max-height: 90vh; overflow: auto; background: white; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); padding: 10px; }
+        .modal-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; cursor: pointer; font-weight: bold; background: none; border: none; }
+        .modal-close:hover, .modal-close:focus-visible { color: #ffc800; }
+        mark { background-color: #ffc800; color: #222; padding: 1px 0; }
+
+footer { 
+            background-color: #111; 
+            color: #ffc800; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 30px; 
+            font-size: 12px; 
+            /* 👇 CÓDIGO NUEVO PARA FIJARLO 👇 */
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            z-index: 1000; 
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-cards { flex-direction: column; }
+            main { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="top-bar">
+    <div class="logo">INTERGUIDE <span>1.7</span></div>
+    <div class="top-links">
+        <!-- 📧 BOTÓN DE CONTACTO -->
+        <a href="mailto:wilder.sican@intertek.com" style="text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer;">
+            <i class="far fa-envelope"></i> Contact Us
+        </a>
+    </div>
+</header>
+<nav class="sub-nav" role="tablist" aria-label="Sections">
+    <div class="nav-tab active" onclick="switchMainTab('etsrf')">ETRF</div>
+    <div class="nav-tab" onclick="switchMainTab('prevs')">PREVS</div>
+</nav>
+
+<main>
+    <div id="view-etrf" class="view-wrapper active">
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <div><i class="fas fa-heart title-icon"></i> ETRF Analyzer (Local)</div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                </div>
+                <div class="card-content">
+                    <label class="visually-hidden" for="archivoPdf">Select ETRF PDF file</label>
+                    <div class="pdf-controls">
+                        <input type="file" id="archivoPdf" accept="application/pdf,.pdf">
+                        <button class="btn-analizar" id="btnAnalizar" onclick="procesarPDF()">Analyze ETRF</button>
+                    </div>
+                    <div class="inline-alert" id="alertaEtrf" role="alert"></div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+                    <!-- 🧪 AUDITORÍA PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
+                    <div style="margin: 15px 0; padding: 10px; background: #fdfbf7; border: 1px solid #e0dcd3; border-left: 4px solid #d32f2f; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <div style="font-weight: bold; font-size: 12px; color: #b71c1c; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>🧪 PFAS Audit (Styles & Version)</span>
+                            <span style="font-size: 10px; background: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 3px; font-weight: normal;">Gap Inc.</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="archivoInput-pfas" accept=".pdf,.docx,.doc" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
+                            <button id="btnAnalizar-pfas" onclick="procesarArchivoPFAS()" style="background: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; transition: background 0.2s;">
+                                Analyze PFAS
+                            </button>
+                        </div>
+                        
+                        <!-- Disguised progress bar -->
+                        <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
+                            <div id="progressFill-pfas" style="width: 0%; height: 100%; background: #d32f2f; transition: width 0.3s;"></div>
+                        </div>
+
+                        <!-- Alert Container -->
+                        <div id="resultados-pfas-container" style="margin-top: 8px;"></div>
+                    </div>
+
+                    <div class="viewer-tabs" role="tablist" aria-label="ETRF View Mode">
+                        <button id="tabVisual" class="active" onclick="cambiarVista('visual')">Visual</button>
+                        <button id="tabTexto" onclick="cambiarVista('texto')">Text</button>
+                    </div>
+                    <div class="search-controls">
+                        <label class="visually-hidden" for="campoBusqueda">Search in ETRF text</label>
+                        <input type="text" id="campoBusqueda" placeholder="Search in text..." oninput="buscarEnTexto()">
+                        <span class="match-info" id="infoCoincidencias" aria-live="polite"></span>
+                    </div>
+                    <!-- 🟢 CORREGIDO: Tipeo <Sdiv cambiado por <div para solucionar ruptura estructural -->
+                    <div id="resultados" aria-live="polite">
+                        <div class="pdf-pages" id="pdfPages"><p style="color:#767676;text-align:center;margin-top:40px;font-size:13px;">Select a ETRF to begin</p></div>
+                        <div class="pdf-text-view" id="pdfTextView"></div>
+                    </div>
+                    <div class="zoom-hint" id="zoomHint" style="display:none;">Click on a page to zoom in</div>
+                    <button class="debug-toggle" onclick="toggleDebug()">🔧 Debug</button>
+                    <div id="debug-panel"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div><i class="fas fa-info-circle title-icon"></i> Details</div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                </div>
+                <div class="card-content">
+                    <p style="color:#767676;font-size:13px;text-align:center;margin-top:40px;" id="det-placeholder">No ETRF analyzed yet.</p>
+                    
+                    <div id="det-body" style="display:none;">
+                        <div id="rejection-alerts" style="display:none;"></div>
+
+                        <div class="det-row">
+                            <span class="det-label">File</span>
+                            <span class="det-val" id="d-file"></span>
+                        </div>
+
+                        <div class="det-section"><i class="fas fa-file-alt"></i>General</div>
+                        <div class="det-row"><span class="det-label">Test Status</span><span class="det-val" id="d-test-status"></span></div>
+                        <div class="det-row"><span class="det-label">Product Stage</span><span class="det-val" id="d-product-stage"></span></div>
+                        <div class="det-row"><span class="det-label">Type of Testing</span><span class="det-val" id="d-type-testing"></span></div>
+                        <div class="det-row"><span class="det-label">Laboratory</span><span class="det-val" id="d-laboratory"></span></div>
+                        <div class="det-row"><span class="det-label">Intended Age</span><span class="det-val" id="d-intended-age"></span></div>
+                        <div class="det-row"><span class="det-label">Style No.</span><span class="det-val" id="d-style-no"></span></div>
+                        <div class="det-row"><span class="det-label">Style Description</span><span class="det-val" id="d-style-desc"></span></div>
+                        <div class="det-row"><span class="det-label">Style Colors</span><span class="det-val" id="d-style-colors"></span></div>
+
+                        <div class="det-row"><span class="det-label">Retail Market</span><span class="det-val" id="d-retail"></span></div>
+                        <div class="det-row"><span class="det-label">Channel</span><span class="det-val" id="d-channel"></span></div>
+                        <div class="det-row"><span class="det-label">Destination Country</span><span class="det-val" id="d-dest"></span></div>
+                        <div class="det-row"><span class="det-label">Ship to Country</span><span class="det-val" id="d-ship"></span></div>
+
+                        <div class="det-section"><i class="fas fa-tag"></i>Product Details</div>
+                        <div class="det-row"><span class="det-label">Brand</span><span class="det-val" id="d-brand"></span></div>
+                        <div class="det-row"><span class="det-label">Season / Year</span><span class="det-val" id="d-season"></span></div>
+                        <div class="det-row"><span class="det-label">Sourcing Office</span><span class="det-val" id="d-sourcing"></span></div>
+
+                        <div class="det-section"><i class="fas fa-check-square"></i>Test Details</div>
+                        <div id="d-test-type-block"></div>
+
+                        <div class="det-section"><i class="fas fa-tshirt"></i>Fiber &amp; Care</div>
+                        <div class="det-row"><span class="det-label">Fiber Content</span><span class="det-val" id="d-fiber"></span></div>
+                        <div class="det-row"><span class="det-label">Wash Method</span><span class="det-val" id="d-wash"></span></div>
+
+                        <div class="det-section" id="sect-p7" style="display:none;"><i class="fas fa-layer-group"></i>Fabric Details</div>
+                        <div class="det-row" id="row-rd-num" style="display:none;"><span class="det-label">RD Number (PLM)</span><span class="det-val" id="d-rd-num"></span></div>
+                        <div class="det-row" id="row-fabric" style="display:none;"><span class="det-label">Fabric Construction</span><span class="det-val" id="d-fabric"></span></div>
+                        <div class="det-row" id="row-weight" style="display:none;"><span class="det-label">Fabric Weight</span><span class="det-val" id="d-weight"></span></div>
+                        <div class="det-row" id="row-elongation" style="display:none;"><span class="det-label">Elongation</span><span class="det-val" id="d-elongation"></span></div>
+                        <div class="det-row" id="row-prod-char" style="display:none;"><span class="det-label">Prod. Characteristics</span><span class="det-val" id="d-prod-char"></span></div>
+
+                        <div class="det-section"><i class="fas fa-file-signature"></i>PFAS Certification</div>
+                        <div id="d-declarations-block"><em style="color:#767676;font-size:12px;">—</em></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complementary Reports Section -->
+        <div class="card" style="width: 100%; max-width: 1200px; min-height: auto;">
+            <div class="card-header">
+                <div><i class="fas fa-folder-open title-icon"></i> Complementary Test Reports</div>
+                <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+            </div>
+            <div class="card-content" style="display: flex; gap: 30px; flex-wrap: wrap; padding: 25px;">
+                <div style="flex: 1; min-width: 300px; background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 6px; padding: 15px;" id="box-trim-report">
+                    <div style="display: flex; align-items: center; border-bottom: 2px solid #ffc800; padding-bottom: 8px; margin-bottom: 12px;">
+                        <i class="fas fa-cut" style="color: #2b2b2b; font-size: 16px; margin-right: 8px;"></i>
+                        <span style="font-weight: 700; font-size: 13px; color: #333;">Trim Certifier Test Report</span>
+                    </div>
+                    <div id="trim-report-body">
+                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
+                    </div>
+                </div>
+
+                <div style="flex: 1; min-width: 300px; background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 6px; padding: 15px;" id="box-fabric-report">
+                    <div style="display: flex; align-items: center; border-bottom: 2px solid #ffc800; padding-bottom: 8px; margin-bottom: 12px;">
+                        <i class="fas fa-scroll" style="color: #2b2b2b; font-size: 16px; margin-right: 8px;"></i>
+                        <span style="font-weight: 700; font-size: 13px; color: #333;">Fabric Test Report</span>
+                    </div>
+                    <div id="fabric-report-body">
+                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREVS VIEW -->
+    <div id="view-prevs" class="view-wrapper">
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <div><i class="fas fa-file-pdf title-icon"></i> Previous Report Analyzer</div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                </div>
+                <div class="card-content">
+                    <label class="visually-hidden" for="archivoPdf-prev">Select PREVS PDF file</label>
+                    <div class="pdf-controls">
+                        <input type="file" id="archivoPdf-prev" accept="application/pdf,.pdf">
+                        <button class="btn-analizar" id="btnAnalizar-prev" onclick="procesarPDFPrev()">Analyze PREVS</button>
+                    </div>
+                    <div class="inline-alert" id="alertaPrev" role="alert"></div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill-prev"></div></div>
+                    <div class="viewer-tabs" role="tablist" aria-label="PREVS View Mode">
+                        <button id="tabVisual-prev" class="active" onclick="cambiarVistaPrev('visual')">Visual</button>
+                        <button id="tabTexto-prev" onclick="cambiarVistaPrev('texto')">Text</button>
+                    </div>
+                    <div class="search-controls">
+                        <label class="visually-hidden" for="campoBusqueda-prev">Search in PREVS text</label>
+                        <input type="text" id="campoBusqueda-prev" placeholder="Search in text..." oninput="buscarEnTextoPrev()">
+                        <span class="match-info" id="infoCoincidencias-prev" aria-live="polite"></span>
+                    </div>
+                    <div class="resultados-prev" aria-live="polite">
+                        <div class="pdf-pages" id="pdfPages-prev"><p style="color:#767676;text-align:center;margin-top:40px;font-size:13px;">Select a PREVS report to begin</p></div>
+                        <div class="pdf-text-view" id="pdfTextView-prev"></div>
+                    </div>
+                    <div class="zoom-hint" id="zoomHint-prev" style="display:none;">Click on a page to zoom in</div>
+                    <button class="debug-toggle" onclick="toggleDebugPrev()">🔧 Debug</button>
+                    <div id="debug-panel-prev"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div><i class="fas fa-info-circle title-icon"></i> Details</div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                </div>
+                <div class="card-content">
+                    <p style="color:#767676;font-size:13px;text-align:center;margin-top:40px;" id="det-placeholder-prev">No PREVS analyzed yet.</p>
+
+                    <div id="det-body-prev" style="display:none;">
+                        <div class="det-row" style="margin-bottom: 10px;">
+                            <span class="det-label">File</span>
+                            <span class="det-val found" id="d-file-prev"></span>
+                        </div>
+
+                        <div class="det-section"><i class="fas fa-file-invoice"></i>Report Info</div>
+                        <div class="det-row"><span class="det-label">Report No.</span><span class="det-val" id="d-prev-report-no"></span></div>
+                        <div class="det-row"><span class="det-label">Date Out</span><span class="det-val" id="d-prev-date-out"></span></div>
+
+                        <div class="det-section" style="margin-top:15px;"><i class="fas fa-flask"></i>PSR Test Results (RESULT SUMMARY)</div>
+                        <div id="d-prev-tests-block"><em style="color:#767676;font-size:12px;">—</em></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-left"><i class="fab fa-invision"></i> <span style="color:#ccc;">© 2026 INTERGUIDE | By WilderSican</span></div>
+</footer>
+
+<div class="modal-overlay" id="modalPreview" onclick="cerrarModal()" role="dialog" aria-modal="true" aria-label="Expanded PDF view">
+    <button class="modal-close" onclick="cerrarModal()" aria-label="Close expanded view">&times;</button>
+    <div class="modal-content" id="modalContent" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+/* ============================================================================
+   MAIN NAVIGATION
+============================================================================ */
+function switchMainTab(tab) {
+    document.querySelectorAll('.view-wrapper').forEach(vista => {
+        vista.classList.remove('active');
+    });
+
+    const botones = document.querySelectorAll('.sub-nav .nav-tab');
+    botones.forEach(b => b.classList.remove('active'));
+
+    let vistaId = (tab === 'etsrf') ? 'etrf' : tab;
+    
+    const vistaSeleccionada = document.getElementById('view-' + vistaId);
+    if (vistaSeleccionada) {
+        vistaSeleccionada.classList.add('active');
+    }
+
+    botones.forEach(b => {
+        const onclickTexto = b.getAttribute('onclick') || '';
+        if (onclickTexto.includes(tab) || onclickTexto.includes(vistaId)) {
+            b.classList.add('active');
+        }
+    });
+}
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ============================================================================
+   COMMON UTILITIES
+============================================================================ */
+function norm(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+
+function esc(t) {
+    const d = document.createElement('div');
+    d.textContent = (t === null || t === undefined) ? '' : String(t);
+    return d.innerHTML;
+}
+
+function setVal(id, val, lowConfidence) {
+    const el = document.getElementById(id); if (!el) return;
+    if (val && val !== '--' && val !== '—') {
+        el.textContent = val;
+        el.className = lowConfidence ? 'det-val lowconf' : 'det-val found';
+        if (lowConfidence) {
+            const tag = document.createElement('span');
+            tag.className = 'lowconf-tag';
+            tag.title = 'Low confidence detection: verify against original PDF';
+            tag.textContent = '≈';
+            el.appendChild(tag);
+        }
+    } else {
+        el.textContent = '—'; el.className = 'det-val empty';
+    }
+}
+
+function mostrarAlerta(elId, mensaje, tipo) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!mensaje) { el.classList.remove('show', 'error'); el.innerHTML = ''; return; }
+    el.innerHTML = `<i class="fas ${tipo === 'error' ? 'fa-times-circle' : 'fa-exclamation-triangle'}"></i>${esc(mensaje)}`;
+    el.classList.add('show');
+    if (tipo === 'error') el.classList.add('error'); else el.classList.remove('error');
+}
+
+/** * ANTI-ROTATION ALGORITHM (NEW v2.0) */
+function aplicarViewportTransform(vp, xPdf, yPdf) {
+    return {
+        x: vp.transform[0] * xPdf + vp.transform[2] * yPdf + vp.transform[4],
+        y: vp.transform[1] * xPdf + vp.transform[3] * yPdf + vp.transform[5]
+    };
+}
+
+function multiplicarMatricesPDF(m1, m2) {
+    return [
+        m1[0] * m2[0] + m1[1] * m2[2],
+        m1[0] * m2[1] + m1[1] * m2[3],
+        m1[2] * m2[0] + m1[3] * m2[2],
+        m1[2] * m2[1] + m1[3] * m2[3],
+        m1[4] * m2[0] + m1[5] * m2[2] + m2[4],
+        m1[4] * m2[1] + m1[5] * m2[3] + m2[5]
+    ];
+}
+function transformarPuntoPDF(m, x, y) {
+    return [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
+}
+
+async function extraerMarcasGraficas(page, vp) {
+    const marcas = [];
+    try {
+        const opList = await page.getOperatorList();
+        const OPS = pdfjsLib.OPS;
+        const stack = [];
+        let ctm = [1, 0, 0, 1, 0, 0];
+
+        for (let i = 0; i < opList.fnArray.length; i++) {
+            const fn = opList.fnArray[i];
+            const args = opList.argsArray[i];
+
+            if (fn === OPS.save) {
+                stack.push(ctm.slice());
+            } else if (fn === OPS.restore) {
+                if (stack.length) ctm = stack.pop();
+            } else if (fn === OPS.transform) {
+                ctm = multiplicarMatricesPDF(args, ctm);
+            } else if (fn === OPS.paintImageXObject || fn === OPS.paintInlineImageXObject || fn === OPS.paintImageMaskXObject) {
+                const p00 = transformarPuntoPDF(ctm, 0, 0);
+                const p10 = transformarPuntoPDF(ctm, 1, 0);
+                const p01 = transformarPuntoPDF(ctm, 0, 1);
+                const p11 = transformarPuntoPDF(ctm, 1, 1);
+                
+                const p00_s = aplicarViewportTransform(vp, p00[0], p00[1]);
+                const p10_s = aplicarViewportTransform(vp, p10[0], p10[1]);
+                const p01_s = aplicarViewportTransform(vp, p01[0], p01[1]);
+                const p11_s = aplicarViewportTransform(vp, p11[0], p11[1]);
+
+                const xs = [p00_s.x, p10_s.x, p01_s.x, p11_s.x];
+                const ys = [p00_s.y, p10_s.y, p01_s.y, p11_s.y];
+                const minX = Math.min(...xs), maxX = Math.max(...xs);
+                const minY = Math.min(...ys), maxY = Math.max(...ys);
+                const w = maxX - minX, h = maxY - minY;
+                
+                if (w > 1 && w < 40 && h > 1 && h < 40) {
+                    marcas.push({
+                        x: Math.round((minX + maxX) / 2),
+                        y: Math.round((minY + maxY) / 2),
+                        w: Math.round(w),
+                        h: Math.round(h)
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('extraerMarcasGraficas: ', e.message);
+    }
+    return marcas;
+}
+
+async function leerPdf(archivo, incluirGraficosVacios, detectarImagenes) {
+    if (!archivo) throw new Error('No file selected.');
+    if (archivo.type && archivo.type !== 'application/pdf' && !archivo.name.toLowerCase().endsWith('.pdf')) {
+        throw new Error('The selected file does not appear to be a PDF.');
+    }
+
+    const ab = await archivo.arrayBuffer();
+    let pdfDoc;
+    try {
+        pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(ab) }).promise;
+    } catch (e) {
+        throw new Error('Could not open PDF.');
+    }
+
+    const pageTexts = [];
+    const pageItems = [];
+    const pageGraphics = [];
+    let textoExtraido = '';
+    let totalChars = 0;
+
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const content = await page.getTextContent();
+        const vp = page.getViewport({ scale: 1 });
+
+        const items = content.items
+            .map(it => {
+                const pt = aplicarViewportTransform(vp, it.transform[4], it.transform[5]);
+                const visualWidth = Math.sqrt(Math.pow(vp.transform[0] * it.width, 2) + Math.pow(vp.transform[1] * it.width, 2));
+                return {
+                    str: (it.str || '').trim(),
+                    x: Math.round(pt.x),
+                    y: Math.round(pt.y),
+                    w: Math.round(visualWidth) || Math.round(it.width)
+                };
+            })
+            .filter(it => it.str.length > 0 || (incluirGraficosVacios && it.str === '' && it.w > 0 && it.w < 25));
+
+        pageItems.push(items);
+
+        if (detectarImagenes) {
+            pageGraphics.push(await extraerMarcasGraficas(page, vp));
+        } else {
+            pageGraphics.push([]);
+        }
+
+        const pageStr = content.items.map(it => (it.str || '').trim()).filter(s => s).join(' ');
+        pageTexts.push(pageStr);
+        totalChars += pageStr.length;
+        textoExtraido += `--- PAGE ${i} ---\n${pageStr}\n\n`;
+    }
+
+    return { pdfDoc, pageTexts, pageItems, pageGraphics, textoExtraido, sinTextoDetectable: totalChars < 20 };
+}
+
+async function renderizarPaginas(pdfDoc, containerId, onClickPagina, onProgreso) {
+    const cont = document.getElementById(containerId);
+    if (!pdfDoc || !cont) return;
+    cont.innerHTML = '';
+    const w = cont.clientWidth - 4;
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const pg = await pdfDoc.getPage(i);
+        const vb = pg.getViewport({ scale: 1 });
+        const sc = w / vb.width;
+        const vp = pg.getViewport({ scale: sc });
+        const cv = document.createElement('canvas');
+        cv.width = vp.width; cv.height = vp.height;
+        cv.style.cssText = 'display:block;margin:0 auto 10px;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;';
+        cv.title = `Page ${i} — click to zoom in`;
+        cv.setAttribute('role', 'button');
+        cv.setAttribute('aria-label', `Zoom in page ${i} of ${pdfDoc.numPages}`);
+        cv.onclick = onClickPagina;
+        cont.appendChild(cv);
+        await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+        if (onProgreso) onProgreso(i, pdfDoc.numPages);
+    }
+}
+
+let elementoConFocoPrevio = null;
+async function abrirModalConPdf(pdfDoc) {
+    if (!pdfDoc) return;
+    elementoConFocoPrevio = document.activeElement;
+    const ov = document.getElementById('modalPreview');
+    const mc = document.getElementById('modalContent');
+    mc.innerHTML = '<p style="padding:20px;color:#999;">Loading...</p>';
+    ov.classList.add('show');
+    document.querySelector('.modal-close').focus();
+    const w = Math.min(window.innerWidth * 0.85, 1200);
+    mc.innerHTML = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const pg = await pdfDoc.getPage(i);
+        const vb = pg.getViewport({ scale: 1 });
+        const vp = pg.getViewport({ scale: w / vb.width });
+        const cv = document.createElement('canvas');
+        cv.width = vp.width; cv.height = vp.height;
+        cv.style.cssText = 'display:block;margin:0 auto 14px;box-shadow:0 4px 10px rgba(0,0,0,.15);';
+        mc.appendChild(cv);
+        await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    }
+}
+function cerrarModal() {
+    document.getElementById('modalPreview').classList.remove('show');
+    document.getElementById('modalContent').innerHTML = '';
+    if (elementoConFocoPrevio && elementoConFocoPrevio.focus) elementoConFocoPrevio.focus();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+function cambiarVistaGenerica(ids, v) {
+    document.getElementById(ids.tabVisual).className = v === 'visual' ? 'active' : '';
+    document.getElementById(ids.tabTexto).className  = v === 'texto'  ? 'active' : '';
+    document.getElementById(ids.pdfPages).style.display = v === 'visual' ? 'block' : 'none';
+    document.getElementById(ids.pdfTextView).style.display = v === 'texto' ? 'block' : 'none';
+}
+
+function buscarEnTextoGenerico(ids, textoExtraido, cambiarVistaFn) {
+    const t = document.getElementById(ids.campoBusqueda).value.trim();
+    const cv = document.getElementById(ids.pdfTextView);
+    const info = document.getElementById(ids.infoCoincidencias);
+    if (!t || !textoExtraido) { cv.innerText = textoExtraido || ''; info.textContent = ''; return; }
+    const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    const hits = textoExtraido.match(re);
+    if (!hits) { cv.innerText = textoExtraido; info.textContent = '0 results'; return; }
+    cv.innerHTML = textoExtraido.split(re).map((p, i) => i < hits.length ? esc(p) + `<mark>${esc(hits[i])}</mark>` : esc(p)).join('');
+    info.textContent = `${hits.length} result${hits.length !== 1 ? 's' : ''}`;
+    cambiarVistaFn('texto');
+}
+
+function extractByEnum(text, label, allowedValues) {
+    if (!text) return null;
+    const safeLabel = label.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const valuesPattern = allowedValues.map(v => v.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&').replace(/\s+/g, '\\s*')).join('|');
+    const re = new RegExp(safeLabel + '[\\s\\S]{0,100}?(' + valuesPattern + ')', 'i');
+    const match = text.match(re);
+    if (match && match[1]) {
+        const foundLower = match[1].replace(/\s+/g, ' ').toLowerCase();
+        const original = allowedValues.find(v => v.toLowerCase().replace(/\s+/g, ' ') === foundLower);
+        return original || match[1].trim();
+    }
+    return null;
+}
+
+function getTextBetween(text, startPhrase, endPhrases) {
+    if (!text || !startPhrase) return null;
+    const startIdx = text.toLowerCase().indexOf(startPhrase.toLowerCase());
+    if (startIdx === -1) return null;
+    const contentStart = startIdx + startPhrase.length;
+    let contentEnd = contentStart + 80;
+    if (Array.isArray(endPhrases)) {
+        let minIdx = text.length;
+        for (const endP of endPhrases) {
+            const eIdx = text.toLowerCase().indexOf(endP.toLowerCase(), contentStart);
+            if (eIdx !== -1 && eIdx < minIdx) minIdx = eIdx;
+        }
+        if (minIdx !== text.length) contentEnd = minIdx;
+    }
+    let result = text.substring(contentStart, contentEnd).trim();
+    return result.replace(/^[:\-]\s*/, '') || null;
+}
+
+/* ============================================================================
+   MODULE 1: ETRF LOGIC
+============================================================================ */
+let textoExtraido = '';
+let pageTexts = [];
+let pageItems = [];
+let pdfDoc = null;
+let debugLog = [];
+let extraccionBajaConfianza = false;
+
+function dbg(m) { debugLog.push(m); }
+function toggleDebug() {
+    const p = document.getElementById('debug-panel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    p.textContent = debugLog.join('\n');
+}
+function setProgress(p) { document.getElementById('progressFill').style.width = p + '%'; }
+
+async function extractAll(fileName) {
+    setProgress(10);
+    extraccionBajaConfianza = false;
+
+    let p1 = pageTexts[0] || '';
+    let startForm = p1.search(/TEST REQUEST TYPE/i);
+    if (startForm === -1) startForm = p1.search(/Submitter is/i);
+    if (startForm !== -1) p1 = p1.substring(startForm);
+
+    setVal('d-test-status',   extractByEnum(p1, 'Test Status', ['Production', 'Development']));
+    setVal('d-product-stage', extractByEnum(p1, 'Product Stage', ['Fabric', 'Finished Product', 'Trim']));
+    setVal('d-type-testing',  extractByEnum(p1, 'Type of Testing', ['PSR + Performance', 'PSR only', 'Performance Only']));
+    setVal('d-laboratory',    extractByEnum(p1, 'Laboratory', ['Intertek']));
+    setVal('d-intended-age',  extractByEnum(p1, 'Intended Age', ['Adult', 'Kids', 'Baby & Toddler']));
+
+    let styleData = await extractStyleRowSpatial();
+    let styleFallback = false;
+    if (!styleData || styleData.no === '--') {
+        styleData = extractStyleRow(p1);
+        styleFallback = true;
+        extraccionBajaConfianza = true;
+    }
+    setVal('d-style-no',     styleData.no, styleFallback);
+    setVal('d-style-desc',   styleData.desc, styleFallback);
+    setVal('d-style-colors', styleData.colors, styleFallback);
+    setVal('d-retail',       styleData.retail, styleFallback);
+    setVal('d-channel',      styleData.channel, styleFallback);
+    setVal('d-dest',         styleData.dest, styleFallback);
+    setVal('d-ship',         styleData.ship, styleFallback);
+
+    setProgress(25);
+
+    let p2 = pageTexts[1] || '';
+    let brand = extractByEnum(p2, 'Brand', ['Old Navy', 'Gap', 'Banana Republic', 'Athleta']);
+    if (!brand && styleData) brand = styleData.brand || '--';
+    setVal('d-brand', brand);
+
+    let rawSeason = extractSeason(p2);
+    setVal('d-season', rawSeason);
+    setVal('d-sourcing', getTextBetween(p2, 'Sourcing Office', ['Gap Inc. Contact', 'Design Number', 'PO Number', 'Ship']));
+    setProgress(40);
+
+    const chkFull       = isBoxChecked('Full Package');
+    const chkAdditional = isBoxChecked('Additional Colorway Package');
+    const chkSpecial    = isBoxChecked('Special Claims');
+    const chkPSR        = isBoxChecked('Individual Tests (PSR)');
+    const chkPerf        = isBoxChecked('Individual Tests (Performance)');
+
+    let chkCount = [chkFull, chkAdditional, chkSpecial, chkPSR, chkPerf].filter(Boolean).length;
+
+    const reqTests = extractRequestedTests();
+    renderTestTypeBlock(chkFull, chkAdditional, chkSpecial, chkPSR, chkPerf, reqTests);
+    setProgress(55);
+
+    renderFiber();
+    renderWashMethod();
+    setProgress(70);
+
+    let fabricConst = null;
+    let elongation = null;
+    let weightBefore = null;
+    let weightAfter = null;
+
+    for (let txt of pageTexts) {
+        if (!fabricConst) fabricConst = getTextBetween(txt, 'Fabric Construction', ['Thread Count', 'Before Wash', 'Stitch Length']);
+        if (!elongation) elongation = getTextBetween(txt, 'Elongation', ['Modulus', 'Trim Details', 'Other']);
+
+        const bm = txt.match(/Before\s+Wash[\s:]{1,15}(\d+(?:\.\d+)?)/i);
+        if (bm && !weightBefore) weightBefore = bm[1];
+        const am = txt.match(/After\s+Wash[\s:]{1,15}(\d+(?:\.\d+)?)/i);
+        if (am && !weightAfter) weightAfter = am[1];
+    }
+
+    for (let i = 0; i < pageItems.length; i++) {
+        const items = pageItems[i];
+
+        const hBefore = items.find(it => it.str.trim().toLowerCase() === 'before wash');
+        const hAfter = items.find(it => it.str.trim().toLowerCase() === 'after wash');
+
+        if (hBefore || hAfter) {
+            const rowY = hBefore ? hBefore.y : hAfter.y;
+            const rowItems = items.filter(it => Math.abs(it.y - rowY) < 15);
+
+            if (hBefore && !weightBefore) {
+                const bNum = rowItems.find(it => it.x > hBefore.x + 10 && (!hAfter || it.x < hAfter.x) && /^[\d\.]+$/.test(it.str.trim()));
+                if (bNum) weightBefore = bNum.str.trim();
+            }
+            if (hAfter && !weightAfter) {
+                const aNum = rowItems.find(it => it.x > hAfter.x + 10 && /^[\d\.]+$/.test(it.str.trim()));
+                if (aNum) weightAfter = aNum.str.trim();
+            }
+        }
+    }
+
+    let prodChar = null;
+    const fullTextUpper = pageTexts.join(' ').toUpperCase();
+    const cleanTextGlobal = fullTextUpper.replace(/[\s\-\*]/g, '');
+
+    if (cleanTextGlobal.includes('NONPRESHRUNK')) {
+        prodChar = 'Non-PreShrunk';
+    } else if (cleanTextGlobal.includes('PRESHRUNK')) {
+        prodChar = 'Pre-Shrunk';
+    } else if (cleanTextGlobal.includes('NOFINISHING')) {
+        prodChar = '*No-Finishing';
+    }
+
+    const stageVal = (document.getElementById('d-product-stage').textContent || '').toLowerCase();
+    const isFabric = stageVal.includes('fabric');
+    const isFullPkg = chkFull;
+
+    const fiberVal = (document.getElementById('d-fiber').textContent || '').toLowerCase();
+    const hasSpandex = fiberVal.includes('spandex') || fiberVal.includes('elastane') || fiberVal.includes('elastano');
+
+    const showElongation = isFabric && isFullPkg && hasSpandex;
+    const showP7 = (fabricConst && fabricConst !== '--') || showElongation || weightBefore || weightAfter || isFabric || true;
+
+    if (showP7) {
+        document.getElementById('sect-p7').style.display = '';
+        
+        let rdNumVal = extractRDNumber();
+        if (!rdNumVal && isFabric) {
+            const styleVal = document.getElementById('d-style-no').textContent;
+            if (styleVal && styleVal !== '--' && styleVal !== '—') rdNumVal = styleVal;
+        }
+        if (isFabric || rdNumVal) {
+            document.getElementById('row-rd-num').style.display = '';
+            setVal('d-rd-num', rdNumVal);
+        }
+
+        if (fabricConst && fabricConst !== '--') {
+            document.getElementById('row-fabric').style.display = '';
+            setVal('d-fabric', fabricConst);
+        }
+        if (weightBefore || weightAfter) {
+            document.getElementById('row-weight').style.display = '';
+            let wStr = [];
+            if (weightBefore) wStr.push('Before: ' + weightBefore);
+            if (weightAfter) wStr.push('After: ' + weightAfter);
+            setVal('d-weight', wStr.join(' / '));
+        }
+
+        document.getElementById('row-prod-char').style.display = '';
+        setVal('d-prod-char', prodChar);
+    }
+
+    if (showElongation) {
+        document.getElementById('row-elongation').style.display = '';
+        setVal('d-elongation', elongation);
+    }
+    setProgress(85);
+
+    renderDeclarations();
+    renderComplementaryReports();
+    setProgress(100);
+
+    evaluateRejections(chkCount, weightBefore, weightAfter, prodChar);
+
+    if (extraccionBajaConfianza) {
+        dbg('WARNING: fallback extraction used for style fields. Please verify.');
+    }
+}
+
+function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
+    let alerts = [];
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const txt = el.textContent.trim();
+        return (txt === '--' || txt === '—' || txt === '') ? null : txt;
+    };
+
+    const testStatus = (getVal('d-test-status') || '').toLowerCase();
+    const isProduction = testStatus === 'production';
+    const prodStage = (getVal('d-product-stage') || '').toLowerCase();
+    const isFabric = prodStage.includes('fabric');
+
+    const season = getVal('d-season');
+    if (!season) alerts.push('MISSING <strong>Season / Year</strong>');
+    else if (season.includes(',') || season.includes(';') || season.includes('&')) {
+        alerts.push('TWO (or multiple) <strong>Season / Year</strong> detected');
+    }
+
+    const sourcing = getVal('d-sourcing');
+    if (!sourcing) {
+        alerts.push('MISSING <strong>Sourcing Office</strong>');
+    } else {
+        // 🛡️ LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
+        const validSourcingRegex = /^\s*GIS\s*[\-\._]*\s*(HONG\s*KONG|HK|SHANGAI|SHANGHAI|SH|CENTRAL\s*AMERICA?|CA|AMERICA?|VIETNAM|VN)\s*$/i;
+        
+        if (validSourcingRegex.test(sourcing)) {
+            // Es 100% válida (1 sola oficina). Lo dejamos pasar limpiecito.
+        } else if ((sourcing.includes(',') || sourcing.includes(';') || sourcing.includes('&')) && /GIS/i.test(sourcing)) {
+            // Si tiene coma/separador Y además menciona la palabra "GIS", asumimos que intentaron poner 2 oficinas a la vez
+            alerts.push('TWO (or multiple) <strong>Sourcing Office</strong> detected');
+        } else {
+            // Si no pasó la lista blanca, y no son múltiples GIS, es inválida
+            alerts.push('INVALID <strong>Sourcing Office</strong> (Detected: ' + sourcing + ')');
+        }
+    }
+
+    const rdNum = getVal('d-rd-num');
+    const styleNo = getVal('d-style-no');
+    if (isFabric && !rdNum && !styleNo) {
+        alerts.push('MISSING <strong>PLM Fabric Article (RD Number)</strong>');
+    }
+
+    if (chkCount === 0) alerts.push('NO <strong>Test Type</strong> checked');
+    else if (chkCount > 1) alerts.push('TWO (or multiple) <strong>Test Types</strong> checked');
+
+    const refNumEl = document.getElementById('d-ref-num');
+    if (refNumEl && (refNumEl.textContent === '--' || refNumEl.textContent === '—')) {
+        alerts.push('MISSING <strong>Reference Full Package Report Number</strong>');
+    }
+
+    if (!getVal('d-fiber')) alerts.push('MISSING <strong>Fiber Content</strong>');
+    if (!getVal('d-wash')) alerts.push('MISSING <strong>WASH METHOD</strong>');
+    if (!weightBefore && !weightAfter) alerts.push('MISSING <strong>Fabric Weight</strong>');
+    if (!prodCharStr) alerts.push('MISSING <strong>Product Characteristics/Finishing</strong>');
+
+    if (isProduction) {
+        if (!isFabric && !styleNo) alerts.push('MISSING <strong>Style No.</strong>');
+        if (!getVal('d-style-desc')) alerts.push('MISSING <strong>Style Description</strong>');
+        if (!getVal('d-style-colors')) alerts.push('MISSING <strong>Style Colors</strong>');
+        if (!getVal('d-retail')) alerts.push('MISSING <strong>Retail Market</strong>');
+        if (!getVal('d-channel')) alerts.push('MISSING <strong>Channel</strong>');
+        if (!getVal('d-dest')) alerts.push('MISSING <strong>Destination Country</strong>');
+        if (!getVal('d-ship')) alerts.push('MISSING <strong>Ship to Country</strong>');
+    }
+
+    const pfasBlock = document.getElementById('d-declarations-block');
+    if (pfasBlock && pfasBlock.innerHTML.includes('missing but required')) {
+        alerts.push('MISSING <strong>PFAS Certification</strong>');
+    }
+
+    const alertBox = document.getElementById('rejection-alerts');
+    if (alerts.length > 0) {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = '<div style="background:#ffebee; border:1px solid #ef9a9a; border-radius:6px; padding:12px; margin-bottom:15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">' +
+            '<h4 style="color:#c62828; margin-bottom:8px; font-size:13px; font-weight:700;"><i class="fas fa-ban"></i> REJECTION GROUNDS DETECTED</h4>' +
+            '<ul style="margin-left:24px; color:#b71c1c; font-size:12px; font-weight:600; line-height:1.6;">' +
+            alerts.map(a => `<li>${a}</li>`).join('') +
+            '</ul></div>';
+    } else {
+        alertBox.style.display = 'none';
+        alertBox.innerHTML = '';
+    }
+}
+
+async function extractStyleRowSpatial() {
+    try {
+        const items = pageItems[0];
+        if (!items || items.length === 0) return null;
+
+        const hBrand = items.find(i => i.str.trim() === 'Brand');
+        if (!hBrand) return null;
+
+        const headerItems = items.filter(i => Math.abs(i.y - hBrand.y) < 15).sort((a, b) => a.x - b.x);
+
+        let xDesc = 9999, xCol = 9999, xBrand = hBrand.x - 5, xRetail = 9999, xChannel = 9999, xDest = 9999, xShip = 9999;
+
+        for (let i = 0; i < headerItems.length; i++) {
+            const txt = headerItems[i].str.toLowerCase();
+            if (txt.includes('description')) xDesc = (i > 0 && headerItems[i-1].str.toLowerCase().includes('style') && (headerItems[i].x - headerItems[i-1].x) < 40) ? headerItems[i-1].x - 5 : headerItems[i].x - 5;
+            if (txt.includes('colors') || txt === 'color') xCol = (i > 0 && headerItems[i-1].str.toLowerCase().includes('style') && (headerItems[i].x - headerItems[i-1].x) < 40) ? headerItems[i-1].x - 5 : headerItems[i].x - 5;
+            if (txt.includes('brand')) xBrand = hBrand.x - 5;
+            if ((txt.includes('retail') || txt.includes('market')) && xRetail === 9999) xRetail = headerItems[i].x - 5;
+            if (txt.includes('channel')) xChannel = headerItems[i].x - 5;
+            if (txt.includes('destination')) xDest = headerItems[i].x - 5;
+            if ((txt.includes('ship to') || txt.includes('ship'))) xShip = headerItems[i].x - 5;
+        }
+
+        if (xDesc === 9999) xDesc = 80;
+        if (xCol === 9999) xCol = 220;
+        if (xBrand === 9999) xBrand = xCol + 50;
+        if (xRetail === 9999) xRetail = xBrand + 55;
+        if (xChannel === 9999) xChannel = xRetail + 65;
+        if (xDest === 9999) xDest = xChannel + 55;
+        if (xShip === 9999) xShip = xDest + 65;
+
+        const groupedY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('grouped'))?.y || 9999;
+        const prodDetailsY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('product details'))?.y || 9999;
+        const labY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('laboratory will'))?.y || 9999;
+        const bottomY = Math.min(groupedY, prodDetailsY, labY, hBrand.y + 300) - 5;
+
+        const styleItems = items.filter(i =>
+            i.y > hBrand.y + 5 &&
+            i.y < bottomY &&
+            i.x < xDesc &&
+            /\d/.test(i.str) &&
+            /^[A-Z0-9#\-\._]*\d+[A-Z0-9#\-\._]*$/i.test(i.str.trim())
+        );
+        if (styleItems.length === 0) return null;
+
+        styleItems.sort((a, b) => a.y - b.y);
+
+        let allNos = [], allDescs = [], allColors = [], allBrands = [];
+        let allRetails = [], allChannels = [], allDests = [], allShips = [];
+
+        for (let j = 0; j < styleItems.length; j++) {
+            const currentRow = styleItems[j];
+            let rowBottom = bottomY;
+            if (j + 1 < styleItems.length) {
+                rowBottom = styleItems[j+1].y;
+            }
+            rowBottom = Math.min(rowBottom, currentRow.y + 60);
+
+            let rowItems = items.filter(i => i.y >= currentRow.y - 8 && i.y < rowBottom - 2);
+
+            let descParts = [], colorsParts = [], brandParts = [];
+            let retailParts = [], channelParts = [], destParts = [], shipParts = [];
+
+            for (const it of rowItems) {
+                if (it.str.trim() === currentRow.str.trim() && Math.abs(it.x - currentRow.x) < 10) continue;
+
+                if (it.x >= xDesc && it.x < xCol) descParts.push(it);
+                else if (it.x >= xCol && it.x < xBrand) colorsParts.push(it);
+                else if (it.x >= xBrand && it.x < xRetail) brandParts.push(it);
+                else if (it.x >= xRetail && it.x < xChannel) retailParts.push(it);
+                else if (it.x >= xChannel && it.x < xDest) channelParts.push(it);
+                else if (it.x >= xDest && it.x < xShip) destParts.push(it);
+                else if (it.x >= xShip) shipParts.push(it);
+            }
+
+            const sortFn = (a, b) => Math.abs(a.y - b.y) > 5 ? a.y - b.y : a.x - b.x;
+
+            const descText = descParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+            const colorsText = colorsParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+            const brandText = brandParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+
+            const retailText = retailParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+            const channelText = channelParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+            const destText = destParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+            const shipText = shipParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+
+            allNos.push(currentRow.str.trim());
+            if (descText) allDescs.push(descText);
+            if (colorsText) allColors.push(colorsText);
+            if (brandText) allBrands.push(brandText);
+            if (retailText) allRetails.push(retailText);
+            if (channelText) allChannels.push(channelText);
+            if (destText) allDests.push(destText);
+            if (shipText) allShips.push(shipText);
+        }
+
+        return {
+            no: [...new Set(allNos)].join(', ') || '--',
+            desc: [...new Set(allDescs)].join(', ') || '--',
+            colors: [...new Set(allColors)].join(', ') || '--',
+            brand: [...new Set(allBrands)].join(', ') || '--',
+            retail: [...new Set(allRetails)].join(', ') || '--',
+            channel: [...new Set(allChannels)].join(', ') || '--',
+            dest: [...new Set(allDests)].join(', ') || '--',
+            ship: [...new Set(allShips)].join(', ') || '--'
+        };
+    } catch (e) {
+        dbg('extractStyleRowSpatial ERROR: ' + e.message);
+        return null;
+    }
+}
+
+function extractStyleRow(text) {
+    const brands = ['Old Navy', 'Gap', 'Banana Republic', 'Athleta'];
+    const brandsPattern = brands.join('|');
+    const re = new RegExp(`([A-Z0-9#\\-\\._]*\\d+[A-Z0-9#\\-\\._]*)\\s+([\\s\\S]{1,150}?)\\s+(${brandsPattern})`, 'i');
+    const m = text.match(re);
+
+    if (m) {
+        const no = m[1];
+        const middle = m[2].trim();
+        const brand = m[3];
+        const words = middle.split(' ');
+        let desc = middle, colors = '--';
+
+        if (words.length > 2) { colors = words.slice(-2).join(' '); desc = words.slice(0, -2).join(' '); }
+        else if (words.length > 1) { colors = words.slice(-1).join(' '); desc = words.slice(0, -1).join(' '); }
+
+        return { no, desc, colors, brand, retail: '--', channel: '--', dest: '--', ship: '--' };
+    }
+    return { no: '--', desc: '--', colors: '--', brand: '--', retail: '--', channel: '--', dest: '--', ship: '--' };
+}
+
+function extractSeason(text) {
+    let rawSeason = getTextBetween(text, 'Season/Year', ['Country of Origin', 'Gap Inc', 'Design Number', 'Sourcing']) 
+                 || getTextBetween(text, 'Season', ['Country of Origin', 'Gap Inc', 'Sourcing']);
+
+    if (rawSeason && rawSeason.length > 0) {
+        const matches = [...rawSeason.matchAll(/(FA|HO|SP|SU)\d{2}/gi)].map(m => m[0].toUpperCase());
+        if (matches.length > 0) {
+            return [...new Set(matches)].join(', ');
+        }
+        return rawSeason.trim();
+    }
+    return null;
+}
+
+function extractRDNumber() {
+    let rdNumbers = [];
+    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+        const items = pageItems[pageIdx];
+        const hRD = items.find(i => {
+            const str = i.str.trim().toLowerCase();
+            return /\brd\b|rd\s*number|one\s*number\s*per/i.test(str);
+        });
+        if (!hRD) continue;
+
+        const nums = items.filter(i => {
+            const txt = i.str.trim();
+            if (!/^\d{6,9}$/.test(txt)) return false; 
+            if (Math.abs(i.x - hRD.x) > 45) return false; 
+            if (i.y <= hRD.y + 5 || i.y > hRD.y + 220) return false; 
+            return true;
+        });
+
+        for (const n of nums) {
+            const val = n.str.trim();
+            if (!rdNumbers.includes(val)) rdNumbers.push(val);
+        }
+        if (rdNumbers.length > 0) break;
+    }
+
+    if (rdNumbers.length === 0) {
+        const fullText = pageTexts.join(' ');
+        const match = fullText.match(/(?:PLM\s*Fabric|RD\s*Number)[\s\S]{0,150}?(\b\d{6,8}\b)/i);
+        if (match && match[1]) {
+            rdNumbers.push(match[1]);
+        }
+    }
+
+    return rdNumbers.length > 0 ? rdNumbers.join(', ') : null;
+}
+
+function extractRequestedTests() {
+    let requestedTests = [];
+    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+        const items = pageItems[pageIdx];
+        const hClaims = items.find(i => i.str.trim().toLowerCase() === 'claims');
+        if (!hClaims) continue;
+
+        const leftX = hClaims.x + 75;
+        const topY = hClaims.y + 2;
+        const bottomY = hClaims.y + 85;
+
+        let rawItems = items.filter(i => i.y > topY && i.y < bottomY && i.x >= leftX && i.str.trim().length > 0);
+
+        rawItems = rawItems.filter(i => {
+            const s = i.str.trim().toLowerCase();
+            if (/^[xv✓✔☑☒■þoo☐]$/i.test(s)) return false;
+            if (s === 'claims' || s === 'special' || s === 'test') return false;
+            if (s.includes('form no')) return false;
+            if (s.includes('page ')) return false;
+            if (s.includes('(psr)') || s.includes('(performance)') || s === 'ce)') return false;
+            return true;
+        });
+
+        if (rawItems.length === 0) continue;
+
+        rawItems.sort((a, b) => Math.abs(a.y - b.y) > 5 ? a.y - b.y : a.x - b.x);
+        let fullText = rawItems.map(i => i.str.trim()).join(' ').replace(/\s{2,}/g, ' ');
+
+        fullText = fullText.replace(/Form\s*No[\s\S]*/gi, '')
+                           .replace(/Page\s*\d+[\s\S]*/gi, '')
+                           .replace(/\*a00[\s\S]*/gi, '');
+
+        let cleanParts = fullText.split(/[:;]/).map(p => p.trim()).filter(p => p.length > 3);
+
+        if (cleanParts.length > 0) { requestedTests = cleanParts; break; }
+    }
+    return requestedTests;
+}
+
+function isBoxChecked(labelText) {
+    const lowerLabel = labelText.toLowerCase();
+    const checkChars = ['þ', '✓', '✔', '☑', '☒', '■', '[x]', '(x)'];
+    const emptyChars = ['☐', 'o ', 'O ', '[ ]'];
+
+    for (let pageIdx = 0; pageIdx < pageTexts.length; pageIdx++) {
+        const text = pageTexts[pageIdx] || '';
+        const lowerText = text.toLowerCase();
+        let idx = lowerText.indexOf(lowerLabel);
+
+        while (idx !== -1) {
+            const searchWindow = text.substring(Math.max(0, idx - 25), idx);
+            let lastCheckPos = -1;
+            for (let c of checkChars) {
+                let pos = searchWindow.toLowerCase().lastIndexOf(c.toLowerCase());
+                if (pos > lastCheckPos) lastCheckPos = pos;
+            }
+            let lastEmptyPos = -1;
+            for (let e of emptyChars) {
+                let pos = searchWindow.lastIndexOf(e);
+                if (pos > lastEmptyPos) lastEmptyPos = pos;
+            }
+            if (lastCheckPos !== -1 && lastCheckPos > lastEmptyPos) return true;
+            idx = lowerText.indexOf(lowerLabel, idx + labelText.length);
+        }
+    }
+
+    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+        const items = pageItems[pageIdx];
+        const labelItem = items.find(i => i.str.trim().toLowerCase() === lowerLabel);
+        if (!labelItem) continue;
+        const nearby = items.find(i =>
+            Math.abs(i.y - labelItem.y) < 8 &&
+            i.x < labelItem.x && i.x > labelItem.x - 20 &&
+            /^[þ✓✔☑☒■xX]$/.test(i.str.trim())
+        );
+        if (nearby) return true;
+    }
+
+    return false;
+}
+
+function renderTestTypeBlock(full, additional, special, psr, perf, requestedTests = []) {
+    const block = document.getElementById('d-test-type-block');
+    let html = '';
+
+    const checks = [
+        { checked: full,       label: 'Full Package' },
+        { checked: additional, label: 'Additional Colorway Package' },
+        { checked: special,    label: 'Special Claims' },
+        { checked: psr,        label: 'Individual Tests (PSR)' },
+        { checked: perf,       label: 'Individual Tests (Performance)' },
+    ];
+
+    const marked = checks.filter(c => c.checked);
+    if (marked.length === 0) {
+        html = '<p style="color:#767676;font-size:12px;padding:4px 0;">No checkbox marked detected.</p>';
+    } else {
+        for (const c of marked) {
+            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill">✓ ${esc(c.label)}</span></span></div>`;
+        }
+    }
+
+    if (additional) {
+        const typeTesting = (document.getElementById('d-type-testing').textContent || '').toLowerCase();
+        const isPsrOnly = typeTesting.includes('psr only');
+
+        if (isPsrOnly) {
+            html += `<div class="det-row"><span class="det-label">Ref. Full Pkg Report</span><span class="det-val" style="color:#666; font-weight:600;">Not Applicable</span></div>`;
+        } else {
+            let refNum = null;
+            for (let i = 0; i < pageTexts.length; i++) {
+                let pText = pageTexts[i] || '';
+                let found = getTextBetween(pText, 'Reference Full Package Report Number(s)', ['Special Claims', 'Individual Tests', 'Form No', 'Page'])
+                         || getTextBetween(pText, 'Reference Full Package Report Number', ['Special Claims', 'Individual Tests', 'Form No', 'Page'])
+                         || getTextBetween(pText, 'Reference', ['Special Claims', 'Individual Tests', 'Form No', 'Page']);
+                
+                if (found && found !== '--') {
+                    let cleaned = found.replace(/number\(s\)/ig, '').replace(/\(s\)/ig, '').replace(/^[bcdfghjklmnpqrstvwxyz]\s+/i, '').trim();
+                    let numMatch = cleaned.match(/\b([A-Z0-9\-\._]*\d{3,}[A-Z0-9\-\._]*)\b/i);
+                    if (numMatch) {
+                        refNum = numMatch[1];
+                        break;
+                    }
+                }
+            }
+
+            if (refNum) {
+                html += `<div class="det-row"><span class="det-label">Ref. Full Pkg Report</span><span class="det-val found" id="d-ref-num">${esc(refNum)}</span></div>`;
+            } else {
+                html += `<div class="det-row"><span class="det-label">Ref. Full Pkg Report</span><span class="det-val empty" id="d-ref-num">--</span></div>`;
+                html += `<div class="cond-alert"><i class="fas fa-exclamation-triangle"></i><strong>Reference Full Package Report Number is required</strong></div>`;
+            }
+        }
+    }
+
+    if ((psr || perf) && requestedTests && requestedTests.length > 0) {
+        html += `<div style="margin-top: 8px; border-top: 1px dashed #eee; padding-top: 8px;">`;
+        html += `<div style="font-size:11px; color:#666; font-weight:bold; margin-bottom:6px;">REQUESTED TESTS / CLAIMS:</div>`;
+        for (const rt of requestedTests) {
+            html += `<div style="font-size:12px; color:#333; margin-bottom:4px; line-height:1.3; font-weight:600;"><i class="fas fa-angle-right" style="color:#ffc800; margin-right:6px;"></i>${esc(rt)}</div>`;
+        }
+        html += `</div>`;
+    }
+
+    block.innerHTML = html;
+} 
+
+function renderFiber() {
+    let fibers = [];
+    let colFiberX = null;
+    let colPctX = null;
+
+    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+        const items = pageItems[pageIdx];
+        const hPct = items.find(i => i.str.includes('Percentage'));
+        const hFiber = items.find(i => i.str.trim().toLowerCase() === 'fiber');
+        
+        if (hPct && hFiber) {
+            colPctX = hPct.x;
+            colFiberX = hFiber.x;
+            break;
+        }
+    }
+
+    if (colPctX !== null && colFiberX !== null) {
+        for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+            const items = pageItems[pageIdx];
+            const pctItems = items.filter(i => Math.abs(i.x - colPctX) < 40 && /^[\d\.]+$/.test(i.str.trim()));
+
+            for (const pIt of pctItems) {
+                const pct = parseFloat(pIt.str.trim());
+                if (isNaN(pct) || pct <= 0 || pct > 100) continue;
+
+                const fItems = items.filter(i => Math.abs(i.y - pIt.y) < 10 && i.x >= colFiberX - 40 && i.x < colPctX - 10);
+                const rawFName = fItems.sort((a, b) => a.x - b.x).map(i => i.str.trim()).join(' ').trim();
+
+                if (rawFName && rawFName.toLowerCase() !== 'fiber') {
+                    const lowerFName = rawFName.toLowerCase();
+                    if (rawFName.length > 45) continue;
+                    if (lowerFName.includes('acknowledge') || lowerFName.includes('compliance') || 
+                        lowerFName.includes('california') || lowerFName.includes('responsible') || 
+                        lowerFName.includes('certify') || lowerFName.includes('penalty')) {
+                        continue;
+                    }
+
+                    const garbageWords = ['30s', '20s', '40s', '50s', 'jersey', 'rib', 'fleece', 'mesh', 'interlock', 'pique', 'fabric', 'body', 'sleeve', 'neck', 'tape', 'section', 'disclosure', 'only'];
+                    const cleanWords = rawFName.split(/\s+/).filter(word => {
+                        const wLow = word.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        return !garbageWords.includes(wLow) && !/^[\d\.\%]+$/.test(wLow);
+                    });
+                    const fName = cleanWords.join(' ').trim();
+                    
+                    if (fName && !fibers.some(f => f.name === fName)) {
+                        fibers.push({ name: fName, pct: pct.toFixed(0) + '%' });
+                    }
+                }
+            }
+        }
+    }
+
+    const el = document.getElementById('d-fiber');
+    if (fibers.length) {
+        el.innerHTML = fibers.map(f => `<span class="fiber-chip">${esc(f.name)}: ${esc(f.pct)}</span>`).join('');
+        el.className = 'det-val';
+    } else { 
+        el.textContent = '—'; 
+        el.className = 'det-val empty'; 
+    }
+}
+
+function renderWashMethod() {
+    let text = pageTexts.join(' ').toUpperCase();
+    const el = document.getElementById('d-wash');
+    let method = null;
+    if (/DO\s+NOT\s+DRY\s+CLEAN/i.test(text) || /MACHINE\s+WASH/i.test(text)) method = 'Machine Wash';
+    else if (/HAND\s+WASH/i.test(text)) method = 'Hand Wash';
+    else if (/DRY\s+CLEAN\s+ONLY/i.test(text)) method = 'Dry Clean Only';
+    else if (/DRY\s+CLEAN/i.test(text) && !/DO\s+NOT\s+DRY\s+CLEAN/i.test(text)) method = 'Dry Clean';
+
+    if (method) { el.textContent = method; el.className = 'det-val found'; }
+    else { el.textContent = '—'; el.className = 'det-val empty'; }
+}
+
+function renderDeclarations() {
+    const block = document.getElementById('d-declarations-block');
+    const testStatus = (document.getElementById('d-test-status').textContent || '').toLowerCase();
+    const productStage = (document.getElementById('d-product-stage').textContent || '').toLowerCase();
+    const typeTesting = (document.getElementById('d-type-testing').textContent || '').toLowerCase();
+    const isDevelopment = testStatus.includes('development');
+    const isTrim = productStage.includes('trim');
+    const isPerfOnly = typeTesting.includes('performance only');
+
+    if (isDevelopment || isTrim || isPerfOnly) {
+        block.innerHTML = '<em style="color:#666;font-size:12px;font-weight:600;">Not Applicable</em>';
+        return;
+    }
+
+    let decls = [];
+    for (let text of pageTexts) {
+        const regex = /PFAS\s+Declaration[\s\S]{0,100}?([a-zA-Z0-9_\-\s\(\)]+\.(?:pdf|docx))/gi;
+        const matches = [...text.matchAll(regex)];
+        for (const match of matches) {
+            const fileName = match[1].trim();
+            if (fileName.length > 4 && !fileName.toLowerCase().includes('file name')) {
+                decls.push(`<div class="pfas-row"><span style="font-weight:600; color:#555;">PFAS Declaration - </span><span style="font-weight:700; color:#1a6e1a;"><i class="fas fa-file-alt" style="color:#c62828; margin:0 4px;"></i>${esc(fileName)}</span></div>`);
+            }
+        }
+    }
+    const uniqueDecls = [...new Set(decls)];
+    if (uniqueDecls.length > 0) block.innerHTML = uniqueDecls.join('');
+    else block.innerHTML = '<div class="cond-alert"><i class="fas fa-exclamation-triangle"></i><strong>PFAS Certification is missing but required</strong></div>';
+}
+
+function renderComplementaryReports() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? (el.textContent || '').trim().toLowerCase() : '';
+    };
+
+    const prodStage = getVal('d-product-stage');
+    const typeTesting = getVal('d-type-testing');
+    const testTypeBlock = getVal('d-test-type-block');
+
+    const isFabricOrTrim = prodStage.includes('fabric') || prodStage.includes('trim');
+    const isNotFinished = !prodStage.includes('finished');
+    const isPerfOnly = typeTesting.includes('performance only') || typeTesting === 'performance';
+    const isPerfCheckbox = testTypeBlock.includes('individual tests (performance)');
+
+    const trimBody = document.getElementById('trim-report-body');
+    const fabricBody = document.getElementById('fabric-report-body');
+    if (!trimBody || !fabricBody) return;
+
+    if (isFabricOrTrim || isNotFinished || isPerfOnly || isPerfCheckbox) {
+        const naHtml = '<div style="color:#767676; font-weight:600; padding: 6px 0; font-size:13px; display:flex; align-items:center;">' +
+                       '<i class="fas fa-ban" style="margin-right:8px; color:#aaa;"></i>Not Applicable' +
+                       '</div>';
+        trimBody.innerHTML = naHtml;
+        fabricBody.innerHTML = naHtml;
+    } else {
+        const compData = extractComplementaryReportsData();
+        
+        if (compData.trims.length > 0) {
+            trimBody.innerHTML = compData.trims.map(t => 
+                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee;">` +
+                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-tag" style="color:#888; margin-right:6px;"></i>${esc(t.desc)}</span>` +
+                `<span style="background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(t.report)}</span>` +
+                `</div>`
+            ).join('');
+        } else {
+            trimBody.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Trim reports detected</div>';
+        }
+
+        if (compData.fabrics.length > 0) {
+            fabricBody.innerHTML = compData.fabrics.map(f => 
+                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee;">` +
+                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>${esc(f.desc)}</span>` +
+                `<span style="background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(f.report)}</span>` +
+                `</div>`
+            ).join('');
+        } else {
+            fabricBody.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Fabric reports detected</div>';
+        }
+    }
+}
+
+function extractComplementaryReportsData() {
+    let trimPairs = [];
+    let fabricPairs = [];
+
+    let currentSection = 'OTHER';
+
+    // 🟢 PLAN 0: LA BASE DE DATOS HISTÓRICA COMPLETA UNIFICADA
+    const knownReports = {
+        // 🏷️ T-LABEL / JOKER LABEL
+        "82260780111": "T-LABEL", 
+        "(8226)078-0111": "T-LABEL",
+        "TRM-0002134267": "JOKER LABEL", "(8225)318-0244": "JOKER LABEL",
+        "TRM-0002405949": "JOKER LABEL", "GUAT26000395": "JOKER LABEL",
+        "TRM-0002521361": "JOKER LABEL", "GUAT26003435": "JOKER LABEL",
+        "TRM-0002120344": "JOKER LABEL", "(5225)297-0535": "JOKER LABEL",
+        "TRM-0002133627": "JOKER LABEL", "JKTT25027079": "JOKER LABEL",
+        "TRM-0002111955": "JOKER LABEL", "GUAT25031761": "JOKER LABEL",
+        "TRM-0002492330": "JOKER LABEL", "GUAT26001359": "JOKER LABEL",
+        "TRM-0002489607": "JOKER LABEL", "GUAT26001028": "JOKER LABEL",
+        "GUAT26008388": "JOKER LABEL",
+        "GUAT25016153": "JOKER LABEL",
+        
+        // 🔥 HEAT SEAL / HEAT TRANSFER
+        "82260780113": "HEAT SEAL LABEL", 
+        "(8226)078-0113": "HEAT SEAL LABEL",
+        "TRM-0002137778": "HEAT TRANSFER", "(8225)330-0003": "HEAT TRANSFER",
+        "TRM-0002394253": "HEAT TRANSFER", "GUAT26000142": "HEAT TRANSFER",
+        "TRM-0002122162": "HEAT TRANSFER", "77253000012": "HEAT TRANSFER",
+        "TRM-0002520860": "HEAT TRANSFER", "GUAT26003430": "HEAT TRANSFER",
+        "GUBT26003646": "HEAT TRANSFER",
+        "TRM-0002122160": "HEAT TRANSFER", "77253000004": "HEAT TRANSFER",
+        "TRM-0002521596": "HEAT TRANSFER", "GUAT26003429": "HEAT TRANSFER",
+        "TRM-0002125560": "HEAT TRANSFER", "GUAT25033651": "HEAT TRANSFER",
+        "GUBT26004014": "HEAT TRANSFER",
+        "TRM-0002394249": "HEAT TRANSFER", "GUAT26000191": "HEAT TRANSFER",
+        "TRM-0002098289": "HEAT TRANSFER", "GUAT25028827": "HEAT TRANSFER",
+        "GUAT26003421": "HEAT TRANSFER",
+        "GUAT25034508": "HEAT TRANSFER",
+        "GUBT26003147": "HEAT TRANSFER",
+        "TRM-0002520852": "HEAT TRANSFER", "GUAT26003441": "HEAT TRANSFER",
+        "GUAT26003401": "HEAT TRANSFER",
+        "GUAT26003416": "HEAT TRANSFER",
+        "TRM-0002405490": "HEAT TRANSFER", "GUAT26000131": "HEAT TRANSFER",
+        "(5226)072-0115": "HEAT TRANSFER",
+        "GUAT26003386": "HEAT TRANSFER",
+        "GUAT26003415": "HEAT TRANSFER",
+        "GUBT26003936": "HEAT TRANSFER",
+        "GUAT25028876": "HEAT TRANSFER",
+        "(7725)300-0012": "HEAT TRANSFER",
+        "GUAT26003431": "HEAT TRANSFER",
+        
+        // 🧺 CARE LABEL
+        "TRM-0002116687": "CARE LABEL", "KORT25054351": "CARE LABEL",
+        "TRM-0002404929": "CARE LABEL", "GUAT26000399": "CARE LABEL",
+        "TRM-0002521152": "CARE LABEL", "GUAT26003439": "CARE LABEL",
+        "GUAT25027309": "CARE LABEL",
+        "TRM-0002488275": "CARE LABEL", "KORT26002888": "CARE LABEL",
+        "(9626)021-0113": "CARE LABEL",
+        "TRM-0002491694": "CARE LABEL", "GUAT26001358": "CARE LABEL",
+        "(9625)322-0178": "CARE LABEL",
+        "KORT26019945": "CARE LABEL",
+        
+        // 📡 RFID LABEL
+        "TRM-0002521145": "RFID LABEL", "GUAT26003408": "RFID LABEL",
+        "TRM-0002019463": "RFID LABEL", "GUAT25016940": "RFID LABEL",
+        "GUAT25031760": "RFID LABEL",
+        "TRM-0002112857": "RFID LABEL", "GUAT25031747": "RFID LABEL",
+        "(9626)076-0516": "RFID LABEL",
+        "TRM-0002491118": "RFID LABEL", "GUAT26001350": "RFID LABEL",
+        "TRM-0002119713": "RFID LABEL", "GUAT25032343": "RFID LABEL",
+        "TRM-0002491112": "RFID LABEL", "GUAT26001342": "RFID LABEL",
+        "TRM-0002146456": "RFID LABEL", "VNMT25074284": "RFID LABEL",
+        "(9625)333-0080": "RFID LABEL",
+        "TRM-0002119728": "RFID LABEL", "GUAT25031282": "RFID LABEL",
+        
+        // 📦 MIXTOS Y OTROS
+        "TRM-0002145940": "JOKER LABEL & CARE LABEL", "77253380006": "JOKER LABEL & CARE LABEL",
+        "TRM-0002520854": "WOVEN LABEL", "GUAT26003442": "WOVEN LABEL",
+        "(9625)235-0143": "MOBILON TAPE",
+        "(9626)021-0116": "MOBILON TAPE",
+        "TRM-0002087728": "MAIN LABEL", "(5225)262-0045": "MAIN LABEL"
+    };
+
+    const trimDictionary = [
+        { normal: 'MAIN LABEL', regex: /MAIN\s*[-_]?\s*LABEL/i },
+        { normal: 'CARE LABEL', regex: /CARE\s*[-_]?\s*LABEL/i },
+        { normal: 'RFID', regex: /RFID/i },
+        { normal: 'HEAT TRANSFER', regex: /HEAT\s*[-_]?\s*TRANSFER/i },
+        { normal: 'T-LABEL', regex: /T\s*[-_]?\s*LABEL/i },
+        { normal: 'JOKER LABEL', regex: /JOKER\s*[-_]?\s*LABEL/i },
+        { normal: 'PO LABEL', regex: /PO\s*[-_]?\s*LABEL/i },
+        { normal: 'MOBILON', regex: /MOBILON/i }
+    ];
+
+    let activeMinX = 140; 
+    let activeMaxX = 340; 
+    let colorMinX = 340;
+    let colorMaxX = 460;
+
+    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+        const items = pageItems[pageIdx];
+
+        const hDesc = items.find(i => /^description/i.test(i.str.trim()) && i.x > 100 && i.x < 550);
+        if (hDesc) {
+            const rightNeighbors = items.filter(i => 
+                Math.abs(i.y - hDesc.y) < 20 && 
+                i.x > hDesc.x + 20 && 
+                i.str.trim().length > 1
+            );
+            rightNeighbors.sort((a, b) => a.x - b.x);
+
+            activeMinX = hDesc.x - 20;
+            if (rightNeighbors.length > 0) {
+                activeMaxX = rightNeighbors[0].x - 5;
+            } else {
+                activeMaxX = hDesc.x + 120;
+            }
+        }
+
+        const hColor = items.find(i => /^color/i.test(i.str.trim()) && i.x > 150 && i.x < 650);
+        if (hColor) {
+            colorMinX = hColor.x - 15;
+            colorMaxX = hColor.x + 120;
+        } else if (hDesc) {
+            colorMinX = activeMaxX + 5;
+            colorMaxX = colorMinX + 120;
+        }
+
+        const sortedItems = [...items].sort((a, b) => {
+            if (Math.abs(a.y - b.y) > 8) return a.y - b.y;
+            return a.x - b.x;
+        });
+
+        let cocHeadersY = [];
+        for (const item of sortedItems) {
+            const txt = item.str.trim();
+            if (/trim\s*certif(ier|er)\s*test|vendor\s*sourced/i.test(txt)) {
+                currentSection = 'TRIM';
+            } else if (/fabric\s*test|reports\s*for\s*fabrics/i.test(txt)) {
+                currentSection = 'FABRIC';
+            // 🛑 ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
+            } else if (/\bcoc['s]*\b|attestation|compliance|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
+                if (item.x < 280) {
+                    currentSection = 'OTHER';
+                }
+                cocHeadersY.push(item.y);
+            }
+        }
+        cocHeadersY.sort((a, b) => a - b);
+
+        // 🚀 EXTRACCIÓN SEGURA: Permite números unidos a guiones bajos (ej. \d{10,12}_)
+        let rawAnchors = items
+            .filter(it => /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
+            .sort((a, b) => a.y - b.y);
+
+        let reportAnchors = [];
+        for (let i = 0; i < rawAnchors.length; i++) {
+            const current = rawAnchors[i];
+            let skip = false;
+
+            if (/^\d{10,12}/.test(current.str.replace(/[^\d]/g, ''))) {
+                skip = reportAnchors.some(prev => 
+                    /TRM/i.test(prev.str) && 
+                    Math.abs(current.y - prev.y) < 45 && 
+                    Math.abs(current.x - prev.x) < 100
+                );
+            }
+            
+            if (!skip) {
+                skip = reportAnchors.some(prev => 
+                    Math.abs(current.y - prev.y) < 12 && 
+                    Math.abs(current.x - prev.x) < 100
+                );
+            }
+
+            if (!skip) {
+                reportAnchors.push(current);
+            }
+        }
+
+        for (let idx = 0; idx < reportAnchors.length; idx++) {
+            const item = reportAnchors[idx];
+
+            const rowItems = items.filter(it => Math.abs(it.y - item.y) < 30);
+            const rowText = rowItems.map(it => it.str).join(' ');
+            
+            // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
+            if (/\bcoc\b|certificado|certificate|special\s*test\s*instructions|applicant\s*information|intertek\s*test\s*sum/i.test(rowText)) continue;
+
+            let topLimitY;
+            if (idx > 0) {
+                topLimitY = reportAnchors[idx - 1].y + 15; 
+            } else {
+                if (hDesc) {
+                    topLimitY = hDesc.y + 10; 
+                } else {
+                    topLimitY = 40; 
+                }
+            }
+            
+            let bottomLimitY = (idx < reportAnchors.length - 1) ? (reportAnchors[idx + 1].y - 15) : item.y + 55;
+            
+            let fileBottomY = item.y + 35; 
+            if (idx < reportAnchors.length - 1) {
+                fileBottomY = reportAnchors[idx + 1].y - 2;
+            } 
+            
+            const nextCocY = cocHeadersY.find(y => y > item.y + 10);
+            if (nextCocY && (nextCocY - item.y) < 65) {
+                fileBottomY = Math.min(fileBottomY, nextCocY - 2);
+                bottomLimitY = Math.min(bottomLimitY, nextCocY - 2);
+            }
+
+            const cellItems = items.filter(it => 
+                it.x > item.x - 25 && it.x < item.x + 140 && 
+                it.y > item.y - 14 && it.y < fileBottomY
+            );
+            let cellText = cellItems.map(it => it.str.trim()).join(' ');
+            
+            let stitchedText = cellText
+                .replace(/(GUAT|GUBT|KORT|JKTT|VNMT)\s*(\d+)\s+(\d+)/ig, '$1$2$3')
+                .replace(/\(\s*(\d{4})\s*\)\s*(\d{3})\s*[-]?\s*(\d{4})/ig, '($1)$2-$3')
+                .replace(/TRM\s*[-_]?\s*/ig, 'TRM-')
+                .replace(/(TRM-[\d_]+)\s+(?=[\d_])/ig, '$1'); 
+
+            // 🚀 EXTRACCIÓN SEGURA: Captura el número incluso si está pegado a un guion bajo `_`
+            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[\d_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
+            if (!match) continue;
+            let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
+
+            let targetSection = currentSection;
+            if (/fabric|frd\-|jersey|rib|twill|fleece|interlock|cool\s*almond/i.test(rowText)) targetSection = 'FABRIC';
+            else if (/trim|label|button|zipper|thread|elastic|polybag/i.test(rowText)) targetSection = 'TRIM';
+
+            if (targetSection !== 'TRIM' && targetSection !== 'FABRIC') continue;
+
+            let finalDesc = '';
+
+            let historicalMatch = Object.keys(knownReports).find(key => repNum.includes(key));
+
+            if (targetSection === 'TRIM' && historicalMatch) {
+                finalDesc = knownReports[historicalMatch];
+            } else {
+                const descItems = items.filter(it => {
+                    const t = it.str.trim();
+                    if (t.length === 0 || /^\d+$/.test(t)) return false;
+                    if (t.length === 1 && !/^[T\-]$/i.test(t)) return false; 
+                    
+                    const cleanWord = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
+                    
+                    if (/^(description|color|style|number|item|type|file|name|document|form|no|r-pac|pac|sml|international|test|tests|testing|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|must|be|indicated|as|the|not|will|review|without|corresponding|match|address|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|apply|applied|coating|coatings|treatments|finish|finishes|adult|kids|baby|toddler|childcare|children|jewelry|apparel|general|wearing|flammability|lead|content|substrate|formaldehyde|qualitative|cadmium|phthalates|us|eu|uk|white|black|blue|red|dark|light|navy|walnut|halo|grey|gray|green|yellow|brown|pink|purple|orange|beige|cream|neutral|jack|of|by|to|at|on|for|and|or|trim\/component|cool|herb|dried|report|reports|rpt|submit|labs|in|this|ensure|that|products|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest)$/i.test(cleanWord)) {
+                        return false;
+                    }
+                    
+                    if (it.x < activeMinX || it.x > activeMaxX) return false;
+                    if (it.y < topLimitY || it.y > bottomLimitY) return false;
+                    return true;
+                });
+
+                let descText = descItems
+                    .sort((a, b) => {
+                        if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
+                        return a.x - b.x;
+                    })
+                    .map(it => it.str.trim())
+                    .join(' ')
+                    .replace(/\s*-\s*/g, '-')
+                    .trim();
+
+                if (/trim\/component|id\s*number|^trim$|^component$/i.test(descText)) {
+                    descText = '';
+                }
+
+                if (descText && targetSection === 'TRIM') {
+                    for (const entry of trimDictionary) {
+                        if (entry.regex.test(descText)) {
+                            descText = entry.normal;
+                            break;
+                        }
+                    }
+                }
+
+                if (!descText && pageIdx > 0 && item.y < 230) {
+                    const prevItems = pageItems[pageIdx - 1];
+                    const prevHDesc = prevItems.find(i => /^description/i.test(i.str.trim()) && i.x > 100 && i.x < 550);
+                    const prevMinX = prevHDesc ? prevHDesc.x - 20 : activeMinX;
+                    const prevMaxX = prevHDesc ? prevHDesc.x + 90 : activeMaxX;
+
+                    const prevDescItems = prevItems.filter(it => {
+                        const t = it.str.trim();
+                        if (t.length === 0 || /^\d+$/.test(t) || (t.length === 1 && !/^[T\-]$/i.test(t))) return false;
+                        const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
+                        if (/^(description|color|style|number|item|type|file|name|document|form|no|r-pac|pac|sml|international|test|tests|testing|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|must|be|indicated|as|the|not|will|review|without|corresponding|match|address|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|apply|applied|coating|coatings|treatments|finish|finishes|adult|kids|baby|toddler|childcare|children|jewelry|apparel|general|wearing|flammability|lead|content|substrate|formaldehyde|qualitative|cadmium|phthalates|us|eu|uk|white|black|blue|red|dark|light|navy|walnut|halo|grey|gray|green|yellow|brown|pink|purple|orange|beige|cream|neutral|jack|of|by|to|at|on|for|and|or|trim\/component|cool|herb|dried|report|reports|rpt|submit|labs|in|this|ensure|that|products|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest)$/i.test(cw)) return false;
+                        if (it.x < prevMinX || it.x > prevMaxX || it.y < 350) return false;
+                        return true;
+                    });
+
+                    if (prevDescItems.length > 0) {
+                        prevDescItems.sort((a, b) => a.y - b.y);
+                        const bottomRowY = prevDescItems[prevDescItems.length - 1].y;
+                        const bottomRowWords = prevDescItems.filter(it => Math.abs(it.y - bottomRowY) <= 12);
+                        bottomRowWords.sort((a, b) => a.x - b.x);
+                        descText = bottomRowWords.map(it => it.str.trim()).join(' ').replace(/\s*-\s*/g, '-').trim();
+                    }
+                }
+
+                if (!descText && targetSection === 'FABRIC') {
+                    const colorItems = items.filter(it => {
+                        const t = it.str.trim();
+                        if (t.length === 0 || /^\d+$/.test(t)) return false;
+                        const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
+                        if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or)$/i.test(cw)) return false;
+                        if (it.x < colorMinX || it.x > colorMaxX) return false;
+                        if (it.y < topLimitY || it.y > bottomLimitY) return false;
+                        return true;
+                    });
+
+                    let colorText = colorItems
+                        .sort((a, b) => {
+                            if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
+                            return a.x - b.x;
+                        })
+                        .map(it => it.str.trim())
+                        .join(' ')
+                        .replace(/\s*-\s*/g, '-')
+                        .trim();
+
+                    if (colorText.length > 0) {
+                        const uniqueWords = [...new Set(colorText.toUpperCase().split(/\s+/))];
+                        descText = uniqueWords.join(' ');
+                    }
+                }
+
+                if (!descText && targetSection === 'TRIM') {
+                    for (const entry of trimDictionary) {
+                        if (entry.regex.test(stitchedText)) {
+                            descText = entry.normal;
+                            break;
+                        }
+                    }
+                }
+
+                if (!descText) {
+                    let cleanFile = stitchedText
+                        .replace(/((?:GUAT|GUBT|KORT|JKTT|VNMT)[\d\-]+|\(\d{4}\)\s*\d{3}\s*[-]?\s*\d{4}|TRM-[\d_]+|\b\d{10,12}\b)/ig, '')
+                        .replace(/\(version\s*\d+\)/ig, '') 
+                        .replace(/\.pdf|\.doc|\.docx|\.xls|\.xlsx/ig, '')
+                        .replace(/\b[pP]\s*[dD]\s*[fF]\b|\b[dD]\s*[oO]\s*[cC]\s*[xX]?\b|\b[xX]\s*[lL]\s*[sS]\s*[xX]?\b/ig, '')
+                        .replace(/\b(?=[A-Z0-9]*\d)(?=[A-Z0-9]*[A-Z])[A-Z0-9]{6,}\b/ig, '')
+                        .replace(/\b\d+\b/g, '')
+                        .replace(/\b(type|file|name|document|form|no|r-pac|pac|sml|international|trim|trims|report|reports|rpt|certifier|certifiers|coc|cocs|test|testing|vendor|sourced|nom|nominated|mill|fabric|fabrics|rev|r\d+|v\d+|final|signed|approved|copy|certificado|cert|stamp|stamped|corresponding|address|must|be|indicated|review|without|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|pdf|doc|docx|xls|xlsx)\b/ig, '')
+                        .replace(/_/g, ' ')
+                        .replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/\s]+$/g, '')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    if (cleanFile.length > 0) {
+                        descText = cleanFile.toUpperCase();
+                    }
+                }
+
+                finalDesc = descText || (targetSection === 'TRIM' ? 'Trim Component' : 'Fabric Component');
+                if (targetSection === 'FABRIC' && /trim/i.test(finalDesc)) finalDesc = 'Fabric Component';
+            }
+
+            if (targetSection === 'TRIM') {
+                if (!trimPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
+                    trimPairs.push({ desc: finalDesc, report: repNum });
+                }
+            } else if (targetSection === 'FABRIC') {
+                if (!fabricPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
+                    fabricPairs.push({ desc: finalDesc, report: repNum });
+                }
+            }
+        }
+    }
+
+    return { trims: trimPairs, fabrics: fabricPairs };
+}
+
+async function procesarPDF() {
+    const inputEl = document.getElementById('archivoPdf');
+    const archivo = inputEl.files[0];
+    mostrarAlerta('alertaEtrf', null);
+
+    if (!archivo) { mostrarAlerta('alertaEtrf', 'Please select a PDF first.', 'error'); return; }
+
+    const btn = document.getElementById('btnAnalizar');
+    btn.disabled = true; btn.textContent = 'Processing...';
+    debugLog = []; setProgress(3);
+    document.getElementById('pdfPages').innerHTML = '<p style="color:#767676;text-align:center;padding:30px;font-size:13px;">Loading...</p>';
+    document.getElementById('pdfTextView').innerText = '';
+    document.getElementById('campoBusqueda').value = '';
+    document.getElementById('infoCoincidencias').textContent = '';
+
+    try {
+        const lectura = await leerPdf(archivo, false);
+        pdfDoc = lectura.pdfDoc;
+        pageTexts = lectura.pageTexts;
+        pageItems = lectura.pageItems;
+        textoExtraido = lectura.textoExtraido;
+
+        if (lectura.sinTextoDetectable) {
+            mostrarAlerta('alertaEtrf', 'This PDF contains no extractable text (appears to be a scan/image). Fields below will likely be empty; consider OCR processing first.', 'warning');
+        }
+
+        document.getElementById('pdfTextView').innerText = textoExtraido;
+        await renderizarPaginas(pdfDoc, 'pdfPages', abrirModal, (i, total) => setProgress(Math.min(20, Math.round((i / total) * 20))));
+        document.getElementById('zoomHint').style.display = '';
+        document.getElementById('det-placeholder').style.display = 'none';
+        document.getElementById('det-body').style.display = '';
+        const el = document.getElementById('d-file');
+        el.textContent = archivo.name; el.className = 'det-val found';
+
+        document.getElementById('sect-p7').style.display = 'none';
+        document.getElementById('row-rd-num').style.display = 'none';
+        document.getElementById('row-fabric').style.display = 'none';
+        document.getElementById('row-weight').style.display = 'none';
+        document.getElementById('row-elongation').style.display = 'none';
+        document.getElementById('row-prod-char').style.display = 'none';
+
+        await extractAll(archivo.name);
+        cambiarVista('visual');
+
+        const textoPantallaEtrf = document.getElementById('view-etrf') ? document.getElementById('view-etrf').innerText : '';
+        const matchEstilos = textoPantallaEtrf.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
+        let estilosEncontrados = matchEstilos ? matchEstilos[1].match(/\b\d{6,8}\b/g) || [] : textoPantallaEtrf.match(/\b\d{6,8}\b/g) || [];
+        window.estilosGlobalesETRF = [...new Set(estilosEncontrados)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202'));
+
+    } catch (e) {
+        dbg('ERROR: ' + e.message);
+        console.error(e);
+        mostrarAlerta('alertaEtrf', 'An error occurred while processing the PDF: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = 'Analyze ETRF';
+        setProgress(0);
+    }
+}
+
+function abrirModal() { abrirModalConPdf(pdfDoc); }
+function cambiarVista(v) {
+    cambiarVistaGenerica({ tabVisual: 'tabVisual', tabTexto: 'tabTexto', pdfPages: 'pdfPages', pdfTextView: 'pdfTextView' }, v);
+}
+function buscarEnTexto() {
+    buscarEnTextoGenerico({ campoBusqueda: 'campoBusqueda', pdfTextView: 'pdfTextView', infoCoincidencias: 'infoCoincidencias' }, textoExtraido, cambiarVista);
+}
+
+/* ============================================================================
+   MODULE 2: PREVS LOGIC (ENGINE V2.2)
+============================================================================ */
+let textoExtraidoPrev = '';
+let pageTextsPrev = [];
+let pageItemsPrev = [];
+let pageGraphicsPrev = [];
+let pdfDocPrev = null;
+let debugLogPrev = [];
+
+function dbgPrev(m) { debugLogPrev.push(m); }
+function toggleDebugPrev() {
+    const p = document.getElementById('debug-panel-prev');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    p.textContent = debugLogPrev.join('\n');
+}
+
+const baseDeDatosPruebas = {
+    "Cadmium": [
+        "TRM-0002137778", "82253300003", "TRM-0002134267", "82253180244", "TRM-0002394253", "GUAT26000142",
+        "TRM-0002405949", "GUAT26000395", "TRM-0002404929", "GUAT26000399", "TRM-0002521361", "GUAT26003435",
+        "TRM-0002521145", "GUAT26003408-R1", "TRM-0002122162", "77253000012", "TRM-0002145940", "77253380006",
+        "TRM-0002019463", "GUAT25016940", "TRM-0002520860", "GUAT26003430", "TRM-0002521152", "GUAT26003439",
+        "GUBT26003646", "TRM-0002120344", "52252970535", "GUAT25027309", "GUAT25031760", "82260780113",
+        "82260780111", "TRM-0002488275", "KORT26002888", "TRM-0002122160", "77253000004", "TRM-0002521596",
+        "GUAT26003429", "TRM-0002133627", "JKTT25027079", "TRM-0002125560", "GUAT25033651", "TRM-0002111955",
+        "GUAT25031761", "TRM-0002112857", "GUAT25031747", "GUBT26004014", "TRM-0002492330", "GUAT26001359",
+        "TRM-0002394249", "GUAT26000191", "TRM-0002098289", "GUAT25028827-R1", "96260210116", "TRM-0002491118",
+        "GUAT26001350-R1", "96252350143", "GUAT26003421", "GUAT25034508", "TRM-0002119713", "GUAT25032343",
+        "GUBT26003147", "TRM-0002520852", "GUAT26003441", "TRM-0002489607", "GUAT26001028", "TRM-0002491694",
+        "GUAT26001358", "GUAT26003401", "TRM-0002491112", "GUAT26001342", "GUAT26003416", "96253220178",
+        "96253330080", "TRM-0002405490", "GUAT26000131", "GUAT26008388", "TRM-0002119728", "GUAT25031282",
+        "52260720115", "GUAT26003386", "GUAT26003415", "GUBT26003936", "GUAT25028876", "GUAT25016153"
+    ],
+    "Phthalates": [
+        "TRM-0002137778", "82253300003", "TRM-0002134267", "82253180244", "TRM-0002116687", "KORT25054351",
+        "TRM-0002394253", "GUAT26000142", "TRM-0002405949", "GUAT26000395", "TRM-0002521361", "GUAT26003435",
+        "TRM-0002122162", "77253000012", "TRM-0002145940", "77253380006", "TRM-0002520860", "GUAT26003430",
+        "GUBT26003646", "TRM-0002120344", "52252970535", "82260780113", "TRM-0002488275", "KORT26002888",
+        "82260780111", "TRM-0002122160", "77253000004", "TRM-0002521596", "GUAT26003429", "TRM-0002133627",
+        "JKTT25027079", "TRM-0002125560", "GUAT25033651", "TRM-0002111955", "GUAT25031761", "TRM-0002112857",
+        "GUAT25031747", "GUBT26004014", "TRM-0002492330", "GUAT26001359", "TRM-0002394249", "GUAT26000191",
+        "TRM-0002098289", "GUAT25028827-R1", "96260210116", "96252350143", "GUAT26003421", "GUAT25034508",
+        "GUBT26003147", "TRM-0002520852", "GUAT26003441", "TRM-0002087728", "52252620045", "TRM-0002489607",
+        "GUAT26001028", "GUAT26003401", "GUAT26003416", "TRM-0002405490", "GUAT26000131", "GUAT26008388",
+        "TRM-0002119728", "GUAT25031282", "52260720115", "GUAT26003386", "GUAT26003415", "GUBT26003936",
+        "GUAT25028876", "KORT26019945", "GUAT26001342", "GUAT25016153"
+    ],
+    "Substrate": [
+        "TRM-0002116687", "KORT25054351", "TRM-0002405949", "GUAT26000395", "TRM-0002404929", "GUAT26000399",
+        "TRM-0002521361", "GUAT26003435", "TRM-0002521145", "GUAT26003408-R1", "TRM-0002145940", "77253380006",
+        "TRM-0002019463", "GUAT25016940", "TRM-0002521152", "GUAT26003439", "GUAT25031760", "GUAT25027309",
+        "TRM-0002488275", "KORT26002888", "TRM-0002520854", "GUAT26003442", "TRM-0002111955", "GUAT25031761",
+        "TRM-0002112857", "GUAT25031747", "TRM-0002492330", "GUAT26001359", "96260210116", "96260760516",
+        "96260210113", "TRM-0002491118", "GUAT26001350-R1", "96252350143", "TRM-0002119713", "GUAT25032343",
+        "TRM-0002087728", "52252620045", "TRM-0002489607", "GUAT26001028", "TRM-0002491694", "GUAT26001358",
+        "TRM-0002491112", "GUAT26001342", "TRM-0002146456", "VNMT25074284", "JKTT25027079", "96253220178",
+        "96253330080", "TRM-0002134267", "82253180244", "TRM-0002119728", "GUAT25031282", "KORT26019945"
+    ],
+    "Surface": [
+        "TRM-0002137778", "82253300003", "TRM-0002134267", "82253180244", "TRM-0002394253", "GUAT26000142",
+        "TRM-0002122162", "77253000012", "TRM-0002145940", "77253380006", "TRM-0002019463", "GUAT25016940",
+        "TRM-0002520860", "GUAT26003430", "GUBT26003646", "TRM-0002120344", "52252970535", "82260780113",
+        "82260780111", "TRM-0002122160", "77253000004", "TRM-0002521596", "GUAT26003429", "TRM-0002133627",
+        "JKTT25027079", "TRM-0002125560", "GUAT25033651", "GUBT26004014", "TRM-0002394249", "GUAT26000191",
+        "TRM-0002098289", "GUAT25028827-R1", "96260210116", "TRM-0002521361", "GUAT26003435", "TRM-0002404929",
+        "GUAT26000399", "GUAT25034508", "GUBT26003147", "TRM-0002520852", "GUAT26003441", "GUAT26003401",
+        "GUAT26003416", "TRM-0002405490", "GUAT26000131", "GUAT26008388", "TRM-0002119728", "GUAT25031282",
+        "52260720115", "GUAT26003386", "GUAT26003415", "GUBT26003936", "GUAT25028876", "GUAT26001342", "GUAT25016153"
+    ]
+};
+
+function verificarPruebasEnBaseDeDatos(numeroReporteExtraido) {
+    if (!numeroReporteExtraido) return [];
+    const reporteLimpio = numeroReporteExtraido.toUpperCase().replace(/[\s\(\)\-\.]/g, '');
+    let pruebasAplicables = [];
+
+    for (const [prueba, listaReportes] of Object.entries(baseDeDatosPruebas)) {
+        const listaLimpia = listaReportes.map(r => r.toUpperCase().replace(/[\s\(\)\-\.]/g, ''));
+        if (listaLimpia.includes(reporteLimpio)) pruebasAplicables.push(prueba);
+    }
+    return pruebasAplicables;
+}
+
+async function renderizarPaginaAEscala(pdfDoc, numPagina, escala) {
+    const page = await pdfDoc.getPage(numPagina);
+    const vp = page.getViewport({ scale: escala });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.ceil(vp.width));
+    canvas.height = Math.max(1, Math.ceil(vp.height));
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    return { ctx, width: canvas.width, height: canvas.height };
+}
+
+function localizarEncabezadosIntertek(items, numeroPagina) {
+    const textoPagina = items.map(i => i.str.trim()).filter(Boolean).join(' ').toUpperCase();
+    const esPaginaResumen = textoPagina.includes('RESULT SUMMARY') || 
+                            textoPagina.includes('RESUMEN DE RESULTADOS') || 
+                            (textoPagina.includes('TEST PROPERTY') && (textoPagina.includes('PASS') || textoPagina.includes('COMMENTS')));
+    
+    if (!esPaginaResumen) return null;
+
+    dbgPrev(`[Page ${numeroPagina}] => RESULT SUMMARY page detected!`);
+
+    const columnas = [
+        { key: 'PASS', x: 275 },
+        { key: 'FAIL', x: 315 },
+        { key: 'DATA', x: 355 },
+        { key: 'NA',   x: 395 }
+    ];
+
+    return { columnas: columnas };
+}
+
+function evaluarCeldaEstricta(ctx, yPt, colXPt, wBoxPt, hBoxPt, escala) {
+    const x0 = Math.max(0, Math.floor((colXPt - wBoxPt) * escala));
+    const x1 = Math.min(ctx.canvas.width, Math.ceil((colXPt + wBoxPt) * escala));
+    const y0 = Math.max(0, Math.floor((yPt - hBoxPt) * escala));
+    const y1 = Math.min(ctx.canvas.height, Math.ceil((yPt + hBoxPt) * escala));
+
+    const w = x1 - x0, h = y1 - y0;
+    if (w <= 0 || h <= 0) return 0;
+
+    let oscuros = 0;
+    try {
+        const data = ctx.getImageData(x0, y0, w, h).data;
+        for (let i = 0; i < data.length; i += 4) {
+            const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            if (lum < 185 && data[i + 3] > 40) oscuros++;
+        }
+    } catch (e) { return 0; }
+    return oscuros;
+}
+
+function buscarEstadoEnCanvas(ctx, yBasePt, columnas, escala) {
+    const offsetsY = [0, -2, +2, -4, +4, -6, +6, -8, +8];
+    const wBoxPt = 12;  
+    const hBoxPt = 3.5; 
+
+    for (const offsetY of offsetsY) {
+        const yEval = yBasePt + offsetY;
+        let maxOscuros = 0, segundoMaxOscuros = 0, colGanadora = null;
+
+        for (const col of columnas) {
+            const oscuros = evaluarCeldaEstricta(ctx, yEval, col.x, wBoxPt, hBoxPt, escala);
+            if (oscuros > maxOscuros) {
+                segundoMaxOscuros = maxOscuros;
+                maxOscuros = oscuros;
+                colGanadora = col.key;
+            } else if (oscuros > segundoMaxOscuros) {
+                segundoMaxOscuros = oscuros;
+            }
+        }
+
+        const umbralTinta = Math.round(escala * 1.8);
+        if (maxOscuros >= umbralTinta && (maxOscuros - segundoMaxOscuros) >= Math.round(escala * 1.5)) {
+            return colGanadora;
+        }
+    }
+    return null;
+}
+
+async function escanearTablaResultadosPSR() {
+    const resultados = [];
+    let tablaEncontrada = false;
+    const escala = 3;
+
+    for (let pageIdx = 0; pageIdx < pageItemsPrev.length; pageIdx++) {
+        const items = pageItemsPrev[pageIdx];
+        const graficos = pageGraphicsPrev[pageIdx] || [];
+
+        const enc = localizarEncabezadosIntertek(items, pageIdx + 1);
+        if (!enc) continue;
+
+        tablaEncontrada = true;
+        const colPass = enc.columnas[0];
+
+        const propItems = items.filter(i => {
+            if (!i.str || !i.str.trim()) return false;
+            const txt = i.str.trim();
+            if (i.x >= (colPass.x - 20)) return false; 
+            if (txt.length < 3) return false;
+            
+            const txtL = txt.toLowerCase();
+            if (txtL.includes('intertek') || txtL.includes('guatemala')) return false;
+            if (txtL.includes('result summary') || txtL.includes('psr protocol')) return false;
+            if (txtL.includes('analytical tests') || txtL === 'psr') return false;
+            if (txtL.includes('test property') || txtL.includes('pass') || txtL.includes('fail')) return false;
+            
+            if (/^(performance|physical properties|others?|general|packaging|limit|test method|comments?|rating|overall|cpsc|submitted|submitter|date|report|no\.?|attn|sample|description|style|number|finished|product|gis|america|gap|intl|sourcing|folsom|street|san|francisco|ca|usa|order|brand|season|buyer|vendor|factory|code|care|label|standard|softlines|request|service|regular)$/i.test(txt)) return false;
+            if (/^remark/i.test(txt) || /^note/i.test(txt) || /^key/i.test(txt) || /page \d/i.test(txt) || /form version/i.test(txt)) return false;
+            
+            return true;
+        });
+
+        if (propItems.length === 0) continue;
+
+        propItems.sort((a, b) => a.y - b.y);
+        const lineasTexto = [];
+        let lineaActual = null;
+
+        for (const it of propItems) {
+            if (!lineaActual || Math.abs(it.y - lineaActual.y) > 4) {
+                if (lineaActual) lineasTexto.push(lineaActual);
+                lineaActual = { y: it.y, items: [it] };
+            } else {
+                lineaActual.items.push(it);
+                lineaActual.y = (lineaActual.y * lineaActual.items.length + it.y) / (lineaActual.items.length + 1);
+            }
+        }
+        if (lineaActual) lineasTexto.push(lineaActual);
+
+        const bloquesPruebas = [];
+        let bloqueActual = null;
+
+        for (const lin of lineasTexto) {
+            lin.items.sort((a, b) => a.x - b.x);
+            let textoLinea = lin.items.map(it => it.str.trim()).join(' ').replace(/\s{2,}/g, ' ').trim();
+            textoLinea = textoLinea.replace(/^[-–—•\*\.\s]+/, '').trim();
+
+            if (textoLinea.length < 2) continue;
+
+            if (!bloqueActual) {
+                bloqueActual = { name: textoLinea, lastY: lin.y, lineas: [lin] };
+                bloquesPruebas.push(bloqueActual);
+            } else {
+                const distancia = Math.abs(lin.y - bloqueActual.lastY);
+                if (distancia < 14.5) {
+                    bloqueActual.name += ' ' + textoLinea;
+                    bloqueActual.lineas.push(lin);
+                    bloqueActual.lastY = lin.y;
+                } else {
+                    bloqueActual = { name: textoLinea, lastY: lin.y, lineas: [lin] };
+                    bloquesPruebas.push(bloqueActual);
+                }
+            }
+        }
+
+        let render = null;
+        for (const bloque of bloquesPruebas) {
+            const centroY = bloque.lineas.reduce((sum, l) => sum + l.y, 0) / bloque.lineas.length;
+            let estado = null;
+
+            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && /^[☑✔✓þvVxX■]$/i.test(it.str.trim()));
+            if (checkTexto) {
+                const colCercana = enc.columnas.reduce((prev, curr) => Math.abs(curr.x - checkTexto.x) < Math.abs(prev.x - checkTexto.x) ? curr : prev);
+                estado = colCercana.key;
+            }
+
+            if (!estado && graficos.length > 0) {
+                const checkGraf = graficos.find(g => Math.abs(g.y - centroY) < 14 && g.x > (colPass.x - 30));
+                if (checkGraf) {
+                    const colCercana = enc.columnas.reduce((prev, curr) => Math.abs(curr.x - checkGraf.x) < Math.abs(prev.x - checkGraf.x) ? curr : prev);
+                    estado = colCercana.key;
+                }
+            }
+
+            if (!estado) {
+                if (!render) {
+                    try { render = await renderizarPaginaAEscala(pdfDocPrev, pageIdx + 1, escala); } catch (e) { continue; }
+                }
+                estado = buscarEstadoEnCanvas(render.ctx, centroY, enc.columnas, escala);
+            }
+
+            if (estado !== null) {
+                resultados.push({ name: bloque.name, status: estado });
+            } else {
+                dbgPrev(`  [WARNING] Test skipped due to no mark detected: "${bloque.name.substring(0,30)}..."`);
+            }
+        }
+    }
+
+    dbgPrev(`FINAL RESULT: found=${tablaEncontrada}, valid rows=${resultados.length}`);
+    return { encontrada: tablaEncontrada, filas: resultados };
+}
+
+function renderTablaResultadosPSR(filas) {
+    const cont = document.getElementById('d-prev-tests-block');
+    if (!filas || filas.length === 0) {
+        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">PSR results table (RESULT SUMMARY) not detected in this PDF. (Enable 🔧 Debug for details)</span></div>';
+        return;
+    }
+
+    const filtroPalabras = ["Cadmium", "Heavy Metals", "Phthalates", "Substrate", "Surface", "Lead"]; 
+
+    let filasAMostrar = filas;
+    
+    if (filtroPalabras.length > 0) {
+        filasAMostrar = filas.filter(f => {
+            const nombreTest = f.name.toLowerCase();
+            return filtroPalabras.some(palabra => nombreTest.includes(palabra.toLowerCase()));
+        });
+    }
+
+    if (filasAMostrar.length === 0) {
+        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">Tests detected, but none match your filter criteria (Cadmium, Lead, etc.).</span></div>';
+        return;
+    }
+
+    const pillFor = (status) => {
+        if (status === 'PASS') return '<span class="check-pill">✓ PASS</span>';
+        if (status === 'FAIL') return '<span class="check-pill fail-pill">✗ FAIL</span>';
+        if (status === 'DATA') return '<span class="check-pill data-pill">DATA</span>';
+        return '<span class="check-pill na-pill">NA</span>';
+    };
+    
+    let html = '';
+    for (const f of filasAMostrar) {
+        html += `<div class="det-row" style="padding:6px 0;"><span class="det-label" style="flex:1; text-align:left; color:#222; font-weight:500;">${esc(f.name)}</span><span class="det-val" style="margin-left:10px;">${pillFor(f.status)}</span></div>`;
+    }
+    cont.innerHTML = html;
+}
+
+async function escanearTablaConclusions() {
+    const resultados = [];
+    let tablaEncontrada = false;
+    let detenerEscaneo = false;
+
+    for (let pageIdx = 0; pageIdx < pageItemsPrev.length; pageIdx++) {
+        if (detenerEscaneo) break; 
+
+        const items = pageItemsPrev[pageIdx];
+
+        const esBureauVeritas = items.some(i => i.str.toLowerCase().includes('bureau veritas'));
+        if (esBureauVeritas) {
+            continue; 
+        }
+
+        const hConclusions = items.find(i => i.str.trim().toLowerCase() === 'conclusions');
+        const hRating = items.find(i => i.str.trim().toLowerCase() === 'rating');
+
+        if (!hConclusions && !hRating) continue;
+
+        tablaEncontrada = true;
+        let ratingX = hRating ? hRating.x : 450; 
+        let startY = (hRating ? hRating.y : hConclusions.y) + 5;
+
+        let validItems = items.filter(i => i.y > startY && i.str.trim().length > 0);
+        validItems.sort((a, b) => a.y - b.y); 
+
+        const lineas = [];
+        let currentLine = null;
+        
+        for (const it of validItems) {
+            if (!currentLine || Math.abs(it.y - currentLine.y) > 6) {
+                if (currentLine) lineas.push(currentLine);
+                currentLine = { y: it.y, items: [it] };
+            } else {
+                currentLine.items.push(it);
+                currentLine.y = (currentLine.y * (currentLine.items.length - 1) + it.y) / currentLine.items.length;
+            }
+        }
+        if (currentLine) lineas.push(currentLine);
+
+        let testActual = null;
+
+        for (const lin of lineas) {
+            lin.items.sort((a, b) => a.x - b.x); 
+            let textoCompleto = lin.items.map(i => i.str.trim()).join(' ').trim();
+            let textoLimpio = textoCompleto.toLowerCase();
+
+            if (textoLimpio.includes('tests presented in this report') || 
+                textoLimpio.includes('test results') || 
+                textoLimpio.includes('end of report') ||
+                textoLimpio.includes('sample description')) {
+                detenerEscaneo = true;
+                break;
+            }
+
+            const statusItem = lin.items.find(i => Math.abs(i.x - ratingX) < 80 && /^(pass|fail|n\s*\/\s*a|not applicable|data)$/i.test(i.str.trim()));
+
+            if (statusItem) {
+                let statusStr = statusItem.str.trim().toUpperCase();
+                if (statusStr.includes('N/A') || statusStr.includes('N / A') || statusStr.includes('NOT APPLICABLE')) {
+                    statusStr = 'NA';
+                }
+
+                if (statusStr !== 'NA') {
+                    const nameItems = lin.items.filter(i => i.x < statusItem.x - 15);
+                    const nameStr = nameItems.map(i => i.str.trim()).join(' ').trim();
+
+                    if (nameStr) {
+                        testActual = { name: nameStr, status: statusStr };
+                        resultados.push(testActual);
+                    }
+                } else {
+                    testActual = null; 
+                }
+            } else if (testActual && lin.items[0].x < ratingX - 50) {
+                testActual.name += ' ' + textoCompleto;
+            }
+        }
+    }
+    return { encontrada: tablaEncontrada, filas: resultados };
+}
+
+async function escanearTablaBV() {
+    const resultados = [];
+    let tablaEncontrada = false;
+    let detenerEscaneo = false;
+
+    for (let pageIdx = 0; pageIdx < pageItemsPrev.length; pageIdx++) {
+        if (detenerEscaneo) break;
+
+        const items = pageItemsPrev[pageIdx];
+        const hTestName = items.find(i => /^(test name|test item|parameter|test parameter|test requested)$/i.test(i.str.trim()));
+        const hRatings = items.find(i => /^(overall ratings?|rating|conclusion|result|pass\s*\/\s*fail)$/i.test(i.str.trim()));
+
+        if (!hTestName || !hRatings) {
+            if (tablaEncontrada) detenerEscaneo = true; 
+            continue;
+        }
+
+        tablaEncontrada = true;
+        let ratingX = hRatings.x; 
+        let nameX = hTestName.x;
+        let startY = Math.max(hTestName.y, hRatings.y) + 5;
+
+        let validItems = items.filter(i => i.y > startY && i.str.trim().length > 0);
+        validItems.sort((a, b) => a.y - b.y);
+
+        const lineas = [];
+        let currentLine = null;
+        
+        for (const it of validItems) {
+            if (!currentLine || Math.abs(it.y - currentLine.y) > 6) {
+                if (currentLine) lineas.push(currentLine);
+                currentLine = { y: it.y, items: [it] };
+            } else {
+                currentLine.items.push(it);
+                currentLine.y = (currentLine.y * (currentLine.items.length - 1) + it.y) / currentLine.items.length;
+            }
+        }
+        if (currentLine) lineas.push(currentLine);
+
+        let testActual = null;
+
+        for (const lin of lineas) {
+            lin.items.sort((a, b) => a.x - b.x);
+            let textoCompleto = lin.items.map(i => i.str.trim()).join(' ').trim();
+            let textoLimpio = textoCompleto.toLowerCase();
+
+            if (textoLimpio.startsWith('i00') || textoLimpio.startsWith('100') || 
+                textoLimpio.startsWith('gapi') || textoLimpio.includes('mg/kg') ||
+                textoLimpio.includes('reporting limit') || textoLimpio.includes('not detected')) {
+                testActual = null;
+                continue; 
+            }
+
+            const statusItem = lin.items.find(i => Math.abs(i.x - ratingX) < 80 && /^(pass|fail|n\s*\/\s*a|not applicable|na|data)$/i.test(i.str.trim()));
+
+            if (statusItem) {
+                let statusStr = statusItem.str.trim().toUpperCase();
+                if (statusStr.includes('N/A') || statusStr.includes('NA')) statusStr = 'NA';
+
+                if (statusStr !== 'NA') {
+                    const nameItems = lin.items.filter(i => i.x < statusItem.x - 15);
+                    if (nameItems.length > 0) {
+                        let startX = nameItems[0].x;
+                        if (Math.abs(startX - nameX) < 40) {
+                            const nameStr = nameItems.map(i => i.str.trim()).join(' ').trim();
+                            if (nameStr.length > 0 && nameStr.length < 120) {
+                                testActual = { name: nameStr, status: statusStr };
+                                resultados.push(testActual);
+                            } else {
+                                testActual = null;
+                            }
+                        } else {
+                            testActual = null;
+                        }
+                    }
+                } else {
+                    testActual = null; 
+                }
+            } else if (testActual && lin.items.length > 0) {
+                if (Math.abs(lin.items[0].x - nameX) < 40 && (testActual.name.length + textoCompleto.length) < 120) {
+                    testActual.name += ' ' + textoCompleto;
+                } else {
+                    testActual = null;
+                }
+            }
+        }
+    }
+    return { encontrada: tablaEncontrada, filas: resultados };
+}
+
+async function escanearTablaMatrizX() {
+    const resultados = [];
+    let tablaEncontrada = false;
+    let detenerEscaneo = false;
+
+    for (let pageIdx = 0; pageIdx < pageItemsPrev.length; pageIdx++) {
+        if (detenerEscaneo) break;
+
+        const items = pageItemsPrev[pageIdx];
+
+        const hTestProp = items.find(i => i.str.trim().toLowerCase().includes('test property') || i.str.trim().toLowerCase().includes('tests conducted'));
+        const hPass = items.find(i => i.str.trim().toLowerCase() === 'pass');
+        const hFail = items.find(i => i.str.trim().toLowerCase() === 'fail');
+        const hNA = items.find(i => i.str.trim().toLowerCase() === 'n/a' || i.str.trim().toLowerCase() === 'na');
+
+        if (!hTestProp || !hPass) continue;
+
+        tablaEncontrada = true;
+        const passX = hPass.x;
+        const failX = hFail ? hFail.x : passX + 45;
+        const naX = hNA ? hNA.x : passX + 100;
+
+        let startY = Math.max(hTestProp.y, hPass.y, (hFail ? hFail.y : 0)) + 10;
+
+        let validItems = items.filter(i => i.y > startY && i.str.trim().length > 0);
+        validItems.sort((a, b) => a.y - b.y);
+
+        const lineas = [];
+        let currentLine = null;
+        
+        for (const it of validItems) {
+            if (!currentLine || Math.abs(it.y - currentLine.y) > 6) {
+                if (currentLine) lineas.push(currentLine);
+                currentLine = { y: it.y, items: [it] };
+            } else {
+                currentLine.items.push(it);
+                currentLine.y = (currentLine.y * (currentLine.items.length - 1) + it.y) / currentLine.items.length;
+            }
+        }
+        if (currentLine) lineas.push(currentLine);
+
+        let testActual = null;
+
+        for (const lin of lineas) {
+            lin.items.sort((a, b) => a.x - b.x);
+            let textoCompleto = lin.items.map(i => i.str.trim()).join(' ').trim();
+            let textoLimpio = textoCompleto.toLowerCase();
+
+            if (textoLimpio.includes('remark') || 
+                textoLimpio.includes('not applicable') || 
+                textoLimpio.includes('no comment') || 
+                textoLimpio.includes('end of report') ||
+                textoLimpio.includes('abcd') ||
+                textoLimpio.startsWith('note')) {
+                detenerEscaneo = true;
+                break;
+            }
+
+            const nameItems = lin.items.filter(i => i.x < passX - 25);
+            const markItems = lin.items.filter(i => i.x >= passX - 25);
+
+            const nameStr = nameItems.map(i => i.str.trim()).join(' ').trim();
+            let statusStr = null;
+
+            for (const mark of markItems) {
+                const txt = mark.str.trim().toUpperCase();
+                if (/^(X|\*|\/|\-|PASS|FAIL|DATA)$/i.test(txt)) {
+                    if (Math.abs(mark.x - passX) < 35) {
+                        statusStr = 'PASS';
+                    } else if (Math.abs(mark.x - failX) < 35) {
+                        statusStr = 'FAIL';
+                    } else if (Math.abs(mark.x - naX) < 35 || txt === '-' || txt === 'N/A') {
+                        statusStr = 'NA';
+                    }
+                }
+            }
+
+            if (statusStr) {
+                if (statusStr !== 'NA' && nameStr.length > 0 && nameStr.length < 100) {
+                    testActual = { name: nameStr, status: statusStr };
+                    resultados.push(testActual);
+                } else {
+                    testActual = null;
+                }
+            } else if (testActual && nameItems.length > 0 && markItems.length === 0) {
+                if ((testActual.name.length + textoCompleto.length) < 100) {
+                    testActual.name += ' ' + textoCompleto;
+                }
+            }
+        }
+    }
+    return { encontrada: tablaEncontrada, filas: resultados };
+}
+
+async function procesarPDFPrev() {
+    const archivo = document.getElementById('archivoPdf-prev').files[0];
+    mostrarAlerta('alertaPrev', null);
+
+    if (!archivo) { mostrarAlerta('alertaPrev', 'Please select a PREVS PDF first.', 'error'); return; }
+
+    const btn = document.getElementById('btnAnalizar-prev');
+    btn.disabled = true; btn.textContent = 'Processing...';
+    document.getElementById('progressFill-prev').style.width = '3%';
+    debugLogPrev = [];
+
+    document.getElementById('pdfPages-prev').innerHTML = '<p style="color:#767676;text-align:center;padding:30px;font-size:13px;">Loading PREVS...</p>';
+    document.getElementById('pdfTextView-prev').innerText = '';
+    document.getElementById('campoBusqueda-prev').value = '';
+    document.getElementById('infoCoincidencias-prev').textContent = '';
+
+    try {
+        const lectura = await leerPdf(archivo, true, true);
+        pdfDocPrev = lectura.pdfDoc;
+        pageTextsPrev = lectura.pageTexts;
+        pageItemsPrev = lectura.pageItems;
+        pageGraphicsPrev = lectura.pageGraphics;
+        textoExtraidoPrev = lectura.textoExtraido;
+
+        if (lectura.sinTextoDetectable) {
+            mostrarAlerta('alertaPrev', 'This PDF contains no extractable text (appears to be a scan/image).', 'warning');
+        }
+
+        document.getElementById('pdfTextView-prev').innerText = textoExtraidoPrev;
+        await renderizarPaginas(pdfDocPrev, 'pdfPages-prev', abrirModalPrev, (i, total) => {
+            document.getElementById('progressFill-prev').style.width = Math.min(30, Math.round((i / total) * 30)) + '%';
+        });
+
+        document.getElementById('zoomHint-prev').style.display = '';
+        document.getElementById('det-placeholder-prev').style.display = 'none';
+        document.getElementById('det-body-prev').style.display = 'block';
+
+        const el = document.getElementById('d-file-prev');
+        if (el) { el.textContent = archivo.name; }
+
+        let fullTextPrev = pageTextsPrev.join(' ');
+        let reportNoPrev = null;
+        let dateOutPrev = null;
+        
+        let textSafe = fullTextPrev.replace(/GAP\s*REPORT\s*(?:NO\.?|NUMBER)[\s:\.\-]*[A-Z0-9\(\)\-]+/gi, '');
+        let textPage2 = (pageTextsPrev[1] || '').replace(/GAP\s*REPORT\s*(?:NO\.?|NUMBER)[\s:\.\-]*[A-Z0-9\(\)\-]+/gi, '');
+
+        const matchPage2 = textPage2.match(/(?:Report\s*Number|Report\s*No\.?)[\s:\-]+([A-Z0-9\(\)\-]*\d{4,}[A-Z0-9\(\)\-]*)/i);
+        if (matchPage2) reportNoPrev = matchPage2[1].trim();
+
+        if (!reportNoPrev) {
+            const matchBVDirect = fullTextPrev.match(/\(\s*\d{4}\s*\)[\s\-\.]*\d{3}[\s\-\.]*\d{4}/);
+            if (matchBVDirect) {
+                reportNoPrev = matchBVDirect[0].replace(/\s+/g, ''); 
+            }
+        }
+
+        if (!reportNoPrev) {
+            const matchBV = textSafe.match(/BV\s*REPORT\s*(?:NO\.?|NUMBER)[\s:\.]*(\(\s*\d+\s*\)[\s\d\-]+|[A-Z0-9\(\)\-]*\d{4,}[A-Z0-9\(\)\-]*)/i);
+            if (matchBV) reportNoPrev = matchBV[1].trim();
+        }
+
+        if (!reportNoPrev) {
+            const matchGen = textSafe.match(/(?:INTERTEK\s*REPORT\s*NO\.?|INTERTEK\s*REPORT\s*NUMBER|TEST\s*REPORT\s*NUMBER|TEST\s*REPORT\s*NO\.?|REPORT\s*NUMBER|REPORT\s*NO\.?|TEST\s*REPORT|REPORT)[\s:\-\.]*(?:NUMBER[\s:\-\.]*)?([A-Z0-9\(\)\-]*\d{4,}[A-Z0-9\(\)\-]*)/i);
+            if (matchGen) reportNoPrev = matchGen[1].trim();
+        }
+
+        if (!reportNoPrev) {
+            const globalIntertek = textSafe.match(/\b([A-Z]{2,6}\d{6,15})\b/i);
+            if (globalIntertek) reportNoPrev = globalIntertek[1].toUpperCase();
+        }
+
+        const matchDate = fullTextPrev.match(/(?:DATE\s*OUT|ISSUE\s*DATE|DATE|Report\s*Date)[\s:\-\.]*(\d{1,2}[\-\s\/]+[A-Za-z]{3}[\-\s\/]+\d{2,4}|[A-Za-z]{3}[\-\s\/]+\d{1,2}[,\-\s\/]+\d{2,4}|\d{1,2}[\-\/]\d{1,2}[\-\/]\d{2,4}|\d{4}[\-\/]\d{2}[\-\/]\d{2})/i);
+        if (matchDate) dateOutPrev = matchDate[1].trim();
+
+        // ════════════════════════════════════════════════
+        // 🚀 EL ENRUTADOR SECUENCIAL (A PRUEBA DE BALAS)
+        // ════════════════════════════════════════════════
+        let escaneo = { encontrada: false, filas: [] };
+
+        // 1️⃣ INTENTO 1: Escáner A (Intertek Estándar - Checkboxes)
+        escaneo = await escanearTablaResultadosPSR();
+
+        // 2️⃣ INTENTO 2: Escáner C (Bureau Veritas)
+        if (!escaneo.encontrada || escaneo.filas.length === 0) {
+            escaneo = await escanearTablaBV();
+        }
+
+        // 3️⃣ INTENTO 3: Escáner B (Intertek Textual Antiguo)
+        if (!escaneo.encontrada || escaneo.filas.length === 0) {
+            escaneo = await escanearTablaConclusions();
+        }
+
+        // 4️⃣ INTENTO 4: Escáner D (Matriz X - Fallback)
+        if (!escaneo.encontrada || escaneo.filas.length === 0) {
+            escaneo = await escanearTablaMatrizX();
+        }
+
+        const validadoHistorial = verificarPruebasEnBaseDeDatos(reportNoPrev);
+        
+        const pruebasLive = [];
+        if (escaneo.encontrada && escaneo.filas.length > 0) {
+            const textoPruebasExtraidas = escaneo.filas.map(f => f.name.toLowerCase()).join(' ');
+            if (textoPruebasExtraidas.includes('heavy metal')) {
+                pruebasLive.push('Heavy Metals');
+            }
+        }
+
+        const refEl = document.getElementById('d-prev-report-no');
+        if(refEl) {
+            let etiquetasHTML = '';
+            
+            if (validadoHistorial.length > 0) {
+                etiquetasHTML += `<span style="font-size:10px; color:#2e7d32; background:#e8f5e9; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; margin-right:5px; border: 1px solid #c8e6c9;">🗄️ DB Match: ${validadoHistorial.join(', ')}</span>`;
+            }
+            if (pruebasLive.length > 0) {
+                etiquetasHTML += `<span style="font-size:10px; color:#0277bd; background:#e1f5fe; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; border: 1px solid #b3e5fc;">📄 PDF Live: ${pruebasLive.join(', ')}</span>`;
+            }
+
+            refEl.innerHTML = `${reportNoPrev || 'N/A'} <br> ${etiquetasHTML}`;
+        }
+        setVal('d-prev-date-out', dateOutPrev);
+
+        if (escaneo.encontrada && escaneo.filas.length > 0) {
+            renderTablaResultadosPSR(escaneo.filas);
+        } else {
+            renderTablaResultadosPSR(null);
+        }
+
+        cambiarVistaPrev('visual');
+        document.getElementById('progressFill-prev').style.width = '100%';
+        setTimeout(() => { document.getElementById('progressFill-prev').style.width = '0%'; }, 500);
+    } catch (e) {
+        console.error(e);
+        mostrarAlerta('alertaPrev', 'An error occurred while processing the PDF: ' + e.message, 'error');
+        document.getElementById('progressFill-prev').style.width = '0%';
+    } finally {
+        btn.disabled = false; btn.textContent = 'Analyze PREVS';
+    }
+}
+
+function abrirModalPrev() { abrirModalConPdf(pdfDocPrev); }
+function cambiarVistaPrev(v) {
+    cambiarVistaGenerica({ tabVisual: 'tabVisual-prev', tabTexto: 'tabTexto-prev', pdfPages: 'pdfPages-prev', pdfTextView: 'pdfTextView-prev' }, v);
+}
+function buscarEnTextoPrev() {
+    buscarEnTextoGenerico({ campoBusqueda: 'campoBusqueda-prev', pdfTextView: 'pdfTextView-prev', infoCoincidencias: 'infoCoincidencias-prev' }, textoExtraidoPrev, cambiarVistaPrev);
+}
+
+/* ============================================================================
+   MODULE 3: PFAS LOGIC (HYBRID DOCX / PDF ENGINE)
+============================================================================ */
+let textoExtraidoPfas = '';
+let tipoArchivoPfas = '';
+
+async function extraerTextoHibrido(archivo) {
+    const extension = archivo.name.split('.').pop().toLowerCase();
+    tipoArchivoPfas = extension.toUpperCase();
+
+    if (extension === 'pdf') {
+        console.log("📄 Reading PFAS with PDF.js Engine...");
+        const lectura = await leerPdf(archivo, true, false);
+        return lectura.textoExtraido || lectura.pageTexts.join(' ');
+        
+    } else if (extension === 'docx' || extension === 'doc') {
+        console.log("📝 Reading PFAS with Mammoth.js (Word) Engine...");
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const arrayBuffer = event.target.result;
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                    .then(function(result) {
+                        resolve(result.value);
+                    })
+                    .catch(function(err) {
+                        reject("Error extracting text from Word document: " + err.message);
+                    });
+            };
+            reader.onerror = () => reject("Could not open local Word file.");
+            reader.readAsArrayBuffer(archivo);
+        });
+    } else {
+        throw new Error("Unsupported format. Please upload a .docx or .pdf file");
+    }
+}
+
+function verificarCoincidenciaEstilos(textoPfas) {
+    let alertaVersionHTML = '';
+    
+    const esVersionVieja = /PFAS\s*Policy\s*\|\s*([A-Za-z]+\s*)?2023/i.test(textoPfas) || 
+                           /August\s*2023/i.test(textoPfas) ||
+                           /Fall\s*2023\s*orders/i.test(textoPfas);
+
+    if (esVersionVieja) {
+        alertaVersionHTML = `
+            <div style="padding: 10px 12px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ff8f00; border-radius: 4px; margin-bottom: 8px; font-size: 12px; color: #795548; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #e65100;">⚠️ 2023 VERSION DETECTED:</strong> 
+                    <span>Policy requires version <b>2024</b> or newer. Request supplier update.</span>
+                </div>
+            </div>
+        `;
+    }
+
+    const estilosPFAS = [...new Set(textoPfas.match(/\b\d{6,8}\b/g) || [])];
+    let estilosETRF = window.estilosGlobalesETRF || [];
+    
+    if (estilosETRF.length === 0) {
+        const vistaEtrf = document.getElementById('view-etrf');
+        if (vistaEtrf) {
+            const textoDom = vistaEtrf.innerText || '';
+            const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
+            estilosETRF = matchStyle ? matchStyle[1].match(/\b\d{6,8}\b/g) || [] : textoDom.match(/\b\d{6,8}\b/g) || [];
+        }
+    }
+
+    estilosETRF = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
+
+    if (estilosETRF.length === 0) {
+        return alertaVersionHTML + `
+            <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
+                ⚠️ <b>Missing ETRF report:</b> Please analyze an ETRF PDF above first to cross-reference styles automatically.
+            </div>
+        `;
+    }
+
+    const coincidentes = estilosETRF.filter(est => estilosPFAS.includes(est));
+    const faltantes = estilosETRF.filter(est => !estilosPFAS.includes(est));
+
+    let alertaEstilosHTML = '';
+
+    if (faltantes.length === 0 && coincidentes.length > 0) {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #2e7d32; font-size: 13px;">✔ MATCHING STYLES (PASS)</strong> — 
+                    <span>Styles successfully verified in PFAS declaration: <b>${coincidentes.join(', ')}</b></span>
+                </div>
+            </div>
+        `;
+    } else {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
+                <div style="margin-bottom: 4px;">
+                    <strong style="color: #c62828; font-size: 13px;">❌ STYLE DISCREPANCY (FAIL)</strong> — 
+                    <span>ETRF styles not found in PFAS document:</span>
+                </div>
+                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">🚨 Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
+                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">✔ Matched: ${coincidentes.join(', ')}</div>` : ''}
+            </div>
+        `;
+    }
+
+    return alertaVersionHTML + alertaEstilosHTML;
+}
+
+async function procesarArchivoPFAS() {
+    const input = document.getElementById('archivoInput-pfas');
+    const archivo = input ? input.files[0] : null;
+    const btn = document.getElementById('btnAnalizar-pfas');
+    const progress = document.getElementById('progressFill-pfas');
+    const contenedor = document.getElementById('resultados-pfas-container');
+
+    if (!archivo) {
+        alert("Please select a PFAS PDF or Word (.docx) file.");
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Auditing...'; }
+    if (progress) progress.style.width = '40%';
+    if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying styles and policy version...</p>';
+
+    try {
+        textoExtraidoPfas = await extraerTextoHibrido(archivo);
+        if (progress) progress.style.width = '80%';
+
+        const alertasHTML = verificarCoincidenciaEstilos(textoExtraidoPfas);
+        
+        if (contenedor) {
+            contenedor.innerHTML = alertasHTML;
+        }
+
+        if (progress) {
+            progress.style.width = '100%';
+            setTimeout(() => progress.style.width = '0%', 500);
+        }
+    } catch (error) {
+        console.error("PFAS Module Error:", error);
+        if (contenedor) {
+            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">❌ Error: ${error.message || error}</div>`;
+        }
+        if (progress) progress.style.width = '0%';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Analyze PFAS'; }
+    }
+}
+</script>
+</body>
+</html>
