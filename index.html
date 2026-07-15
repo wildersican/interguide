@@ -892,7 +892,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
         alerts.push('MISSING <strong>Sourcing Office</strong>');
     } else {
         // 🛡️ LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
-        const validSourcingRegex = /^\s*GIS\s*[\-\._]*\s*(HONG\s*KONG|HK|SHANGAI|SHANGHAI|SH|CENTRAL\s*AMERICA?|CA|AMERICA?|VIETNAM|VN)\s*$/i;
+        const validSourcingRegex = /^\s*(?:GIS\s*[\-\._]*\s*)?(HONG\s*KONG|HK|SHANGAI|SHANGHAI|SH|CENTRAL\s*AMERICA?|CA|AMERICA?|VIETNAM|VN)\s*$/i;
         
         if (validSourcingRegex.test(sourcing)) {
             // Es 100% válida (1 sola oficina). Lo dejamos pasar limpiecito.
@@ -1419,8 +1419,12 @@ function renderComplementaryReports() {
         
         if (compData.trims.length > 0) {
             trimBody.innerHTML = compData.trims.map(t => 
-                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee;">` +
+                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
+                `<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">` +
                 `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-tag" style="color:#888; margin-right:6px;"></i>${esc(t.desc)}</span>` +
+                (t.rdNum ? `<span style="background:#f5f5f5; color:#555; border:1px solid #ddd; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">RD Number: ${esc(t.rdNum)}</span>` : '') +
+                (t.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ${esc(t.color)}</span>` : '') +
+                `</div>` +
                 `<span style="background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(t.report)}</span>` +
                 `</div>`
             ).join('');
@@ -1431,7 +1435,10 @@ function renderComplementaryReports() {
         if (compData.fabrics.length > 0) {
             fabricBody.innerHTML = compData.fabrics.map(f => 
                 `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee;">` +
+                `<div style="display:flex; align-items:center; gap:10px;">` +
                 `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>${esc(f.desc)}</span>` +
+                (f.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ${esc(f.color)}</span>` : '') +
+                `</div>` +
                 `<span style="background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(f.report)}</span>` +
                 `</div>`
             ).join('');
@@ -1535,38 +1542,87 @@ function extractComplementaryReportsData() {
         { normal: 'MOBILON', regex: /MOBILON/i }
     ];
 
+    const fabricDictionary = [
+        { normal: 'JERSEY', regex: /Jersey/i },
+        { normal: '1x1 RIB', regex: /1x1\s*Rib/i },
+        { normal: '2x2 RIB', regex: /2x2\s*Rib/i },
+        { normal: '2x1 RIB', regex: /2x1\s*Rib/i },
+        { normal: 'FLEECE', regex: /Fleece/i },
+        { normal: 'WAFFLE', regex: /Waffle/i },
+        { normal: 'MESH', regex: /Mesh/i },
+        { normal: 'FRENCH TERRY', regex: /French\s*Terry/i },
+        { normal: 'RIB', regex: /\bRib\b/i }
+    ];
+
     let activeMinX = 140; 
     let activeMaxX = 340; 
     let colorMinX = 340;
     let colorMaxX = 460;
+    let ccMinX = 0;
+    let ccMaxX = 0;
+    let lastSeenCcColor = '';
+    
+    const COLOR_WHITELIST = ['WHITE', 'BLACK', 'NAVY', 'GREY', 'GRAY', 'COOL', 'BLUE', 'RED', 'GREEN', 'YELLOW', 'ORANGE', 'PINK', 'PURPLE', 'BROWN', 'BEIGE', 'CREAM', 'SALT', 'SEA', 'ROBBIE', 'DARK', 'LIGHT', 'HEATHER', 'OATMEAL'];
 
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
 
-        const hDesc = items.find(i => /^description/i.test(i.str.trim()) && i.x > 100 && i.x < 550);
+        const hDesc = items.find(i => /\bdescription\b/i.test(i.str.trim()) && i.x > 50 && i.x < 1500);
         if (hDesc) {
             const rightNeighbors = items.filter(i => 
-                Math.abs(i.y - hDesc.y) < 20 && 
-                i.x > hDesc.x + 20 && 
+                Math.abs(i.y - hDesc.y) < 55 && 
+                i.x > hDesc.x + 15 && 
+                i.x < hDesc.x + 300 &&
                 i.str.trim().length > 1
             );
             rightNeighbors.sort((a, b) => a.x - b.x);
 
-            activeMinX = hDesc.x - 20;
+            activeMinX = hDesc.x - 100;
             if (rightNeighbors.length > 0) {
                 activeMaxX = rightNeighbors[0].x - 5;
             } else {
-                activeMaxX = hDesc.x + 120;
+                activeMaxX = hDesc.x + 150;
             }
         }
 
-        const hColor = items.find(i => /^color/i.test(i.str.trim()) && i.x > 150 && i.x < 650);
+        let hColor = items.find(i => /\bcolor\b/i.test(i.str.trim()) && i.x > 100 && i.x < 1500);
+        if (hDesc) {
+            hColor = items.find(i => /\bcolor\b/i.test(i.str.trim()) && Math.abs(i.y - hDesc.y) < 20 && i.x > hDesc.x) || hColor;
+        }
+        
         if (hColor) {
-            colorMinX = hColor.x - 15;
-            colorMaxX = hColor.x + 120;
+            const rightNeighborsColor = items.filter(i => 
+                Math.abs(i.y - hColor.y) < 25 && 
+                i.x > hColor.x + 10 && 
+                i.x < hColor.x + 500 &&
+                i.str.trim().length > 1
+            );
+            rightNeighborsColor.sort((a, b) => a.x - b.x);
+
+            if (hDesc) {
+                colorMinX = activeMaxX;
+            } else {
+                colorMinX = hColor.x - 100;
+            }
+            
+            if (rightNeighborsColor.length > 0) {
+                // Extend explicitly into the next column because its text is heavily blacklisted anyway
+                colorMaxX = rightNeighborsColor[0].x + 60;
+            } else {
+                colorMaxX = hColor.x + 200;
+            }
         } else if (hDesc) {
-            colorMinX = activeMaxX + 5;
-            colorMaxX = colorMinX + 120;
+            colorMaxX = activeMaxX; // Right edge is the start of the next column
+            colorMinX = activeMaxX - 150; // Look leftwards from the next column
+        }
+
+        const hCC = items.find(i => /colorway|color\s*way|\(cc\)/i.test(i.str.trim()));
+        if (hCC) {
+            ccMinX = hCC.x - 150;
+            ccMaxX = hCC.x + 150;
+        } else {
+            ccMinX = 0;
+            ccMaxX = 0;
         }
 
         const sortedItems = [...items].sort((a, b) => {
@@ -1593,7 +1649,7 @@ function extractComplementaryReportsData() {
 
         // 🚀 EXTRACCIÓN SEGURA: Permite números unidos a guiones bajos (ej. \d{10,12}_)
         let rawAnchors = items
-            .filter(it => /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
+            .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
             .sort((a, b) => a.y - b.y);
 
         let reportAnchors = [];
@@ -1621,42 +1677,37 @@ function extractComplementaryReportsData() {
             }
         }
 
+        // Determinar el inicio real de la fila (trueRowY) trazando hacia arriba los nombres de archivo multilinea
+        for (let idx = 0; idx < reportAnchors.length; idx++) {
+            let anchor = reportAnchors[idx];
+            let trueRowY = anchor.y;
+            anchor.trueRowY = trueRowY;
+        }
+
         for (let idx = 0; idx < reportAnchors.length; idx++) {
             const item = reportAnchors[idx];
 
-            const rowItems = items.filter(it => Math.abs(it.y - item.y) < 30);
-            const rowText = rowItems.map(it => it.str).join(' ');
-            
-            // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
-            if (/\bcoc\b|certificado|certificate|special\s*test\s*instructions|applicant\s*information|intertek\s*test\s*sum/i.test(rowText)) continue;
-
-            let topLimitY;
+            let topLimitY = item.y - 8;
             if (idx > 0) {
-                topLimitY = reportAnchors[idx - 1].y + 15; 
-            } else {
-                if (hDesc) {
-                    topLimitY = hDesc.y + 10; 
-                } else {
-                    topLimitY = 40; 
-                }
+                topLimitY = Math.max(topLimitY, reportAnchors[idx - 1].y + 5);
             }
             
-            let bottomLimitY = (idx < reportAnchors.length - 1) ? (reportAnchors[idx + 1].y - 15) : item.y + 55;
-            
-            let fileBottomY = item.y + 35; 
-            if (idx < reportAnchors.length - 1) {
-                fileBottomY = reportAnchors[idx + 1].y - 2;
-            } 
+            let bottomLimitY = (idx < reportAnchors.length - 1) ? (reportAnchors[idx + 1].trueRowY - 5) : item.y + 150;
             
             const nextCocY = cocHeadersY.find(y => y > item.y + 10);
             if (nextCocY && (nextCocY - item.y) < 65) {
-                fileBottomY = Math.min(fileBottomY, nextCocY - 2);
                 bottomLimitY = Math.min(bottomLimitY, nextCocY - 2);
             }
 
+            const rowItems = items.filter(it => it.y >= topLimitY && it.y <= bottomLimitY);
+            const rowText = rowItems.map(it => it.str).join(' ');
+            
+            // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
+            if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum/i.test(rowText)) continue;
+
             const cellItems = items.filter(it => 
-                it.x > item.x - 25 && it.x < item.x + 140 && 
-                it.y > item.y - 14 && it.y < fileBottomY
+                it.x > item.x - 25 && it.x < item.x + 200 && 
+                it.y >= topLimitY && it.y <= bottomLimitY
             );
             let cellText = cellItems.map(it => it.str.trim()).join(' ');
             
@@ -1679,12 +1730,128 @@ function extractComplementaryReportsData() {
 
             let finalDesc = '';
 
+            let rdNum = '';
+            const rdItems = items.filter(it => 
+                it.y >= topLimitY && it.y <= bottomLimitY &&
+                /^\d{5,9}$/.test(it.str.trim()) &&
+                it.x < item.x
+            );
+            if (rdItems.length > 0) {
+                rdItems.sort((a, b) => b.x - a.x);
+                rdNum = rdItems[0].str.trim();
+            }
+
+            let extractedColorVal = '';
+            const colorItems = items.filter(it => {
+                const t = it.str.trim();
+                if (t.length === 0 || /^\d+$/.test(t)) return false;
+                const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
+                if (cw === "") return false;
+                if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|information|international|dennison|avery|sml|samwon|printech)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
+                if (it.x < colorMinX || it.x > colorMaxX) return false;
+                if (it.y < topLimitY || it.y > bottomLimitY) return false;
+                return true;
+            });
+
+            let colorText = colorItems
+                .sort((a, b) => {
+                    if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
+                    return a.x - b.x;
+                })
+                .map(it => it.str.trim())
+                .join(' ')
+                .replace(/\s*-\s*/g, '-')
+                .replace(/\(COC's\)/ig, '')
+                .replace(/White\s+White\s+White\s+White\s+Fabric/ig, '')
+                .trim();
+
+            let fileExtractedColor = '';
+            if (targetSection === 'FABRIC') {
+                const fileMatch = stitchedText.match(/(?:GUBT|GUAT|KORT|JKTT|VNMT)[\d\-]+_([A-Z0-9\s\-]+)_/i);
+                if (fileMatch) {
+                    fileExtractedColor = fileMatch[1].trim().toUpperCase();
+                } else {
+                    const fallbackMatch = stitchedText.match(/_([A-Z0-9\s\-]+)(?:\.pdf)/i);
+                    if (fallbackMatch) {
+                        fileExtractedColor = fallbackMatch[1].trim().toUpperCase();
+                    }
+                }
+            }
+
+            let baseColor = '';
+            let isGarbageColor = /white\s*white|information|international|dennison|\bs\s*fabric\b/i.test(colorText);
+
+            if (colorText.length > 0 && !isGarbageColor) {
+                if (targetSection === 'FABRIC') {
+                    let cwWords = colorText.toUpperCase().split(/\s+/).map(w => w.replace(/[^A-Z]/g, ''));
+                    let hasValidColorWord = cwWords.some(w => COLOR_WHITELIST.includes(w));
+                    
+                    let fileHasValidColorWord = false;
+                    if (fileExtractedColor) {
+                        let fWords = fileExtractedColor.split(/\s+/).map(w => w.replace(/[^A-Z]/g, ''));
+                        fileHasValidColorWord = fWords.some(w => COLOR_WHITELIST.includes(w));
+                    }
+
+                    if (!hasValidColorWord && fileHasValidColorWord) {
+                        // El texto de la columna no tiene colores reales y parece basura impredecible, pero el archivo SÍ tiene un color real!
+                        baseColor = fileExtractedColor;
+                    } else {
+                        baseColor = colorText;
+                    }
+                } else {
+                    let uniqueWords = [...new Set(colorText.toUpperCase().split(/\s+/))];
+                    uniqueWords = uniqueWords.filter(w => {
+                        const cw = w.replace(/[^A-Z]/g, '');
+                        return COLOR_WHITELIST.includes(cw);
+                    });
+                    baseColor = uniqueWords.join(' ');
+                }
+            }
+
+            // Rescate definitivo para FABRICS si el color es texto basura invisible o no existe en absoluto (porque es una imagen)
+            if (targetSection === 'FABRIC' && !baseColor && fileExtractedColor) {
+                baseColor = fileExtractedColor;
+            }
+
+            let ccFinal = '';
+            if (ccMaxX > 0) {
+                const ccItems = items.filter(it => {
+                    const t = it.str.trim();
+                    if (t.length === 0 || /^\d+$/.test(t)) return false;
+                    const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
+                    if (cw === "") return false;
+                    if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|r-pac|pac|international|avery|dennison|sml|samwon|printech)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
+                    if (it.x < ccMinX || it.x > ccMaxX) return false;
+                    if (it.y < topLimitY || it.y > bottomLimitY) return false;
+                    return true;
+                });
+                let ccText = ccItems
+                    .sort((a, b) => {
+                        if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
+                        return a.x - b.x;
+                    })
+                    .map(it => it.str.trim())
+                    .join(' ')
+                    .replace(/\s*-\s*/g, '-')
+                    .trim();
+                
+                if (ccText.length > 0) {
+                    if (targetSection === 'FABRIC') {
+                        ccFinal = ccText;
+                    } else {
+                        let uniqueCc = [...new Set(ccText.toUpperCase().split(/\s+/))];
+                        uniqueCc = uniqueCc.filter(w => {
+                            const cw = w.replace(/[^A-Z]/g, '');
+                            return COLOR_WHITELIST.includes(cw);
+                        });
+                        ccFinal = uniqueCc.join(' ');
+                    }
+                }
+            }
+
             let historicalMatch = Object.keys(knownReports).find(key => repNum.includes(key));
 
-            if (targetSection === 'TRIM' && historicalMatch) {
-                finalDesc = knownReports[historicalMatch];
-            } else {
-                const descItems = items.filter(it => {
+            const descItems = items.filter(it => {
                     const t = it.str.trim();
                     if (t.length === 0 || /^\d+$/.test(t)) return false;
                     if (t.length === 1 && !/^[T\-]$/i.test(t)) return false; 
@@ -1723,10 +1890,21 @@ function extractComplementaryReportsData() {
                     }
                 }
 
+                let matchedDictionary = false;
+                if (descText && targetSection === 'FABRIC') {
+                    for (const entry of fabricDictionary) {
+                        if (entry.regex.test(descText)) {
+                            descText = entry.normal;
+                            matchedDictionary = true;
+                            break;
+                        }
+                    }
+                }
+
                 if (!descText && pageIdx > 0 && item.y < 230) {
                     const prevItems = pageItems[pageIdx - 1];
                     const prevHDesc = prevItems.find(i => /^description/i.test(i.str.trim()) && i.x > 100 && i.x < 550);
-                    const prevMinX = prevHDesc ? prevHDesc.x - 20 : activeMinX;
+                    const prevMinX = prevHDesc ? prevHDesc.x - 100 : activeMinX;
                     const prevMaxX = prevHDesc ? prevHDesc.x + 90 : activeMaxX;
 
                     const prevDescItems = prevItems.filter(it => {
@@ -1747,33 +1925,6 @@ function extractComplementaryReportsData() {
                     }
                 }
 
-                if (!descText && targetSection === 'FABRIC') {
-                    const colorItems = items.filter(it => {
-                        const t = it.str.trim();
-                        if (t.length === 0 || /^\d+$/.test(t)) return false;
-                        const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
-                        if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or)$/i.test(cw)) return false;
-                        if (it.x < colorMinX || it.x > colorMaxX) return false;
-                        if (it.y < topLimitY || it.y > bottomLimitY) return false;
-                        return true;
-                    });
-
-                    let colorText = colorItems
-                        .sort((a, b) => {
-                            if (Math.abs(a.y - b.y) > 6) return a.y - b.y;
-                            return a.x - b.x;
-                        })
-                        .map(it => it.str.trim())
-                        .join(' ')
-                        .replace(/\s*-\s*/g, '-')
-                        .trim();
-
-                    if (colorText.length > 0) {
-                        const uniqueWords = [...new Set(colorText.toUpperCase().split(/\s+/))];
-                        descText = uniqueWords.join(' ');
-                    }
-                }
-
                 if (!descText && targetSection === 'TRIM') {
                     for (const entry of trimDictionary) {
                         if (entry.regex.test(stitchedText)) {
@@ -1781,6 +1932,20 @@ function extractComplementaryReportsData() {
                             break;
                         }
                     }
+                }
+
+                if (!matchedDictionary && targetSection === 'FABRIC') {
+                    for (const entry of fabricDictionary) {
+                        if (entry.regex.test(stitchedText)) {
+                            descText = entry.normal;
+                            matchedDictionary = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!descText && targetSection === 'TRIM' && historicalMatch) {
+                    descText = knownReports[historicalMatch];
                 }
 
                 if (!descText) {
@@ -1802,21 +1967,61 @@ function extractComplementaryReportsData() {
                     }
                 }
 
+                if (!descText && targetSection === 'FABRIC') {
+                    descText = baseColor;
+                }
+
                 finalDesc = descText || (targetSection === 'TRIM' ? 'Trim Component' : 'Fabric Component');
                 if (targetSection === 'FABRIC' && /trim/i.test(finalDesc)) finalDesc = 'Fabric Component';
+
+            if (/special\s*claims|special\s*instructions/i.test(finalDesc) || /special\s*claims|special\s*instructions/i.test(stitchedText)) {
+                continue;
             }
 
             if (targetSection === 'TRIM') {
                 if (!trimPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
-                    trimPairs.push({ desc: finalDesc, report: repNum });
+                    trimPairs.push({ desc: finalDesc, report: repNum, rdNum: rdNum, color: '', baseColor: baseColor, ccFinal: ccFinal, pageIdx: pageIdx });
                 }
             } else if (targetSection === 'FABRIC') {
                 if (!fabricPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
-                    fabricPairs.push({ desc: finalDesc, report: repNum });
+                    fabricPairs.push({ desc: finalDesc, report: repNum, color: '', baseColor: baseColor, ccFinal: '', pageIdx: pageIdx });
                 }
             }
         }
     }
+
+    [trimPairs, fabricPairs].forEach(pairs => {
+        if (pairs.length === 0) return;
+        
+        let currentCc = '';
+        for (let i = 0; i < pairs.length; i++) {
+            if (pairs[i].ccFinal) {
+                currentCc = pairs[i].ccFinal;
+            } else {
+                pairs[i].ccFinal = currentCc;
+            }
+        }
+        
+        for (let i = pairs.length - 2; i >= 0; i--) {
+            if (!pairs[i].ccFinal && pairs[i+1].ccFinal && pairs[i].pageIdx === pairs[i+1].pageIdx) {
+                pairs[i].ccFinal = pairs[i+1].ccFinal;
+            }
+        }
+        
+        for (let i = 0; i < pairs.length; i++) {
+            let finalColor = pairs[i].baseColor;
+            if (pairs[i].ccFinal) {
+                if (finalColor) {
+                    if (!finalColor.includes(pairs[i].ccFinal) && !pairs[i].ccFinal.includes(finalColor)) {
+                        finalColor = `${pairs[i].ccFinal} / ${finalColor}`;
+                    }
+                } else {
+                    finalColor = pairs[i].ccFinal;
+                }
+            }
+            pairs[i].color = finalColor;
+        }
+    });
 
     return { trims: trimPairs, fabrics: fabricPairs };
 }
@@ -2673,15 +2878,18 @@ function verificarCoincidenciaEstilos(textoPfas) {
         `;
     }
 
-    const estilosPFAS = [...new Set(textoPfas.match(/\b\d{6,8}\b/g) || [])];
+    const textoPfasNormalizado = textoPfas.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    
     let estilosETRF = window.estilosGlobalesETRF || [];
     
     if (estilosETRF.length === 0) {
         const vistaEtrf = document.getElementById('view-etrf');
         if (vistaEtrf) {
-            const textoDom = vistaEtrf.innerText || '';
+            const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
             const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
-            estilosETRF = matchStyle ? matchStyle[1].match(/\b\d{6,8}\b/g) || [] : textoDom.match(/\b\d{6,8}\b/g) || [];
+            const targetText = matchStyle ? matchStyle[1] : textoDom;
+            const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
+            estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
         }
     }
 
@@ -2695,8 +2903,13 @@ function verificarCoincidenciaEstilos(textoPfas) {
         `;
     }
 
-    const coincidentes = estilosETRF.filter(est => estilosPFAS.includes(est));
-    const faltantes = estilosETRF.filter(est => !estilosPFAS.includes(est));
+    const coincidentes = estilosETRF.filter(est => {
+        const spacedDigits = est.split('').join('\\s*');
+        const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
+        return regex.test(textoPfasNormalizado);
+    });
+    
+    const faltantes = estilosETRF.filter(est => !coincidentes.includes(est));
 
     let alertaEstilosHTML = '';
 
