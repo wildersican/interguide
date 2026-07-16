@@ -1112,7 +1112,7 @@ function extractRDNumber() {
 
         const nums = items.filter(i => {
             const txt = i.str.trim();
-            if (!/^\d{6,9}$/.test(txt)) return false; 
+            if (!/\b\d{6,9}\b/.test(txt)) return false; 
             if (Math.abs(i.x - hRD.x) > 45) return false; 
             if (i.y <= hRD.y + 5 || i.y > hRD.y + 220) return false; 
             return true;
@@ -1120,14 +1120,21 @@ function extractRDNumber() {
 
         for (const n of nums) {
             const val = n.str.trim();
-            if (!rdNumbers.includes(val)) rdNumbers.push(val);
+            const matches = val.match(/\b\d{6,9}\b/g);
+            if (matches) {
+                matches.forEach(m => {
+                    if (!rdNumbers.includes(m)) rdNumbers.push(m);
+                });
+            } else {
+                if (!rdNumbers.includes(val)) rdNumbers.push(val);
+            }
         }
         if (rdNumbers.length > 0) break;
     }
 
     if (rdNumbers.length === 0) {
         const fullText = pageTexts.join(' ');
-        const match = fullText.match(/(?:PLM\s*Fabric|RD\s*Number)[\s\S]{0,150}?(\b\d{6,8}\b)/i);
+        const match = fullText.match(/(?:PLM\s*Fabric|RD\s*Number|Article)[\s\S]{0,150}?(\b\d{6,9}\b)/i);
         if (match && match[1]) {
             rdNumbers.push(match[1]);
         }
@@ -1287,6 +1294,8 @@ function renderFiber() {
     let fibers = [];
     let colFiberX = null;
     let colPctX = null;
+    let targetPageIdx = -1;
+    let headerY = -1;
 
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
@@ -1296,41 +1305,40 @@ function renderFiber() {
         if (hPct && hFiber) {
             colPctX = hPct.x;
             colFiberX = hFiber.x;
+            targetPageIdx = pageIdx;
+            headerY = hFiber.y;
             break;
         }
     }
 
-    if (colPctX !== null && colFiberX !== null) {
-        for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
-            const items = pageItems[pageIdx];
-            const pctItems = items.filter(i => Math.abs(i.x - colPctX) < 40 && /^[\d\.]+$/.test(i.str.trim()));
+    if (colPctX !== null && colFiberX !== null && targetPageIdx !== -1) {
+        const items = pageItems[targetPageIdx];
+        const pctItems = items.filter(i => Math.abs(i.x - colPctX) < 150 && i.y > headerY && i.y < headerY + 150 && /^[\d\.]+$/.test(i.str.trim()));
 
-            for (const pIt of pctItems) {
-                const pct = parseFloat(pIt.str.trim());
-                if (isNaN(pct) || pct <= 0 || pct > 100) continue;
+        for (const pIt of pctItems) {
+            const pct = parseFloat(pIt.str.trim());
+            if (isNaN(pct) || pct <= 0 || pct > 100) continue;
 
-                const fItems = items.filter(i => Math.abs(i.y - pIt.y) < 10 && i.x >= colFiberX - 40 && i.x < colPctX - 10);
-                const rawFName = fItems.sort((a, b) => a.x - b.x).map(i => i.str.trim()).join(' ').trim();
+            const fItems = items.filter(i => Math.abs(i.y - pIt.y) < 20 && i.x >= colFiberX - 250 && i.x < colPctX + 40);
+            const rawFName = fItems.sort((a, b) => a.x - b.x).map(i => i.str.trim()).join(' ').trim();
 
-                if (rawFName && rawFName.toLowerCase() !== 'fiber') {
-                    const lowerFName = rawFName.toLowerCase();
-                    if (rawFName.length > 45) continue;
-                    if (lowerFName.includes('acknowledge') || lowerFName.includes('compliance') || 
-                        lowerFName.includes('california') || lowerFName.includes('responsible') || 
-                        lowerFName.includes('certify') || lowerFName.includes('penalty')) {
-                        continue;
-                    }
+            if (rawFName) {
+                const lowerFName = rawFName.toLowerCase();
+                if (lowerFName.includes('acknowledge') || lowerFName.includes('compliance') || 
+                    lowerFName.includes('california') || lowerFName.includes('responsible') || 
+                    lowerFName.includes('penalty')) {
+                    continue;
+                }
 
-                    const garbageWords = ['30s', '20s', '40s', '50s', 'jersey', 'rib', 'fleece', 'mesh', 'interlock', 'pique', 'fabric', 'body', 'sleeve', 'neck', 'tape', 'section', 'disclosure', 'only'];
-                    const cleanWords = rawFName.split(/\s+/).filter(word => {
-                        const wLow = word.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        return !garbageWords.includes(wLow) && !/^[\d\.\%]+$/.test(wLow);
-                    });
-                    const fName = cleanWords.join(' ').trim();
-                    
-                    if (fName && !fibers.some(f => f.name === fName)) {
-                        fibers.push({ name: fName, pct: pct.toFixed(0) + '%' });
-                    }
+                const garbageWords = ['30s', '20s', '40s', '50s', 'jersey', 'rib', 'fleece', 'mesh', 'interlock', 'pique', 'fabric', 'body', 'sleeve', 'neck', 'tape', 'section', 'disclosure', 'only', 'page', 'of', 'percentage', 'fiber', 'for', 'sectional', 'single', 'certify', 'content'];
+                const cleanWords = rawFName.split(/\s+/).filter(word => {
+                    const wLow = word.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    return !garbageWords.includes(wLow) && !/^[\d\.\%]+$/.test(wLow);
+                });
+                const fName = cleanWords.join(' ').trim();
+                
+                if (fName && fName.length < 45 && !fibers.some(f => f.name === fName)) {
+                    fibers.push({ name: fName, pct: pct.toFixed(0) + '%' });
                 }
             }
         }
@@ -1341,7 +1349,18 @@ function renderFiber() {
         el.innerHTML = fibers.map(f => `<span class="fiber-chip">${esc(f.name)}: ${esc(f.pct)}</span>`).join('');
         el.className = 'det-val';
     } else { 
-        el.textContent = '—'; 
+        let debugStr = `DEBUG: page=${targetPageIdx}, hFiberX=${colFiberX}, hPctX=${colPctX}, hY=${headerY}`;
+        if (targetPageIdx !== -1) {
+            const items = pageItems[targetPageIdx];
+            const pcts = items.filter(i => Math.abs(i.x - colPctX) < 150 && i.y > headerY && i.y < headerY + 150 && /^[\d\.]+$/.test(i.str.trim()));
+            debugStr += ` | pctsFound=${pcts.length} (${pcts.map(p=>p.str.trim() + '@y' + Math.round(p.y)).join(',')})`;
+            
+            if (pcts.length > 0) {
+                const fIts = items.filter(i => Math.abs(i.y - pcts[0].y) < 20 && i.x >= colFiberX - 250 && i.x < colPctX + 40);
+                debugStr += ` | fIts=${fIts.map(i=>i.str.trim()).join(' ')}`;
+            }
+        }
+        el.innerHTML = `<span style="color:red; font-size:10px;">${debugStr}</span>`; 
         el.className = 'det-val empty'; 
     }
 }
@@ -1687,12 +1706,16 @@ function extractComplementaryReportsData() {
         for (let idx = 0; idx < reportAnchors.length; idx++) {
             const item = reportAnchors[idx];
 
-            let topLimitY = item.y - 8;
-            if (idx > 0) {
-                topLimitY = Math.max(topLimitY, reportAnchors[idx - 1].y + 5);
+            let topLimitY = 50;
+            if (idx === 0) {
+                if (typeof hDesc !== 'undefined' && hDesc) topLimitY = hDesc.y + 5;
+                else if (typeof hColor !== 'undefined' && hColor) topLimitY = hColor.y + 5;
+                else topLimitY = item.y - 60;
+            } else {
+                topLimitY = reportAnchors[idx - 1].y + 5;
             }
             
-            let bottomLimitY = (idx < reportAnchors.length - 1) ? (reportAnchors[idx + 1].trueRowY - 5) : item.y + 150;
+            let bottomLimitY = item.y + 25;
             
             const nextCocY = cocHeadersY.find(y => y > item.y + 10);
             if (nextCocY && (nextCocY - item.y) < 65) {
@@ -1703,7 +1726,7 @@ function extractComplementaryReportsData() {
             const rowText = rowItems.map(it => it.str).join(' ');
             
             // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
-            if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum/i.test(rowText)) continue;
+            if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum|telephone|phone|fax|vendor\s*attestation|form\s*no|page\s*\d+\s*of\s*\d+/i.test(rowText)) continue;
 
             const cellItems = items.filter(it => 
                 it.x > item.x - 25 && it.x < item.x + 200 && 
@@ -1715,10 +1738,10 @@ function extractComplementaryReportsData() {
                 .replace(/(GUAT|GUBT|KORT|JKTT|VNMT)\s*(\d+)\s+(\d+)/ig, '$1$2$3')
                 .replace(/\(\s*(\d{4})\s*\)\s*(\d{3})\s*[-]?\s*(\d{4})/ig, '($1)$2-$3')
                 .replace(/TRM\s*[-_]?\s*/ig, 'TRM-')
-                .replace(/(TRM-[\d_]+)\s+(?=[\d_])/ig, '$1'); 
+                .replace(/(TRM-[A-Z0-9_]+)\s+(?=[A-Z0-9_])/ig, '$1'); 
 
             // 🚀 EXTRACCIÓN SEGURA: Captura el número incluso si está pegado a un guion bajo `_`
-            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[\d_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
+            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
             if (!match) continue;
             let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
 
@@ -1747,7 +1770,7 @@ function extractComplementaryReportsData() {
                 if (t.length === 0 || /^\d+$/.test(t)) return false;
                 const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
                 if (cw === "") return false;
-                if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|information|international|dennison|avery|sml|samwon|printech)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
+                if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|vendor's|fabric|fabrics|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|sewn|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|information|international|dennison|avery|sml|samwon|printech)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
                 if (it.x < colorMinX || it.x > colorMaxX) return false;
                 if (it.y < topLimitY || it.y > bottomLimitY) return false;
                 return true;
@@ -1820,7 +1843,7 @@ function extractComplementaryReportsData() {
                     if (t.length === 0 || /^\d+$/.test(t)) return false;
                     const cw = t.replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/]+$/g, '').toLowerCase();
                     if (cw === "") return false;
-                    if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|r-pac|pac|international|avery|dennison|sml|samwon|printech)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
+                    if (/^(description|color|style|number|item|type|file|name|document|form|no|tests|eligible|select|all|market|markets|finished|product|colorway|cc|trim|trims|component|id|vendor|vendor's|fabric|fabrics|sourced|certifier|certifiers|coc|cocs|attestation|declaration|mill|nominated|article|rd|row|one|per|before|after|wash|unit|construction|weight|characteristics|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|page|intertek|total|quality|assured|etrf|continued|cont|www|http|gap|inc|of|by|to|at|on|for|and|or|azo|colorants|japan|cadmium|us|eu|uk|nickel|release|phthalates|adult|products|psr|durability|extended|laundering|dry|cleaning|regulated|tagless|labels|label|sew|sewn|side|exterior|rfid|care|joker|heat|transfer|heavy|metals|soluable|soluble|children's|kids|only|lead|content|substrate|surface|coating|report|reports|rpt|submit|labs|in|this|ensure|that|comply|cfr|including|applicable|regulations|rules|bans|standards|policies|control|procedures|established|company|attest|&|test|testing|will|not|review|without|corresponding|must|be|indicated|as|the|match|address|certifier's|r-pac|pac|international|avery|dennison|sml|samwon|printech|sewn|vendor's|fabric|fabrics)$/i.test(cw) || /^(report|gubt|guat|trm)/i.test(cw)) return false;
                     if (it.x < ccMinX || it.x > ccMaxX) return false;
                     if (it.y < topLimitY || it.y > bottomLimitY) return false;
                     return true;
@@ -1850,6 +1873,9 @@ function extractComplementaryReportsData() {
             }
 
             let historicalMatch = Object.keys(knownReports).find(key => repNum.includes(key));
+            if (historicalMatch) {
+                targetSection = 'TRIM';
+            }
 
             const descItems = items.filter(it => {
                     const t = it.str.trim();
@@ -1944,13 +1970,13 @@ function extractComplementaryReportsData() {
                     }
                 }
                 
-                if (!descText && targetSection === 'TRIM' && historicalMatch) {
+                if (targetSection === 'TRIM' && historicalMatch) {
                     descText = knownReports[historicalMatch];
                 }
 
                 if (!descText) {
                     let cleanFile = stitchedText
-                        .replace(/((?:GUAT|GUBT|KORT|JKTT|VNMT)[\d\-]+|\(\d{4}\)\s*\d{3}\s*[-]?\s*\d{4}|TRM-[\d_]+|\b\d{10,12}\b)/ig, '')
+                        .replace(/((?:GUAT|GUBT|KORT|JKTT|VNMT)[\d\-]+|\(\d{4}\)\s*\d{3}\s*[-]?\s*\d{4}|TRM-[A-Z0-9_]+|\b\d{10,12}\b)/ig, '')
                         .replace(/\(version\s*\d+\)/ig, '') 
                         .replace(/\.pdf|\.doc|\.docx|\.xls|\.xlsx/ig, '')
                         .replace(/\b[pP]\s*[dD]\s*[fF]\b|\b[dD]\s*[oO]\s*[cC]\s*[xX]?\b|\b[xX]\s*[lL]\s*[sS]\s*[xX]?\b/ig, '')
@@ -2074,6 +2100,15 @@ async function procesarPDF() {
         const matchEstilos = textoPantallaEtrf.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
         let estilosEncontrados = matchEstilos ? matchEstilos[1].match(/\b\d{6,8}\b/g) || [] : textoPantallaEtrf.match(/\b\d{6,8}\b/g) || [];
         window.estilosGlobalesETRF = [...new Set(estilosEncontrados)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202'));
+        
+        const rawRdETRF = document.getElementById('d-rd-num') ? document.getElementById('d-rd-num').textContent : '';
+        let rdList = rawRdETRF.split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '--' && r !== '-');
+        try {
+            const compData = extractComplementaryReportsData();
+            if (compData.trims) compData.trims.forEach(t => { if (t.rdNum) rdList.push(...t.rdNum.split(/[,;]/).map(x=>x.trim())); });
+            if (compData.fabrics) compData.fabrics.forEach(f => { if (f.rdNum) rdList.push(...f.rdNum.split(/[,;]/).map(x=>x.trim())); });
+        } catch(e){}
+        window.rdGlobalesETRF = [...new Set(rdList)].filter(x => x);
 
     } catch (e) {
         dbg('ERROR: ' + e.message);
@@ -2172,7 +2207,7 @@ function verificarPruebasEnBaseDeDatos(numeroReporteExtraido) {
 
     for (const [prueba, listaReportes] of Object.entries(baseDeDatosPruebas)) {
         const listaLimpia = listaReportes.map(r => r.toUpperCase().replace(/[\s\(\)\-\.]/g, ''));
-        if (listaLimpia.includes(reporteLimpio)) pruebasAplicables.push(prueba);
+        if (listaLimpia.some(r => reporteLimpio.includes(r))) pruebasAplicables.push(prueba);
     }
     return pruebasAplicables;
 }
@@ -2260,15 +2295,23 @@ async function escanearTablaResultadosPSR() {
     const resultados = [];
     let tablaEncontrada = false;
     const escala = 3;
+    let encActivo = null;
 
     for (let pageIdx = 0; pageIdx < pageItemsPrev.length; pageIdx++) {
         const items = pageItemsPrev[pageIdx];
         const graficos = pageGraphicsPrev[pageIdx] || [];
 
-        const enc = localizarEncabezadosIntertek(items, pageIdx + 1);
-        if (!enc) continue;
+        let enc = localizarEncabezadosIntertek(items, pageIdx + 1);
+        if (enc) {
+            encActivo = enc;
+            tablaEncontrada = true;
+        } else if (encActivo && pageIdx > 0 && pageIdx <= 3) {
+            // Asumir que la tabla continúa en la página 2 o 3
+            enc = encActivo;
+        } else {
+            continue;
+        }
 
-        tablaEncontrada = true;
         const colPass = enc.columnas[0];
 
         const propItems = items.filter(i => {
@@ -2337,10 +2380,17 @@ async function escanearTablaResultadosPSR() {
             const centroY = bloque.lineas.reduce((sum, l) => sum + l.y, 0) / bloque.lineas.length;
             let estado = null;
 
-            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && /^[☑✔✓þvVxX■]$/i.test(it.str.trim()));
+            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && (/^[☑✔✓þvVxX■]$/i.test(it.str.trim()) || /^(pass|fail|n\s*\/\s*a|na|not applicable|data)$/i.test(it.str.trim())));
             if (checkTexto) {
-                const colCercana = enc.columnas.reduce((prev, curr) => Math.abs(curr.x - checkTexto.x) < Math.abs(prev.x - checkTexto.x) ? curr : prev);
-                estado = colCercana.key;
+                const txt = checkTexto.str.trim().toUpperCase();
+                if (/^(PASS|FAIL|DATA)$/.test(txt)) {
+                    estado = txt;
+                } else if (/^(N\s*\/\s*A|NA|NOT APPLICABLE)$/.test(txt)) {
+                    estado = 'NA';
+                } else {
+                    const colCercana = enc.columnas.reduce((prev, curr) => Math.abs(curr.x - checkTexto.x) < Math.abs(prev.x - checkTexto.x) ? curr : prev);
+                    estado = colCercana.key;
+                }
             }
 
             if (!estado && graficos.length > 0) {
@@ -2377,7 +2427,7 @@ function renderTablaResultadosPSR(filas) {
         return;
     }
 
-    const filtroPalabras = ["Cadmium", "Heavy Metals", "Phthalates", "Substrate", "Surface", "Lead"]; 
+    const filtroPalabras = ["Cadmium", "Heavy Metal", "Phthalate", "Substrate", "Surface", "Lead"]; 
 
     let filasAMostrar = filas;
     
@@ -2397,6 +2447,7 @@ function renderTablaResultadosPSR(filas) {
         if (status === 'PASS') return '<span class="check-pill">✓ PASS</span>';
         if (status === 'FAIL') return '<span class="check-pill fail-pill">✗ FAIL</span>';
         if (status === 'DATA') return '<span class="check-pill data-pill">DATA</span>';
+        if (status === 'UNKNOWN') return '<span class="check-pill" style="background:#e0e0e0; color:#555;">UNKNOWN</span>';
         return '<span class="check-pill na-pill">NA</span>';
     };
     
@@ -2796,6 +2847,31 @@ async function procesarPDFPrev() {
             refEl.innerHTML = `${reportNoPrev || 'N/A'} <br> ${etiquetasHTML}`;
         }
         setVal('d-prev-date-out', dateOutPrev);
+
+        // Match RD/Style con ETRF
+        let rdMatchPrevHTML = '';
+        let rdListToSearch = [];
+        if (window.rdGlobalesETRF) rdListToSearch = rdListToSearch.concat(window.rdGlobalesETRF);
+        if (window.estilosGlobalesETRF) rdListToSearch = rdListToSearch.concat(window.estilosGlobalesETRF);
+        rdListToSearch = [...new Set(rdListToSearch)].filter(x => x && x !== '--' && x !== '-');
+
+        if (rdListToSearch.length > 0) {
+            let matchedRDs = rdListToSearch.filter(rd => {
+                let safeRD = rd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                let regex = new RegExp('(?:^|[^0-9])' + safeRD + '(?:[^0-9]|$)', 'i');
+                return regex.test(fullTextPrev);
+            });
+            if (matchedRDs.length > 0) {
+                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#1565c0; background:#e3f2fd; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #90caf9;"><i class="fas fa-link" style="margin-right: 4px;"></i>ETRF Match: ${matchedRDs.join(', ')}</span></div>`;
+            } else {
+                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#9e9e9e; background:#f5f5f5; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #e0e0e0;"><i class="fas fa-search" style="margin-right: 4px;"></i>No ETRF match for: ${rdListToSearch.join(', ')}</span></div>`;
+            }
+        }
+        
+        const dateOutSpan = document.getElementById('d-prev-date-out');
+        if (dateOutSpan) {
+            dateOutSpan.innerHTML = `${dateOutPrev || 'N/A'}${rdMatchPrevHTML}`;
+        }
 
         if (escaneo.encontrada && escaneo.filas.length > 0) {
             renderTablaResultadosPSR(escaneo.filas);
