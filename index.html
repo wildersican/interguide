@@ -246,6 +246,12 @@ footer {
                             <span class="det-label">File</span>
                             <span class="det-val" id="d-file"></span>
                         </div>
+                        <div id="section-special-instructions" style="display:none; margin-bottom: 15px;">
+                            <div class="det-section" style="color: #d32f2f; border-bottom-color: #d32f2f;"><i class="fas fa-exclamation-triangle" style="color: #d32f2f;"></i>Special Test Instructions</div>
+                            <div class="det-row" style="flex-direction: column; align-items: flex-start; padding: 12px; background: #fff5f5; border-left: 4px solid #d32f2f; border-radius: 0 4px 4px 0;">
+                                <div id="d-special-instructions" style="white-space: pre-wrap; font-family: 'Consolas', 'Courier New', monospace; font-size: 11.5px; line-height: 1.5; color: #333; width: 100%; word-break: break-word;"></div>
+                            </div>
+                        </div>
 
                         <div class="det-section"><i class="fas fa-file-alt"></i>General</div>
                         <div class="det-row"><span class="det-label">Test Status</span><span class="det-val" id="d-test-status"></span></div>
@@ -756,6 +762,7 @@ async function extractAll(fileName) {
     let chkCount = [chkFull, chkAdditional, chkSpecial, chkPSR, chkPerf].filter(Boolean).length;
 
     const reqTests = extractRequestedTests();
+    renderSpecialInstructions();
     renderTestTypeBlock(chkFull, chkAdditional, chkSpecial, chkPSR, chkPerf, reqTests);
     setProgress(55);
 
@@ -1299,16 +1306,23 @@ function renderFiber() {
 
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
-        const hPct = items.find(i => i.str.includes('Percentage'));
-        const hFiber = items.find(i => i.str.trim().toLowerCase() === 'fiber');
         
-        if (hPct && hFiber) {
-            colPctX = hPct.x;
-            colFiberX = hFiber.x;
-            targetPageIdx = pageIdx;
-            headerY = hFiber.y;
-            break;
+        // Find all possible Percentage headers
+        const pctHeaders = items.filter(i => i.str.includes('Percentage'));
+        
+        // Check if any Percentage header has a 'Fiber' header near it vertically
+        for (const hPct of pctHeaders) {
+            const hFiber = items.find(i => i.str.trim().toLowerCase() === 'fiber' && Math.abs(i.y - hPct.y) < 30);
+            
+            if (hPct && hFiber) {
+                colPctX = hPct.x;
+                colFiberX = hFiber.x;
+                targetPageIdx = pageIdx;
+                headerY = hFiber.y;
+                break;
+            }
         }
+        if (targetPageIdx !== -1) break;
     }
 
     if (colPctX !== null && colFiberX !== null && targetPageIdx !== -1) {
@@ -1330,6 +1344,15 @@ function renderFiber() {
                     continue;
                 }
 
+                const validFibers = [
+                    'cotton', 'polyester', 'spandex', 'elastane', 'nylon', 'viscose', 'rayon', 'linen', 
+                    'wool', 'silk', 'lyocell', 'modal', 'acrylic', 'bamboo', 'hemp', 'polyamide', 'cashmere', 
+                    'mohair', 'alpaca', 'acetate', 'triacetate', 'tencel', 'cupro', 'ramie', 'lycra', 'repreve', 'ecovero'
+                ];
+                
+                const hasValidFiber = validFibers.some(fiber => lowerFName.includes(fiber));
+                if (!hasValidFiber) continue;
+
                 const garbageWords = ['30s', '20s', '40s', '50s', 'jersey', 'rib', 'fleece', 'mesh', 'interlock', 'pique', 'fabric', 'body', 'sleeve', 'neck', 'tape', 'section', 'disclosure', 'only', 'page', 'of', 'percentage', 'fiber', 'for', 'sectional', 'single', 'certify', 'content'];
                 const cleanWords = rawFName.split(/\s+/).filter(word => {
                     const wLow = word.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1348,20 +1371,44 @@ function renderFiber() {
     if (fibers.length) {
         el.innerHTML = fibers.map(f => `<span class="fiber-chip">${esc(f.name)}: ${esc(f.pct)}</span>`).join('');
         el.className = 'det-val';
-    } else { 
-        let debugStr = `DEBUG: page=${targetPageIdx}, hFiberX=${colFiberX}, hPctX=${colPctX}, hY=${headerY}`;
-        if (targetPageIdx !== -1) {
-            const items = pageItems[targetPageIdx];
-            const pcts = items.filter(i => Math.abs(i.x - colPctX) < 150 && i.y > headerY && i.y < headerY + 150 && /^[\d\.]+$/.test(i.str.trim()));
-            debugStr += ` | pctsFound=${pcts.length} (${pcts.map(p=>p.str.trim() + '@y' + Math.round(p.y)).join(',')})`;
-            
-            if (pcts.length > 0) {
-                const fIts = items.filter(i => Math.abs(i.y - pcts[0].y) < 20 && i.x >= colFiberX - 250 && i.x < colPctX + 40);
-                debugStr += ` | fIts=${fIts.map(i=>i.str.trim()).join(' ')}`;
-            }
+    } else {
+        el.textContent = '-';
+        el.className = 'det-val empty';
+    }
+}
+
+function renderSpecialInstructions() {
+    const elContainer = document.getElementById('section-special-instructions');
+    const elVal = document.getElementById('d-special-instructions');
+    if (!elContainer || !elVal) return;
+
+    let cleanText = pageTexts.map(text => {
+        return text.replace(/Form No:[\s\w\-\.]+/gi, '')
+                   .replace(/Page \d+ of \d+/gi, '')
+                   .replace(/INTERTEK/gi, '')
+                   .replace(/Gap Inc\.-ETRF/gi, '')
+                   .replace(/Total Quality\. Assured\./gi, '');
+    }).join(' ');
+                            
+    let regex = /SPECIAL\s+TEST\s+INSTRUCTIONS\s+([\s\S]+?)(?=\s*(?:SUBMITTED SAMPLES|COMPONENT LIST|FIBER & CARE|PRODUCT CHARACTERISTICS|ANALYTICAL TESTS|PERFORMANCE|COLORFASTNESS|TEST DETAILS|PRODUCT DETAILS|WASH METHOD|SECTION \(for Sectional|TESTING REQUESTED|CARE LABEL|ADDITIONAL TESTS|VENDOR|SUPPLIER|$))/i;
+    let match = cleanText.match(regex);
+    
+    if (match && match[1].trim() && match[1].trim().length > 3) {
+        // Restore newlines around stars for readability
+        let text = match[1].trim().replace(/\s*(\*\*\*[^\*]+)/g, '\n$1').trim();
+        elVal.textContent = text;
+        elContainer.style.display = 'block';
+    } else {
+        const idx = cleanText.toUpperCase().indexOf('SPECIAL');
+        if (idx !== -1) {
+            let snippet = cleanText.substring(idx, Math.min(cleanText.length, idx + 300));
+            elVal.innerHTML = `<span style="color:red; font-size:10px;">DEBUG SPECIAL: ${snippet.replace(/</g, '&lt;')}</span>`;
+            elContainer.style.display = 'block';
+            return;
         }
-        el.innerHTML = `<span style="color:red; font-size:10px;">${debugStr}</span>`; 
-        el.className = 'det-val empty'; 
+
+        elContainer.style.display = 'none';
+        elVal.textContent = '';
     }
 }
 
