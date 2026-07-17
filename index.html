@@ -962,13 +962,13 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
 
 async function extractStyleRowSpatial() {
     try {
-        const items = pageItems[0];
-        if (!items || items.length === 0) return null;
+        const firstPageItems = pageItems[0];
+        if (!firstPageItems || firstPageItems.length === 0) return null;
 
-        const hBrand = items.find(i => i.str.trim() === 'Brand');
+        const hBrand = firstPageItems.find(i => i.str.trim() === 'Brand');
         if (!hBrand) return null;
 
-        const headerItems = items.filter(i => Math.abs(i.y - hBrand.y) < 15).sort((a, b) => a.x - b.x);
+        const headerItems = firstPageItems.filter(i => Math.abs(i.y - hBrand.y) < 15).sort((a, b) => a.x - b.x);
 
         let xDesc = 9999, xCol = 9999, xBrand = hBrand.x - 5, xRetail = 9999, xChannel = 9999, xDest = 9999, xShip = 9999;
 
@@ -991,70 +991,99 @@ async function extractStyleRowSpatial() {
         if (xDest === 9999) xDest = xChannel + 55;
         if (xShip === 9999) xShip = xDest + 65;
 
-        const groupedY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('grouped'))?.y || 9999;
-        const prodDetailsY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('product details'))?.y || 9999;
-        const labY = items.find(i => i.y > hBrand.y && i.str.toLowerCase().includes('laboratory will'))?.y || 9999;
-        const bottomY = Math.min(groupedY, prodDetailsY, labY, hBrand.y + 300) - 5;
-
-        const styleItems = items.filter(i =>
-            i.y > hBrand.y + 5 &&
-            i.y < bottomY &&
-            i.x < xDesc &&
-            /\d/.test(i.str) &&
-            /^[A-Z0-9#\-\._]*\d+[A-Z0-9#\-\._]*$/i.test(i.str.trim())
-        );
-        if (styleItems.length === 0) return null;
-
-        styleItems.sort((a, b) => a.y - b.y);
-
         let allNos = [], allDescs = [], allColors = [], allBrands = [];
         let allRetails = [], allChannels = [], allDests = [], allShips = [];
 
-        for (let j = 0; j < styleItems.length; j++) {
-            const currentRow = styleItems[j];
-            let rowBottom = bottomY;
-            if (j + 1 < styleItems.length) {
-                rowBottom = styleItems[j+1].y;
+        for (let p = 0; p < pageItems.length; p++) {
+            const items = pageItems[p];
+            if (!items || items.length === 0) continue;
+
+            const startY = (p === 0) ? hBrand.y + 5 : 40; 
+            
+            const groupedY = items.find(i => i.y > startY && i.str.toLowerCase().includes('grouped'))?.y || 9999;
+            const prodDetailsY = items.find(i => i.y > startY && i.str.toLowerCase().includes('product details'))?.y || 9999;
+            const labY = items.find(i => i.y > startY && i.str.toLowerCase().includes('laboratory will'))?.y || 9999;
+            const formNoY = items.find(i => /^form\b/i.test(i.str.trim()) && i.y > startY + 200)?.y || 9999;
+            const pageY = items.find(i => /^page/i.test(i.str.trim()) && i.y > startY + 200)?.y || 9999;
+            
+            let bottomLimit = 9999;
+            if (p === 0) {
+                const tableEnd = items.find(i => i.y > startY && i.str.toLowerCase().includes('sample description'))?.y;
+                if (tableEnd) bottomLimit = tableEnd;
             }
-            rowBottom = Math.min(rowBottom, currentRow.y + 60);
+            
+            const sectionHeaderY = items.find(i => {
+                if (i.y <= startY) return false;
+                const txt = i.str.trim().toLowerCase();
+                return txt.includes('special test instructions') || 
+                       txt.includes('applicant information') || 
+                       txt.includes('sample information') ||
+                       txt.includes('submitted samples') ||
+                       txt.includes('fiber & care') ||
+                       txt === 'vendor' || txt === 'supplier';
+            })?.y || 9999;
+            
+            const bottomY = Math.min(groupedY, prodDetailsY, labY, formNoY, pageY, sectionHeaderY, bottomLimit) - 5;
 
-            let rowItems = items.filter(i => i.y >= currentRow.y - 8 && i.y < rowBottom - 2);
+            const styleItems = items.filter(i =>
+                i.y > startY &&
+                i.y < bottomY &&
+                i.x < xDesc &&
+                /\d/.test(i.str) &&
+                /^[A-Z0-9#\-\._]*\d+[A-Z0-9#\-\._]*$/i.test(i.str.trim())
+            );
+            
+            if (styleItems.length === 0) break;
 
-            let descParts = [], colorsParts = [], brandParts = [];
-            let retailParts = [], channelParts = [], destParts = [], shipParts = [];
+            styleItems.sort((a, b) => a.y - b.y);
 
-            for (const it of rowItems) {
-                if (it.str.trim() === currentRow.str.trim() && Math.abs(it.x - currentRow.x) < 10) continue;
+            for (let j = 0; j < styleItems.length; j++) {
+                const currentRow = styleItems[j];
+                const nextY = (j < styleItems.length - 1) ? styleItems[j + 1].y : bottomY;
 
-                if (it.x >= xDesc && it.x < xCol) descParts.push(it);
-                else if (it.x >= xCol && it.x < xBrand) colorsParts.push(it);
-                else if (it.x >= xBrand && it.x < xRetail) brandParts.push(it);
-                else if (it.x >= xRetail && it.x < xChannel) retailParts.push(it);
-                else if (it.x >= xChannel && it.x < xDest) channelParts.push(it);
-                else if (it.x >= xDest && it.x < xShip) destParts.push(it);
-                else if (it.x >= xShip) shipParts.push(it);
+                const rowItems = items.filter(i => i.y >= currentRow.y - 4 && i.y < nextY - 4);
+
+                let descParts = [], colorsParts = [], brandParts = [];
+                let retailParts = [], channelParts = [], destParts = [], shipParts = [];
+
+                for (const it of rowItems) {
+                    if (it.str.trim() === currentRow.str.trim() && Math.abs(it.x - currentRow.x) < 10) continue;
+                    
+                    const txt = it.str.trim().toLowerCase();
+                    if (/^page/.test(txt) || /^of \d+/.test(txt) || /^form/.test(txt) || /^no:/.test(txt) || /^a\d{8}/.test(txt) || /^intertek/.test(txt) || /gap inc/.test(txt)) continue;
+
+                    if (it.x >= xDesc && it.x < xCol) descParts.push(it);
+                    else if (it.x >= xCol && it.x < xBrand) colorsParts.push(it);
+                    else if (it.x >= xBrand && it.x < xRetail) brandParts.push(it);
+                    else if (it.x >= xRetail && it.x < xChannel) retailParts.push(it);
+                    else if (it.x >= xChannel && it.x < xDest) channelParts.push(it);
+                    else if (it.x >= xDest && it.x < xShip) destParts.push(it);
+                    else if (it.x >= xShip) shipParts.push(it);
+                }
+
+                const sortFn = (a, b) => Math.abs(a.y - b.y) > 5 ? a.y - b.y : a.x - b.x;
+
+                const descText = descParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+                const colorsText = colorsParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+                const brandText = brandParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
+
+                const retailText = retailParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+                const channelText = channelParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+                const destText = destParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+                const shipText = shipParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
+
+                allNos.push(currentRow.str.trim());
+                if (descText) allDescs.push(descText);
+                if (colorsText) allColors.push(colorsText);
+                if (brandText) allBrands.push(brandText);
+                if (retailText) allRetails.push(retailText);
+                if (channelText) allChannels.push(channelText);
+                if (destText) allDests.push(destText);
+                if (shipText) allShips.push(shipText);
             }
-
-            const sortFn = (a, b) => Math.abs(a.y - b.y) > 5 ? a.y - b.y : a.x - b.x;
-
-            const descText = descParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
-            const colorsText = colorsParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
-            const brandText = brandParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ');
-
-            const retailText = retailParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
-            const channelText = channelParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
-            const destText = destParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
-            const shipText = shipParts.sort(sortFn).map(i => i.str.trim()).filter(s => s).join(' ').replace(/;/g, ', ');
-
-            allNos.push(currentRow.str.trim());
-            if (descText) allDescs.push(descText);
-            if (colorsText) allColors.push(colorsText);
-            if (brandText) allBrands.push(brandText);
-            if (retailText) allRetails.push(retailText);
-            if (channelText) allChannels.push(channelText);
-            if (destText) allDests.push(destText);
-            if (shipText) allShips.push(shipText);
         }
+
+        if (allNos.length === 0) return null;
 
         return {
             no: [...new Set(allNos)].join(', ') || '--',
@@ -1435,13 +1464,18 @@ function renderSpecialInstructions() {
 }
 
 function renderWashMethod() {
-    let text = pageTexts.join(' ').toUpperCase();
+    let rawText = pageTexts.join(' ').toUpperCase();
+    let text = rawText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z]/g, '');
+
     const el = document.getElementById('d-wash');
     let method = null;
-    if (/DO\s+NOT\s+DRY\s+CLEAN/i.test(text) || /MACHINE\s+WASH/i.test(text)) method = 'Machine Wash';
-    else if (/HAND\s+WASH/i.test(text)) method = 'Hand Wash';
-    else if (/DRY\s+CLEAN\s+ONLY/i.test(text)) method = 'Dry Clean Only';
-    else if (/DRY\s+CLEAN/i.test(text) && !/DO\s+NOT\s+DRY\s+CLEAN/i.test(text)) method = 'Dry Clean';
+    
+    if (text.includes('MACHINEWASH')) method = 'Machine Wash';
+    else if (text.includes('HANDWASH')) method = 'Hand Wash';
+    else if (text.includes('DRYCLEANONLY')) method = 'Dry Clean Only';
+    else if (text.includes('DRYCLEAN') && !text.includes('DONOTDRYCLEAN')) method = 'Dry Clean';
+    else if (text.includes('PROFESSIONALWETCLEAN')) method = 'Wet Clean';
+    else if (text.includes('GARMENTWASH')) method = 'Garment Wash';
 
     if (method) { el.textContent = method; el.className = 'det-val found'; }
     else { el.textContent = '—'; el.className = 'det-val empty'; }
