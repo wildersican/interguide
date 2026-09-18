@@ -598,11 +598,19 @@ footer {
                 <div class="card-header" style="align-items: flex-start;">
                     <div style="margin-top: 5px;"><i class="fas fa-chart-line title-icon"></i> Tracker (Rejections)</div>
                     <div style="display:flex; flex-direction: column; align-items: flex-end; gap:5px;">
-                        <button id="trackerConnectBtn" class="btn-clear" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block;">
-                            <i class="fas fa-file-excel"></i> Load Excel Data
-                        </button>
-                        <div id="trackerStatusContainer" style="color: #64748b; font-size: 0.75rem; text-align: right; max-width: 400px;">
-                            <span id="trackerStatusText" style="margin:0;">No Excel file connected.</span>
+                        <div style="display:flex; align-items: center; gap: 10px;">
+                            <button class="btn-clear" onclick="if(confirm('Reset all sent statuses?')) { localStorage.removeItem('interguide_sent_ids'); location.reload(); }" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block; background: #f87171; color: white;" title="Clear Sent Memory">
+                                <i class="fas fa-broom"></i> Reset Cache
+                            </button>
+                            <button id="trackerHistoryBtn" class="btn-clear" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block; background: #64748b; color: white;">
+                                <i class="fas fa-history"></i> History
+                            </button>
+                            <button id="trackerConnectBtn" class="btn-clear" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block; background: #0f172a; color: white;">
+                                <i class="fas fa-sync-alt"></i> Sync Live Data
+                            </button>
+                        </div>
+                        <div id="trackerStatusContainer" style="color: #64748b; font-size: 0.75rem; text-align: right; max-width: 400px; margin-top: 5px;">
+                            <span id="trackerStatusText" style="margin:0;">Not synchronized yet.</span>
                         </div>
                     </div>
                 </div>
@@ -624,7 +632,9 @@ footer {
 </main>
 
 <footer>
-    <div class="footer-left"><i class="fab fa-invision"></i> <span style="color:#ccc;">© 2026 INTERGUIDE | By WilderSican</span></div>
+    <div class="footer-left">
+        <i class="fab fa-invision"></i> <span style="color:#ccc;">© 2026 INTERGUIDE | By WilderSican</span>
+    </div>
 </footer>
 
 <div class="modal-overlay" id="modalPreview" onclick="cerrarModal()" role="dialog" aria-modal="true" aria-label="Expanded PDF view">
@@ -3709,52 +3719,150 @@ if (mergeBtnUnify) {
 
 // === Fallback for file:/// context ===
 const trackerConnectBtn = document.getElementById('trackerConnectBtn');
+const trackerHistoryBtn = document.getElementById('trackerHistoryBtn');
 const trackerStatusText = document.getElementById('trackerStatusText');
 const trackerDataContainer = document.getElementById('trackerDataContainer');
 const trackerEmailList = document.getElementById('trackerEmailList');
 
-// Crear input de archivo oculto
-const trackerFileInput = document.createElement('input');
-trackerFileInput.type = 'file';
-trackerFileInput.accept = '.xlsx, .xls';
-trackerFileInput.style.display = 'none';
-document.body.appendChild(trackerFileInput);
+// --- HISTORY LOGIC ---
+if (trackerHistoryBtn) {
+    trackerHistoryBtn.addEventListener('click', async () => {
+        try {
+            const originalText = trackerHistoryBtn.innerHTML;
+            trackerHistoryBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+            trackerHistoryBtn.disabled = true;
 
+            const histUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a0b7779f3b8e432284e53a891906ce91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=flIpC8g1lSysL1qxyk4r2A-ufbTLy8FGmhrsIzydteY";
+            
+            const response = await fetch(histUrl, { method: 'GET' });
+            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+            
+            const historyData = await response.json();
+            
+            // Render modal
+            const ov = document.getElementById('modalPreview');
+            const mc = document.getElementById('modalContent');
+            
+            let tableHtml = `
+            <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 1000px; margin: auto; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                    <h3 style="margin:0; color:#1a1a1a; display:flex; align-items:center; gap: 10px;">
+                        <i class="fas fa-history"></i> Email History Log
+                        <span style="font-size:0.8rem; font-weight:normal; color:#64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 10px;">${historyData.length} records</span>
+                    </h3>
+                    <div style="position: relative; width: 300px;">
+                        <i class="fas fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="historySearchInput" placeholder="Search Form IDs, Vendors, etc..." style="width: 100%; padding: 8px 10px 8px 32px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; transition: border-color 0.2s;" oninput="filterHistoryTable()">
+                    </div>
+                </div>
+                <div style="overflow-y: auto; flex: 1;">
+                    <table id="historyTable" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 10;">
+                            <tr>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Date</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Vendor</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Form IDs</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Recipients</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Iterate in reverse to show newest first (assuming appended at bottom)
+            for(let i = historyData.length - 1; i >= 0; i--) {
+                const row = historyData[i];
+                
+                // Formatear Form IDs
+                const rawForms = row['Form_IDs'] || '';
+                const formsHtml = rawForms.split(/[,;]+/).map(s => s.trim()).filter(s=>s)
+                    .map(s => `<div style="background:#fffbeb; border:1px solid #fde68a; padding:2px 6px; border-radius:4px; margin-bottom:4px; display:inline-block; margin-right:4px; color:#b45309;">${s}</div>`).join('');
+                
+                // Formatear Correos
+                const rawRecips = row['Recipients'] || '';
+                const recipsHtml = rawRecips.split(/[,;]+/).map(s => s.trim()).filter(s=>s)
+                    .map(s => `<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:3px 6px; border-radius:4px; margin-bottom:4px; color:#475569; display:block;">${s}</div>`).join('');
+
+                tableHtml += `
+                    <tr class="history-row" style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 10px; white-space: nowrap; vertical-align: top;">${row['Date'] || ''}</td>
+                        <td style="padding: 10px; font-weight: bold; color: #334155; vertical-align: top;">${row['Vendor'] || ''}</td>
+                        <td style="padding: 10px; vertical-align: top;">${formsHtml}</td>
+                        <td style="padding: 10px; font-size: 0.75rem; vertical-align: top;">${recipsHtml}</td>
+                        <td style="padding: 10px; vertical-align: top;"><span style="background:#dcfce3; color:#166534; padding:3px 8px; border-radius:12px; font-size:0.75rem; white-space:nowrap;">${row['Status'] || ''}</span></td>
+                    </tr>
+                `;
+            }
+            
+            tableHtml += `</tbody></table></div></div>`;
+            mc.innerHTML = tableHtml;
+            ov.classList.add('show');
+            
+            trackerHistoryBtn.innerHTML = originalText;
+            trackerHistoryBtn.disabled = false;
+
+        } catch (e) {
+            console.error(e);
+            alert("Error fetching history: " + e.message);
+            trackerHistoryBtn.innerHTML = `<i class="fas fa-history"></i> History`;
+            trackerHistoryBtn.disabled = false;
+        }
+    });
+}
+// -----------------------
+
+// -----------------------
+
+window.filterHistoryTable = function() {
+    const input = document.getElementById('historySearchInput');
+    if (!input) return;
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('historyTable');
+    if (!table) return;
+    const trs = table.getElementsByClassName('history-row');
+    
+    for (let i = 0; i < trs.length; i++) {
+        const tr = trs[i];
+        if (tr.textContent.toLowerCase().indexOf(filter) > -1) {
+            tr.style.display = "";
+        } else {
+            tr.style.display = "none";
+        }
+    }
+}
+
+// Conectar a Power Automate para obtener Excel vivo
 if (trackerConnectBtn) {
-    trackerConnectBtn.addEventListener('click', () => {
-        trackerFileInput.click();
+    trackerConnectBtn.addEventListener('click', async () => {
+        try {
+            trackerStatusText.textContent = `Syncing with SharePoint...`;
+            trackerConnectBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Syncing...`;
+            trackerConnectBtn.disabled = true;
+
+            const getUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/47139f85bc0d4d25b5bd6dd149d919bb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BlSDt2VA5pOCcc-C_2c5hjAOBvGFxteD70y-umGQKzk";
+            
+            const response = await fetch(getUrl, { method: 'GET' });
+            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+            
+            const jsonData = await response.json();
+            
+            trackerStatusText.textContent = `Live Data Synced! (Records: ${jsonData.length})`;
+            
+            procesarDataTrackerCloud(jsonData);
+
+        } catch (e) {
+            console.error(e);
+            trackerStatusText.textContent = "Error syncing: " + e.message;
+        } finally {
+            trackerConnectBtn.innerHTML = `<i class="fas fa-sync-alt"></i> Sync Live Data`;
+            trackerConnectBtn.disabled = false;
+        }
     });
 }
 
-trackerFileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    // Mostramos que esta cargando
-    trackerStatusText.textContent = `Processing file: ${file.name}...`;
-    
-    // Despachamos el archivo directamente a la funcion (ya no usamos handles)
-    await procesarExcelTrackerLocal(file);
-    
-    // Resetear el input por si suben el mismo archivo tras editarlo
-    trackerFileInput.value = '';
-});
-
-async function procesarExcelTrackerLocal(file) {
+function procesarDataTrackerCloud(jsonData) {
     try {
-        trackerStatusText.textContent = `File loaded: ${file.name} (Last modified: ${new Date(file.lastModified).toLocaleTimeString()})`;
-        
-        const arrayBuffer = await file.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        
-        // Asumimos que es la primera hoja
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        
-        // Convertimos a JSON. Usamos header: 1 para buscar donde estan las cabeceras si no estan en la fila 1
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-        
-        if (jsonData.length === 0) {
+        if (!jsonData || jsonData.length === 0) {
             trackerDataContainer.style.display = 'none';
             trackerStatusText.textContent += " - Error: Excel is empty.";
             return;
