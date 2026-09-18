@@ -609,7 +609,10 @@ footer {
                 <div class="card-content" style="padding: 20px;">
                     
                     <div id="trackerDataContainer" style="display:none;">
-                        <h4 style="margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; color:#1a1a1a;">Pending Rejection Emails</h4>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                            <h4 style="margin:0; color:#1a1a1a;">Pending Rejection Emails</h4>
+                            <button id="sendAllPendingBtn" style="border:none; background:#0f172a; color:#fff; padding:6px 15px; border-radius:6px; font-size:0.85rem; font-weight:600; cursor:pointer; display:none;"><i class="fas fa-paper-plane"></i> Send All Pending</button>
+                        </div>
                         <div id="trackerEmailList" style="display:flex; flex-direction: column; gap: 15px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
                             <!-- Mails will be generated here -->
                         </div>
@@ -3828,6 +3831,10 @@ function renderizarEmailsTracker(groupedData) {
     
     // Leer IDs que ya fueron enviados previamente
     const sentIds = JSON.parse(localStorage.getItem('interguide_sent_ids') || '[]');
+    let hasPending = false;
+
+    // Reset email list but keep container logic
+    trackerEmailList.innerHTML = '';
 
     keys.forEach(groupKey => {
         const group = groupedData[groupKey];
@@ -3896,33 +3903,73 @@ function renderizarEmailsTracker(groupedData) {
         // Determinar si todos los IDs de esta tarjeta ya fueron enviados
         const allSent = group.rejections.every(r => sentIds.includes(r.id));
 
-        const sendBtn = document.createElement('a');
-        sendBtn.href = mailtoLink;
-        sendBtn.target = "_blank"; // Forza a abrir en nueva pestana/ventana para no ser bloqueado
+        const sendBtn = document.createElement('button');
+        sendBtn.style.border = 'none';
         
         if (allSent) {
             sendBtn.innerHTML = `✅ Already Sent`;
-            sendBtn.style.cssText = 'background: #16a34a; color: #ffffff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; display: inline-block; opacity: 0.8;';
+            sendBtn.style.cssText = 'border: none; background: #16a34a; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; display: inline-block; opacity: 0.8;';
             card.style.opacity = '0.7'; // Atenuar la tarjeta un poco
         } else {
+            hasPending = true;
+            sendBtn.className = 'single-send-btn';
             sendBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Send Email`;
-            sendBtn.style.cssText = 'background: #ffc72c; color: #1a1a1a; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; display: inline-block;';
+            sendBtn.style.cssText = 'border: none; background: #ffc72c; color: #1a1a1a; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; display: inline-block; transition: background 0.2s;';
         }
 
-        // Marcar como enviado al darle clic
-        sendBtn.addEventListener('click', () => {
-            const currentSent = JSON.parse(localStorage.getItem('interguide_sent_ids') || '[]');
-            group.rejections.forEach(r => {
-                if (!currentSent.includes(r.id)) currentSent.push(r.id);
-            });
-            localStorage.setItem('interguide_sent_ids', JSON.stringify(currentSent));
+        // Marcar como enviado al darle clic y llamar a Power Automate
+        sendBtn.addEventListener('click', async () => {
+            if (sendBtn.disabled) return;
             
-            // Actualizar boton y tarjeta visualmente al instante
-            sendBtn.innerHTML = `✅ Sent`;
-            sendBtn.style.background = '#16a34a';
-            sendBtn.style.color = '#ffffff';
-            sendBtn.style.opacity = '0.8';
-            card.style.opacity = '0.7';
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending...`;
+            sendBtn.disabled = true;
+
+            const payload = {
+                vendor: group.vendor,
+                form_ids: group.rejections.map(r => r.id).join(', '),
+                reasons: group.rejections.map(r => r.reason).join(' | '),
+                recipients: emailStr,
+                subject: `Rejection Notice - ${group.vendor}`,
+                body_html: `Hello,<br><br>The following forms have been rejected for the reasons detailed below:<br><br>${htmlList}<br>Please address these issues and resubmit.<br><br>Thank you.`
+            };
+
+            // Asegurarnos de usar la URL completa proporcionada por el usuario
+            let paUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cc33da0a39ab46b3bbc345df4e683595/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=UXXVYbrqAVHjzR-bLgOe1vtHzjdX4z9mXP6xScF2EQY";
+            
+            // Si la URL que nos dio le falta el token de seguridad (&sig=), intentaremos agregar un comodin o fallara y le pediremos la completa.
+
+            try {
+                const response = await fetch(paUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok || response.type === 'opaque') {
+                    // Registrar localmente para que cambie de color
+                    const currentSent = JSON.parse(localStorage.getItem('interguide_sent_ids') || '[]');
+                    group.rejections.forEach(r => {
+                        if (!currentSent.includes(r.id)) currentSent.push(r.id);
+                    });
+                    localStorage.setItem('interguide_sent_ids', JSON.stringify(currentSent));
+                    
+                    // Actualizar boton y tarjeta visualmente al instante
+                    sendBtn.innerHTML = `✅ Sent`;
+                    sendBtn.style.background = '#16a34a';
+                    sendBtn.style.color = '#ffffff';
+                    sendBtn.style.opacity = '0.8';
+                    card.style.opacity = '0.7';
+                } else {
+                    const errText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errText}`);
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Hubo un error contactando al robot de Power Automate.\n\n" + e.message);
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
+            }
         });
 
         header.appendChild(titleDiv);
@@ -3936,6 +3983,32 @@ function renderizarEmailsTracker(groupedData) {
 
         trackerEmailList.appendChild(card);
     });
+
+    const sendAllBtn = document.getElementById('sendAllPendingBtn');
+    if (sendAllBtn) {
+        if (hasPending) {
+            sendAllBtn.style.display = 'block';
+            sendAllBtn.onclick = async () => {
+                const btns = document.querySelectorAll('.single-send-btn:not([disabled])');
+                if(btns.length === 0) return;
+                
+                if(!confirm(`Are you sure you want to send ${btns.length} pending emails?\n\nThis will trigger Power Automate for each one.`)) return;
+                
+                sendAllBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending All...`;
+                sendAllBtn.disabled = true;
+                
+                for (let btn of btns) {
+                    btn.click(); // This triggers the individual fetch logic
+                    await new Promise(r => setTimeout(r, 1500)); // 1.5s delay to avoid hammering PA
+                }
+                
+                sendAllBtn.innerHTML = `<i class="fas fa-check"></i> All Sent`;
+                setTimeout(() => { sendAllBtn.style.display = 'none'; }, 2000);
+            };
+        } else {
+            sendAllBtn.style.display = 'none';
+        }
+    }
 }
 
 // (La carga ahora es estrictamente por el boton de Connect Excel)
