@@ -666,9 +666,11 @@ let pendingTab = null;
 let currentUser = "Desconocido";
 
 const userPasswords = {
-    "18392750": "Wilder",
+    "18392750": "Wilder Sican",
     "DavidS2419": "David Salguero",
-    "JimM5837": "Jim Mejia"
+    "JimM5837": "Jim Mejia",
+    "CarmenN8064": "Carmen Navas",
+    "CesarP3175": "Cesar Pardo"
 };
 
 function switchMainTab(tab) {
@@ -3745,7 +3747,8 @@ if (trackerHistoryBtn) {
             const response = await fetch(histUrl, { method: 'GET' });
             if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
             
-            const historyData = await response.json();
+              const rawHistoryData = await response.json();
+              const historyData = rawHistoryData.filter(r => (r["FORM ID"] && r["FORM ID"].toString().trim() !== "") || (r["STATUS"] && r["STATUS"].toString().trim() !== "") || (r["VENDOR"] && r["VENDOR"].toString().trim() !== "") || (r["USER"] && r["USER"].toString().trim() !== ""));
             
             // Render modal
             const ov = document.getElementById('modalPreview');
@@ -3755,7 +3758,7 @@ if (trackerHistoryBtn) {
             <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 1000px; margin: auto; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
                     <h3 style="margin:0; color:#1a1a1a; display:flex; align-items:center; gap: 10px;">
-                        <i class="fas fa-history"></i> Email History Log
+                        <i class="fas fa-history"></i> Story Log
                         <span style="font-size:0.8rem; font-weight:normal; color:#64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 10px;">${historyData.length} records</span>
                     </h3>
                     <div style="position: relative; width: 300px;">
@@ -4085,7 +4088,7 @@ function renderizarEmailsTracker(groupedData) {
             };
             
             btnGroup.appendChild(createStatusBtn('Resuelto', '#16a34a', 'fa-check', 'RESUELTO'));
-            btnGroup.appendChild(createStatusBtn('A Verificar', '#eab308', 'fa-hourglass-half', 'A VERIFICAR'));
+            // btnGroup.appendChild(createStatusBtn('A Verificar', '#eab308', 'fa-hourglass-half', 'A VERIFICAR'));
             btnGroup.appendChild(createStatusBtn('No Proceder', '#dc2626', 'fa-ban', 'NO PROCEDER'));
             
             itemDiv.appendChild(textSpan);
@@ -4123,6 +4126,9 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
+
+
 
 
 
