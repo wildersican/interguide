@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <!-- Importamos la librerÃƒÂ­a pdf-lib desde CDN -->
+    <!-- Importamos la librería pdf-lib desde CDN -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <!-- Importamos SheetJS para procesar archivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -24,7 +24,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
             align-items: center; 
             padding: 10px 30px; 
             height: 60px; 
-            /* Ã°Å¸â€˜â€¡ CÃƒâ€œDIGO NUEVO Ã°Å¸â€˜â€¡ */
+            /* 👇 CÓDIGO NUEVO 👇 */
             position: fixed;
             top: 0;
             left: 0;
@@ -43,7 +43,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
             height: 40px; 
             font-size: 13px; 
             font-weight: 600; 
-            /* Ã°Å¸â€˜â€¡ CÃƒâ€œDIGO NUEVO Ã°Å¸â€˜â€¡ */
+            /* 👇 CÓDIGO NUEVO 👇 */
             position: fixed;
             top: 60px; /* Se ancla justo debajo de los 60px de la barra amarilla */
             left: 0;
@@ -57,7 +57,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
 
         main { 
             flex: 1; 
-            /* Ã°Å¸â€˜â€¡ Modificamos el padding: 130px arriba, 50px derecha, 30px abajo, 50px izquierda Ã°Å¸â€˜â€¡ */
+            /* 👇 Modificamos el padding: 130px arriba, 50px derecha, 30px abajo, 50px izquierda 👇 */
             padding: 130px 50px 30px 50px; 
             display: flex; 
             flex-direction: column; 
@@ -119,7 +119,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
         .lowconf-tag { font-size: 10px; font-weight: 700; color: #8a6d00; border: 1px solid #ffe082; background: #fff8e1; border-radius: 8px; padding: 0 5px; margin-left: 5px; vertical-align: middle; }
 
         .check-pill { display: inline-block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
-        .check-pill.fail-pill { background: #ffebee; color: #c62828; border-color: #ef9a9a; }
+        if (status === 'FAIL') return '<span class="check-pill fail-pill">❌ FAIL</span>';
         .check-pill.data-pill { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
         .check-pill.na-pill { background: #f5f5f5; color: #616161; border-color: #e0e0e0; }
         .cond-alert { background: #fff3cd; border: 1px solid #ffe082; border-radius: 4px; padding: 6px 10px; font-size: 12px; color: #7b5800; margin-top: 4px; }
@@ -145,7 +145,7 @@ footer {
             align-items: center; 
             padding: 15px 30px; 
             font-size: 12px; 
-            /* Ã°Å¸â€˜â€¡ CÃƒâ€œDIGO NUEVO PARA FIJARLO Ã°Å¸â€˜â€¡ */
+            /* 👇 CÓDIGO NUEVO PARA FIJARLO 👇 */
             position: fixed; 
             bottom: 0; 
             left: 0;
@@ -330,14 +330,14 @@ footer {
 <header class="top-bar">
     <div class="logo">INTERGUIDE <span>2.0</span></div>
     <div class="top-links">
-        <!-- Ã°Å¸â€œÂ§ BOTÃƒâ€œN DE CONTACTO -->
+        <!-- 📧 BOTÓN DE CONTACTO -->
         <a href="mailto:wilder.sican@intertek.com" style="text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer;">
             <i class="far fa-envelope"></i> Contact Us
         </a>
     </div>
 </header>
 <nav class="sub-nav" role="tablist" aria-label="Sections">
-    <div class="nav-tab active" onclick="switchMainTab('etsrf')">ETRF</div>
+    <div class="nav-tab active" onclick="switchMainTab('etrf')">ETRF</div>
     <div class="nav-tab" onclick="switchMainTab('prevs')">PREVS</div>
     <div class="nav-tab" onclick="switchMainTab('unifying')">UNIFYING</div>
     <div class="nav-tab" onclick="switchMainTab('tracker')">TRACKER</div>
@@ -360,10 +360,10 @@ footer {
                     <div class="inline-alert" id="alertaEtrf" role="alert"></div>
                     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-                    <!-- Ã°Å¸Â§Âª AUDITORÃƒÂA PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
+                    <!-- 🧪 AUDITORÍA PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
                     <div style="margin: 15px 0; padding: 10px; background: #fdfbf7; border: 1px solid #e0dcd3; border-left: 4px solid #d32f2f; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #b71c1c; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                            <span>Ã°Å¸Â§Âª PFAS Audit (Styles & Version)</span>
+                            <span>🧪 PFAS Audit (Styles & Version)</span>
                             <span style="font-size: 10px; background: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 3px; font-weight: normal;">Gap Inc.</span>
                         </div>
                         
@@ -392,13 +392,13 @@ footer {
                         <input type="text" id="campoBusqueda" placeholder="Search in text..." oninput="buscarEnTexto()">
                         <span class="match-info" id="infoCoincidencias" aria-live="polite"></span>
                     </div>
-                    <!-- Ã°Å¸Å¸Â¢ CORREGIDO: Tipeo <Sdiv cambiado por <div para solucionar ruptura estructural -->
+                    <!-- 🟢 CORREGIDO: Tipeo <Sdiv cambiado por <div para solucionar ruptura estructural -->
                     <div id="resultados" aria-live="polite">
                         <div class="pdf-pages" id="pdfPages"><p style="color:#767676;text-align:center;margin-top:40px;font-size:13px;">Select a ETRF to begin</p></div>
                         <div class="pdf-text-view" id="pdfTextView"></div>
                     </div>
                     <div class="zoom-hint" id="zoomHint" style="display:none;">Click on a page to zoom in</div>
-                    <button class="debug-toggle" onclick="toggleDebug()">Ã°Å¸â€Â§ Debug</button>
+                    <button class="debug-toggle" onclick="toggleDebug()">🔧 Debug</button>
                     <div id="debug-panel"></div>
                 </div>
             </div>
@@ -460,7 +460,7 @@ footer {
                         <div class="det-row" id="row-prod-char" style="display:none;"><span class="det-label">Prod. Characteristics</span><span class="det-val" id="d-prod-char"></span></div>
 
                         <div class="det-section"><i class="fas fa-file-signature"></i>PFAS Certification</div>
-                        <div id="d-declarations-block"><em style="color:#767676;font-size:12px;">Ã¢â‚¬â€</em></div>
+                        <div id="d-declarations-block"><em style="color:#767676;font-size:12px;">—</em></div>
                     </div>
                 </div>
             </div>
@@ -479,7 +479,7 @@ footer {
                         <span style="font-weight: 700; font-size: 13px; color: #333;">Trim Certifier Test Report</span>
                     </div>
                     <div id="trim-report-body">
-                        <em style="color:#767676; font-size:12px; font-style: italic;">Ã¢â‚¬â€ Waiting for ETRF Ã¢â‚¬â€</em>
+                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
                     </div>
                 </div>
 
@@ -489,7 +489,7 @@ footer {
                         <span style="font-weight: 700; font-size: 13px; color: #333;">Fabric Test Report</span>
                     </div>
                     <div id="fabric-report-body">
-                        <em style="color:#767676; font-size:12px; font-style: italic;">Ã¢â‚¬â€ Waiting for ETRF Ã¢â‚¬â€</em>
+                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
                     </div>
                 </div>
             </div>
@@ -526,7 +526,7 @@ footer {
                         <div class="pdf-text-view" id="pdfTextView-prev"></div>
                     </div>
                     <div class="zoom-hint" id="zoomHint-prev" style="display:none;">Click on a page to zoom in</div>
-                    <button class="debug-toggle" onclick="toggleDebugPrev()">Ã°Å¸â€Â§ Debug</button>
+                    <button class="debug-toggle" onclick="toggleDebugPrev()">🔧 Debug</button>
                     <div id="debug-panel-prev"></div>
                 </div>
             </div>
@@ -550,7 +550,7 @@ footer {
                         <div class="det-row"><span class="det-label">Date Out</span><span class="det-val" id="d-prev-date-out"></span></div>
 
                         <div class="det-section" style="margin-top:15px;"><i class="fas fa-flask"></i>PSR Test Results (RESULT SUMMARY)</div>
-                        <div id="d-prev-tests-block"><em style="color:#767676;font-size:12px;">Ã¢â‚¬â€</em></div>
+                        <div id="d-prev-tests-block"><em style="color:#767676;font-size:12px;">—</em></div>
                     </div>
                 </div>
             </div>
@@ -582,7 +582,7 @@ footer {
                         <ul class="file-list" id="fileListUnify"></ul>
                     </div>
 
-                    <!-- BotÃƒÂ³n y Estado -->
+                    <!-- Botón y Estado -->
                     <button class="btn-unify" id="mergeBtnUnify" disabled>Merge and Download PDF</button>
                     <button class="btn-clear" id="clearBtnUnify">Clear All Files</button>
                     <div id="unifyStatus"></div>
@@ -599,9 +599,6 @@ footer {
                     <div style="margin-top: 5px;"><i class="fas fa-chart-line title-icon"></i> Tracker (Rejections)</div>
                     <div style="display:flex; flex-direction: column; align-items: flex-end; gap:5px;">
                         <div style="display:flex; align-items: center; gap: 10px;">
-                            <button class="btn-clear" onclick="if(confirm('Reset all sent statuses?')) { localStorage.removeItem('interguide_sent_ids'); location.reload(); }" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block; background: #f87171; color: white;" title="Clear Sent Memory">
-                                <i class="fas fa-broom"></i> Reset Cache
-                            </button>
                             <button id="trackerHistoryBtn" class="btn-clear" style="padding: 5px 15px; margin: 0; font-size: 0.85rem; display: block; background: #64748b; color: white;">
                                 <i class="fas fa-history"></i> History
                             </button>
@@ -636,7 +633,7 @@ footer {
 
 <footer>
     <div class="footer-left">
-        <i class="fab fa-invision"></i> <span style="color:#ccc;">Ã‚Â© 2026 INTERGUIDE | By WilderSican</span>
+        <i class="fab fa-invision"></i> <span style="color:#ccc;">© 2026 INTERGUIDE | By WilderSican</span>
     </div>
 </footer>
 
@@ -666,6 +663,13 @@ footer {
 ============================================================================ */
 let trackerUnlocked = false;
 let pendingTab = null;
+let currentUser = "Desconocido";
+
+const userPasswords = {
+    "18392750": "Wilder",
+    "DavidS2419": "David Salguero",
+    "JimM5837": "Jim Mejia"
+};
 
 function switchMainTab(tab) {
     if (tab === 'tracker' && !trackerUnlocked) {
@@ -705,8 +709,9 @@ function executeTabSwitch(tab) {
 
 function submitTrackerPassword() {
     const pwd = document.getElementById('trackerPasswordInput').value;
-    if (pwd === "18392750") {
+    if (userPasswords[pwd]) {
         trackerUnlocked = true;
+        currentUser = userPasswords[pwd];
         document.getElementById('passwordModal').style.display = 'none';
         if (pendingTab) {
             executeTabSwitch(pendingTab);
@@ -749,18 +754,18 @@ function esc(t) {
 
 function setVal(id, val, lowConfidence) {
     const el = document.getElementById(id); if (!el) return;
-    if (val && val !== '--' && val !== 'Ã¢â‚¬â€') {
+    if (val && val !== '--' && val !== '—') {
         el.textContent = val;
         el.className = lowConfidence ? 'det-val lowconf' : 'det-val found';
         if (lowConfidence) {
             const tag = document.createElement('span');
             tag.className = 'lowconf-tag';
             tag.title = 'Low confidence detection: verify against original PDF';
-            tag.textContent = 'Ã¢â€°Ë†';
+            tag.textContent = '≈';
             el.appendChild(tag);
         }
     } else {
-        el.textContent = 'Ã¢â‚¬â€'; el.className = 'det-val empty';
+        el.textContent = '—'; el.className = 'det-val empty';
     }
 }
 
@@ -914,7 +919,7 @@ async function renderizarPaginas(pdfDoc, containerId, onClickPagina, onProgreso)
         const cv = document.createElement('canvas');
         cv.width = vp.width; cv.height = vp.height;
         cv.style.cssText = 'display:block;margin:0 auto 10px;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;';
-        cv.title = `Page ${i} Ã¢â‚¬â€ click to zoom in`;
+        cv.title = `Page ${i} — click to zoom in`;
         cv.setAttribute('role', 'button');
         cv.setAttribute('aria-label', `Zoom in page ${i} of ${pdfDoc.numPages}`);
         cv.onclick = onClickPagina;
@@ -1146,7 +1151,7 @@ async function extractAll(fileName) {
         let rdNumVal = extractRDNumber();
         if (!rdNumVal && isFabric) {
             const styleVal = document.getElementById('d-style-no').textContent;
-            if (styleVal && styleVal !== '--' && styleVal !== 'Ã¢â‚¬â€') rdNumVal = styleVal;
+            if (styleVal && styleVal !== '--' && styleVal !== '—') rdNumVal = styleVal;
         }
         if (isFabric || rdNumVal) {
             document.getElementById('row-rd-num').style.display = '';
@@ -1192,7 +1197,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
         const el = document.getElementById(id);
         if (!el) return null;
         const txt = el.textContent.trim();
-        return (txt === '--' || txt === 'Ã¢â‚¬â€' || txt === '') ? null : txt;
+        return (txt === '--' || txt === '—' || txt === '') ? null : txt;
     };
 
     const testStatus = (getVal('d-test-status') || '').toLowerCase();
@@ -1210,16 +1215,16 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
     if (!sourcing) {
         alerts.push('MISSING <strong>Sourcing Office</strong>');
     } else {
-        // Ã°Å¸â€ºÂ¡Ã¯Â¸Â LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
+        // 🛡️ LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
         const validSourcingRegex = /^\s*(?:GIS\s*[\-\._]*\s*)?(HONG\s*KONG|HK|SHANGAI|SHANGHAI|SH|CENTRAL\s*AMERICA?|CA|AMERICA?|VIETNAM|VN)\s*$/i;
         
         if (validSourcingRegex.test(sourcing)) {
-            // Es 100% vÃƒÂ¡lida (1 sola oficina). Lo dejamos pasar limpiecito.
+            // Es 100% válida (1 sola oficina). Lo dejamos pasar limpiecito.
         } else if ((sourcing.includes(',') || sourcing.includes(';') || sourcing.includes('&')) && /GIS/i.test(sourcing)) {
-            // Si tiene coma/separador Y ademÃƒÂ¡s menciona la palabra "GIS", asumimos que intentaron poner 2 oficinas a la vez
+            // Si tiene coma/separador Y además menciona la palabra "GIS", asumimos que intentaron poner 2 oficinas a la vez
             alerts.push('TWO (or multiple) <strong>Sourcing Office</strong> detected');
         } else {
-            // Si no pasÃƒÂ³ la lista blanca, y no son mÃƒÂºltiples GIS, es invÃƒÂ¡lida
+            // Si no pasó la lista blanca, y no son múltiples GIS, es inválida
             alerts.push('INVALID <strong>Sourcing Office</strong> (Detected: ' + sourcing + ')');
         }
     }
@@ -1234,7 +1239,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
     else if (chkCount > 1) alerts.push('TWO (or multiple) <strong>Test Types</strong> checked');
 
     const refNumEl = document.getElementById('d-ref-num');
-    if (refNumEl && (refNumEl.textContent === '--' || refNumEl.textContent === 'Ã¢â‚¬â€')) {
+    if (refNumEl && (refNumEl.textContent === '--' || refNumEl.textContent === '—')) {
         alerts.push('MISSING <strong>Reference Full Package Report Number</strong>');
     }
 
@@ -1506,7 +1511,7 @@ function extractRequestedTests() {
 
         rawItems = rawItems.filter(i => {
             const s = i.str.trim().toLowerCase();
-            if (/^[xvÃ¢Å“â€œÃ¢Å“â€Ã¢Ëœâ€˜Ã¢Ëœâ€™Ã¢â€“Â ÃƒÂ¾ooÃ¢ËœÂ]$/i.test(s)) return false;
+            if (/^[xv✓✔☑☒■þoo☐]$/i.test(s)) return false;
             if (s === 'claims' || s === 'special' || s === 'test') return false;
             if (s.includes('form no')) return false;
             if (s.includes('page ')) return false;
@@ -1532,8 +1537,8 @@ function extractRequestedTests() {
 
 function isBoxChecked(labelText) {
     const lowerLabel = labelText.toLowerCase();
-    const checkChars = ['ÃƒÂ¾', 'Ã¢Å“â€œ', 'Ã¢Å“â€', 'Ã¢Ëœâ€˜', 'Ã¢Ëœâ€™', 'Ã¢â€“Â ', '[x]', '(x)'];
-    const emptyChars = ['Ã¢ËœÂ', 'o ', 'O ', '[ ]'];
+    const checkChars = ['þ', '✓', '✔', '☑', '☒', '■', '[x]', '(x)'];
+    const emptyChars = ['☐', 'o ', 'O ', '[ ]'];
 
     for (let pageIdx = 0; pageIdx < pageTexts.length; pageIdx++) {
         const text = pageTexts[pageIdx] || '';
@@ -1564,7 +1569,7 @@ function isBoxChecked(labelText) {
         const nearby = items.find(i =>
             Math.abs(i.y - labelItem.y) < 8 &&
             i.x < labelItem.x && i.x > labelItem.x - 20 &&
-            /^[ÃƒÂ¾Ã¢Å“â€œÃ¢Å“â€Ã¢Ëœâ€˜Ã¢Ëœâ€™Ã¢â€“Â xX]$/.test(i.str.trim())
+            /^[þ✓✔☑☒■xX]$/.test(i.str.trim())
         );
         if (nearby) return true;
     }
@@ -1589,7 +1594,7 @@ function renderTestTypeBlock(full, additional, special, psr, perf, requestedTest
         html = '<p style="color:#767676;font-size:12px;padding:4px 0;">No checkbox marked detected.</p>';
     } else {
         for (const c of marked) {
-            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill">Ã¢Å“â€œ ${esc(c.label)}</span></span></div>`;
+            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill">✓ ${esc(c.label)}</span></span></div>`;
         }
     }
 
@@ -1790,7 +1795,7 @@ function renderWashMethod() {
     else if (text.includes('GARMENTWASH')) method = 'Garment Wash';
 
     if (method) { el.textContent = method; el.className = 'det-val found'; }
-    else { el.textContent = 'Ã¢â‚¬â€'; el.className = 'det-val empty'; }
+    else { el.textContent = '—'; el.className = 'det-val empty'; }
 }
 
 function renderDeclarations() {
@@ -1888,9 +1893,9 @@ function extractComplementaryReportsData() {
 
     let currentSection = 'OTHER';
 
-    // Ã°Å¸Å¸Â¢ PLAN 0: LA BASE DE DATOS HISTÃƒâ€œRICA COMPLETA UNIFICADA
+    // 🟢 PLAN 0: LA BASE DE DATOS HISTÓRICA COMPLETA UNIFICADA
     const knownReports = {
-        // Ã°Å¸ÂÂ·Ã¯Â¸Â T-LABEL / JOKER LABEL
+        // 🏷️ T-LABEL / JOKER LABEL
         "82260780111": "T-LABEL", 
         "(8226)078-0111": "T-LABEL",
         "TRM-0002134267": "JOKER LABEL", "(8225)318-0244": "JOKER LABEL",
@@ -1904,7 +1909,7 @@ function extractComplementaryReportsData() {
         "GUAT26008388": "JOKER LABEL",
         "GUAT25016153": "JOKER LABEL",
         
-        // Ã°Å¸â€Â¥ HEAT SEAL / HEAT TRANSFER
+        // 🔥 HEAT SEAL / HEAT TRANSFER
         "82260780113": "HEAT SEAL LABEL", 
         "(8226)078-0113": "HEAT SEAL LABEL",
         "TRM-0002137778": "HEAT TRANSFER", "(8225)330-0003": "HEAT TRANSFER",
@@ -1933,7 +1938,7 @@ function extractComplementaryReportsData() {
         "(7725)300-0012": "HEAT TRANSFER",
         "GUAT26003431": "HEAT TRANSFER",
         
-        // Ã°Å¸Â§Âº CARE LABEL
+        // 🧺 CARE LABEL
         "TRM-0002116687": "CARE LABEL", "KORT25054351": "CARE LABEL",
         "TRM-0002404929": "CARE LABEL", "GUAT26000399": "CARE LABEL",
         "TRM-0002521152": "CARE LABEL", "GUAT26003439": "CARE LABEL",
@@ -1944,7 +1949,7 @@ function extractComplementaryReportsData() {
         "(9625)322-0178": "CARE LABEL",
         "KORT26019945": "CARE LABEL",
         
-        // Ã°Å¸â€œÂ¡ RFID LABEL
+        // 📡 RFID LABEL
         "TRM-0002521145": "RFID LABEL", "GUAT26003408": "RFID LABEL",
         "TRM-0002019463": "RFID LABEL", "GUAT25016940": "RFID LABEL",
         "GUAT25031760": "RFID LABEL",
@@ -1957,7 +1962,7 @@ function extractComplementaryReportsData() {
         "(9625)333-0080": "RFID LABEL",
         "TRM-0002119728": "RFID LABEL", "GUAT25031282": "RFID LABEL",
         
-        // Ã°Å¸â€œÂ¦ MIXTOS Y OTROS
+        // 📦 MIXTOS Y OTROS
         "TRM-0002145940": "JOKER LABEL & CARE LABEL", "77253380006": "JOKER LABEL & CARE LABEL",
         "TRM-0002520854": "WOVEN LABEL", "GUAT26003442": "WOVEN LABEL",
         "(9625)235-0143": "MOBILON TAPE",
@@ -2071,7 +2076,7 @@ function extractComplementaryReportsData() {
                 currentSection = 'TRIM';
             } else if (/fabric\s*test|reports\s*for\s*fabrics/i.test(txt)) {
                 currentSection = 'FABRIC';
-            // Ã°Å¸â€ºâ€˜ ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
+            // 🛑 ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
             } else if (/\bcoc['s]*\b|attestation|compliance|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
                 if (item.x < 280) {
                     currentSection = 'OTHER';
@@ -2081,7 +2086,7 @@ function extractComplementaryReportsData() {
         }
         cocHeadersY.sort((a, b) => a - b);
 
-        // Ã°Å¸Å¡â‚¬ EXTRACCIÃƒâ€œN SEGURA: Permite nÃƒÂºmeros unidos a guiones bajos (ej. \d{10,12}_)
+        // 🚀 EXTRACCIÓN SEGURA: Permite números unidos a guiones bajos (ej. \d{10,12}_)
         let rawAnchors = items
             .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
             .sort((a, b) => a.y - b.y);
@@ -2140,7 +2145,7 @@ function extractComplementaryReportsData() {
             const rowItems = items.filter(it => it.y >= topLimitY && it.y <= bottomLimitY);
             const rowText = rowItems.map(it => it.str).join(' ');
             
-            // Ã°Å¸â€ºâ€˜ ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
+            // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
             if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum|telephone|phone|fax|vendor\s*attestation|form\s*no|page\s*\d+\s*of\s*\d+/i.test(rowText)) continue;
 
             const cellItems = items.filter(it => 
@@ -2155,7 +2160,7 @@ function extractComplementaryReportsData() {
                 .replace(/TRM\s*[-_]?\s*/ig, 'TRM-')
                 .replace(/(TRM-[A-Z0-9_]+)\s+(?=[A-Z0-9_])/ig, '$1'); 
 
-            // Ã°Å¸Å¡â‚¬ EXTRACCIÃƒâ€œN SEGURA: Captura el nÃƒÂºmero incluso si estÃƒÂ¡ pegado a un guion bajo `_`
+            // 🚀 EXTRACCIÓN SEGURA: Captura el número incluso si está pegado a un guion bajo `_`
             const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
             if (!match) continue;
             let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
@@ -2231,7 +2236,7 @@ function extractComplementaryReportsData() {
                     }
 
                     if (!hasValidColorWord && fileHasValidColorWord) {
-                        // El texto de la columna no tiene colores reales y parece basura impredecible, pero el archivo SÃƒÂ tiene un color real!
+                        // El texto de la columna no tiene colores reales y parece basura impredecible, pero el archivo SÍ tiene un color real!
                         baseColor = fileExtractedColor;
                     } else {
                         baseColor = colorText;
@@ -2721,7 +2726,7 @@ async function escanearTablaResultadosPSR() {
             encActivo = enc;
             tablaEncontrada = true;
         } else if (encActivo && pageIdx > 0 && pageIdx <= 3) {
-            // Asumir que la tabla continÃƒÂºa en la pÃƒÂ¡gina 2 o 3
+            // Asumir que la tabla continúa en la página 2 o 3
             enc = encActivo;
         } else {
             continue;
@@ -2770,7 +2775,7 @@ async function escanearTablaResultadosPSR() {
         for (const lin of lineasTexto) {
             lin.items.sort((a, b) => a.x - b.x);
             let textoLinea = lin.items.map(it => it.str.trim()).join(' ').replace(/\s{2,}/g, ' ').trim();
-            textoLinea = textoLinea.replace(/^[-Ã¢â‚¬â€œÃ¢â‚¬â€Ã¢â‚¬Â¢\*\.\s]+/, '').trim();
+            textoLinea = textoLinea.replace(/^[-–—•\*\.\s]+/, '').trim();
 
             if (textoLinea.length < 2) continue;
 
@@ -2795,7 +2800,7 @@ async function escanearTablaResultadosPSR() {
             const centroY = bloque.lineas.reduce((sum, l) => sum + l.y, 0) / bloque.lineas.length;
             let estado = null;
 
-            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && (/^[Ã¢Ëœâ€˜Ã¢Å“â€Ã¢Å“â€œÃƒÂ¾vVxXÃ¢â€“Â ]$/i.test(it.str.trim()) || /^(pass|fail|n\s*\/\s*a|na|not applicable|data)$/i.test(it.str.trim())));
+            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && (/^[☑✔✓þvVxX■]$/i.test(it.str.trim()) || /^(pass|fail|n\s*\/\s*a|na|not applicable|data)$/i.test(it.str.trim())));
             if (checkTexto) {
                 const txt = checkTexto.str.trim().toUpperCase();
                 if (/^(PASS|FAIL|DATA)$/.test(txt)) {
@@ -2838,7 +2843,7 @@ async function escanearTablaResultadosPSR() {
 function renderTablaResultadosPSR(filas) {
     const cont = document.getElementById('d-prev-tests-block');
     if (!filas || filas.length === 0) {
-        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">PSR results table (RESULT SUMMARY) not detected in this PDF. (Enable Ã°Å¸â€Â§ Debug for details)</span></div>';
+        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">PSR results table (RESULT SUMMARY) not detected in this PDF. (Enable 🔧 Debug for details)</span></div>';
         return;
     }
 
@@ -2859,8 +2864,8 @@ function renderTablaResultadosPSR(filas) {
     }
 
     const pillFor = (status) => {
-        if (status === 'PASS') return '<span class="check-pill">Ã¢Å“â€œ PASS</span>';
-        if (status === 'FAIL') return '<span class="check-pill fail-pill">Ã¢Å“â€” FAIL</span>';
+        if (status === 'PASS') return '<span class="check-pill">✓ PASS</span>';
+        if (status === 'FAIL') return '<span class="check-pill fail-pill">❌ FAIL</span>';
         if (status === 'DATA') return '<span class="check-pill data-pill">DATA</span>';
         if (status === 'UNKNOWN') return '<span class="check-pill" style="background:#e0e0e0; color:#555;">UNKNOWN</span>';
         return '<span class="check-pill na-pill">NA</span>';
@@ -3215,25 +3220,25 @@ async function procesarPDFPrev() {
         const matchDate = fullTextPrev.match(/(?:DATE\s*OUT|ISSUE\s*DATE|DATE|Report\s*Date)[\s:\-\.]*(\d{1,2}[\-\s\/]+[A-Za-z]{3}[\-\s\/]+\d{2,4}|[A-Za-z]{3}[\-\s\/]+\d{1,2}[,\-\s\/]+\d{2,4}|\d{1,2}[\-\/]\d{1,2}[\-\/]\d{2,4}|\d{4}[\-\/]\d{2}[\-\/]\d{2})/i);
         if (matchDate) dateOutPrev = matchDate[1].trim();
 
-        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-        // Ã°Å¸Å¡â‚¬ EL ENRUTADOR SECUENCIAL (A PRUEBA DE BALAS)
-        // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+        // ════════════════════════════════════════════════
+        // 🚀 EL ENRUTADOR SECUENCIAL (A PRUEBA DE BALAS)
+        // ════════════════════════════════════════════════
         let escaneo = { encontrada: false, filas: [] };
 
-        // 1Ã¯Â¸ÂÃ¢Æ’Â£ INTENTO 1: EscÃƒÂ¡ner A (Intertek EstÃƒÂ¡ndar - Checkboxes)
+        // 1️⃣ INTENTO 1: Escáner A (Intertek Estándar - Checkboxes)
         escaneo = await escanearTablaResultadosPSR();
 
-        // 2Ã¯Â¸ÂÃ¢Æ’Â£ INTENTO 2: EscÃƒÂ¡ner C (Bureau Veritas)
+        // 2️⃣ INTENTO 2: Escáner C (Bureau Veritas)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaBV();
         }
 
-        // 3Ã¯Â¸ÂÃ¢Æ’Â£ INTENTO 3: EscÃƒÂ¡ner B (Intertek Textual Antiguo)
+        // 3️⃣ INTENTO 3: Escáner B (Intertek Textual Antiguo)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaConclusions();
         }
 
-        // 4Ã¯Â¸ÂÃ¢Æ’Â£ INTENTO 4: EscÃƒÂ¡ner D (Matriz X - Fallback)
+        // 4️⃣ INTENTO 4: Escáner D (Matriz X - Fallback)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaMatrizX();
         }
@@ -3253,10 +3258,10 @@ async function procesarPDFPrev() {
             let etiquetasHTML = '';
             
             if (validadoHistorial.length > 0) {
-                etiquetasHTML += `<span style="font-size:10px; color:#2e7d32; background:#e8f5e9; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; margin-right:5px; border: 1px solid #c8e6c9;">Ã°Å¸â€”â€žÃ¯Â¸Â DB Match: ${validadoHistorial.join(', ')}</span>`;
+                etiquetasHTML += `<span style="font-size:10px; color:#2e7d32; background:#e8f5e9; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; margin-right:5px; border: 1px solid #c8e6c9;">✅ DB Match: ${validadoHistorial.join(', ')}</span>`;
             }
             if (pruebasLive.length > 0) {
-                etiquetasHTML += `<span style="font-size:10px; color:#0277bd; background:#e1f5fe; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; border: 1px solid #b3e5fc;">Ã°Å¸â€œâ€ž PDF Live: ${pruebasLive.join(', ')}</span>`;
+                etiquetasHTML += `<span style="font-size:10px; color:#0277bd; background:#e1f5fe; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; border: 1px solid #b3e5fc;">🌐 PDF Live: ${pruebasLive.join(', ')}</span>`;
             }
 
             refEl.innerHTML = `${reportNoPrev || 'N/A'} <br> ${etiquetasHTML}`;
@@ -3325,12 +3330,12 @@ async function extraerTextoHibrido(archivo) {
     tipoArchivoPfas = extension.toUpperCase();
 
     if (extension === 'pdf') {
-        console.log("Ã°Å¸â€œâ€ž Reading PFAS with PDF.js Engine...");
+        console.log("📄 Reading PFAS with PDF.js Engine...");
         const lectura = await leerPdf(archivo, true, false);
         return lectura.textoExtraido || lectura.pageTexts.join(' ');
         
     } else if (extension === 'docx' || extension === 'doc') {
-        console.log("Ã°Å¸â€œÂ Reading PFAS with Mammoth.js (Word) Engine...");
+        console.log("📝 Reading PFAS with Mammoth.js (Word) Engine...");
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -3362,7 +3367,7 @@ function verificarCoincidenciaEstilos(textoPfas) {
         alertaVersionHTML = `
             <div style="padding: 10px 12px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ff8f00; border-radius: 4px; margin-bottom: 8px; font-size: 12px; color: #795548; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <strong style="color: #e65100;">Ã¢Å¡Â Ã¯Â¸Â 2023 VERSION DETECTED:</strong> 
+                    <strong style="color: #e65100;">⚠️ 2023 VERSION DETECTED:</strong> 
                     <span>Policy requires version <b>2024</b> or newer. Request supplier update.</span>
                 </div>
             </div>
@@ -3389,7 +3394,7 @@ function verificarCoincidenciaEstilos(textoPfas) {
     if (estilosETRF.length === 0) {
         return alertaVersionHTML + `
             <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
-                Ã¢Å¡Â Ã¯Â¸Â <b>Missing ETRF report:</b> Please analyze an ETRF PDF above first to cross-reference styles automatically.
+                ⚠️ <b>Missing ETRF report:</b> Please analyze an ETRF PDF above first to cross-reference styles automatically.
             </div>
         `;
     }
@@ -3408,7 +3413,7 @@ function verificarCoincidenciaEstilos(textoPfas) {
         alertaEstilosHTML = `
             <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <strong style="color: #2e7d32; font-size: 13px;">Ã¢Å“â€ MATCHING STYLES (PASS)</strong> Ã¢â‚¬â€ 
+                    <strong style="color: #2e7d32; font-size: 13px;">✔ MATCHING STYLES (PASS)</strong> — 
                     <span>Styles successfully verified in PFAS declaration: <b>${coincidentes.join(', ')}</b></span>
                 </div>
             </div>
@@ -3417,11 +3422,11 @@ function verificarCoincidenciaEstilos(textoPfas) {
         alertaEstilosHTML = `
             <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
                 <div style="margin-bottom: 4px;">
-                    <strong style="color: #c62828; font-size: 13px;">Ã¢ÂÅ’ STYLE DISCREPANCY (FAIL)</strong> Ã¢â‚¬â€ 
+                    <strong style="color: #c62828; font-size: 13px;">❌ STYLE DISCREPANCY (FAIL)</strong> — 
                     <span>ETRF styles not found in PFAS document:</span>
                 </div>
-                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">Ã°Å¸Å¡Â¨ Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
-                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">Ã¢Å“â€ Matched: ${coincidentes.join(', ')}</div>` : ''}
+                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">🚨 Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
+                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">✔ Matched: ${coincidentes.join(', ')}</div>` : ''}
             </div>
         `;
     }
@@ -3462,7 +3467,7 @@ async function procesarArchivoPFAS() {
     } catch (error) {
         console.error("PFAS Module Error:", error);
         if (contenedor) {
-            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">Ã¢ÂÅ’ Error: ${error.message || error}</div>`;
+            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">❌ Error: ${error.message || error}</div>`;
         }
         if (progress) progress.style.width = '0%';
     } finally {
@@ -3735,7 +3740,7 @@ if (trackerHistoryBtn) {
             trackerHistoryBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
             trackerHistoryBtn.disabled = true;
 
-            const histUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a0b7779f3b8e432284e53a891906ce91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=flIpC8g1lSysL1qxyk4r2A-ufbTLy8FGmhrsIzydteY";
+            const histUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d7f902377674f92888e7ebb01d92eee/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BeYW7SOhLF68RtkNgWKSmU9uRfaip0jlsSlrQROzGDg";
             
             const response = await fetch(histUrl, { method: 'GET' });
             if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
@@ -3915,7 +3920,7 @@ function procesarDataTrackerCloud(jsonData) {
             if (!groupedData[groupKey]) {
                 groupedData[groupKey] = { vendor: vendor, emailStr: rawEmails, rejections: [] };
             }
-            groupedData[groupKey].rejections.push({ id: formId, reason: reason });
+            groupedData[groupKey].rejections.push({ id: formId, reason: reason, currentStatus: status });
         });
 
         renderizarEmailsTracker(groupedData);
@@ -3942,7 +3947,7 @@ function renderizarEmailsTracker(groupedData) {
     let totalFormIds = 0;
     keys.forEach(k => { totalFormIds += groupedData[k].rejections.length; });
     
-    trackerStatusText.innerHTML = `<span style="color:#16a34a; font-weight:bold;"><i class="fas fa-check-circle"></i> Live Data Synced!</span> &mdash; ${keys.length} Emails Pending (${totalFormIds} Form IDs)`;
+    trackerStatusText.innerHTML = `<span style="color:#16a34a; font-weight:bold;"><i class="fas fa-check-circle"></i> Live Data Synced!</span> &mdash; ${keys.length} Rejects Pending (${totalFormIds} Form IDs)`;
 
     // Leer IDs que ya fueron enviados previamente
     const sentIds = JSON.parse(localStorage.getItem('interguide_sent_ids') || '[]');
@@ -4018,16 +4023,15 @@ function renderizarEmailsTracker(groupedData) {
             
             const btnGroup = document.createElement('div');
             btnGroup.style.cssText = 'display: flex; gap: 6px;';
-            
-            const createStatusBtn = (label, color, icon, status) => {
+            const createStatusBtn = (label, color, icon, btnStatus) => {
                 const btn = document.createElement('button');
                 btn.innerHTML = `<i class="fas ${icon}"></i> ${label}`;
                 btn.style.cssText = `border:none; background:${color}; color:#fff; padding:6px 10px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer; transition: opacity 0.2s; white-space: nowrap;`;
                 
-                const currentSent = JSON.parse(localStorage.getItem('interguide_sent_ids') || '[]');
-                if (currentSent.includes(r.id)) {
+                // If it's already A VERIFICAR from Excel, lock this specific button
+                if (btnStatus === 'A VERIFICAR' && r.currentStatus && r.currentStatus.includes('A VERIFICAR')) {
+                    btn.style.background = '#94a3b8'; // gris
                     btn.disabled = true;
-                    btn.style.opacity = '0.5';
                     btn.style.cursor = 'not-allowed';
                 }
 
@@ -4039,7 +4043,7 @@ function renderizarEmailsTracker(groupedData) {
                     try {
                         const paUrl = "https://defaultcec3b02aea8c40eda66fa89023ac32.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/285e3c997ee14b48bb39bc6c47b7aaf0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=6VeXBwFPGnXa3K6qFdiL5FWmy8jlFCVcTOqyzsi_b28";
                         
-                        const today = new Date(); const d = String(today.getDate()).padStart(2, "0"); const m = String(today.getMonth() + 1).padStart(2, "0"); const y = today.getFullYear(); const h = String(today.getHours()).padStart(2, "0"); const min = String(today.getMinutes()).padStart(2, "0"); const timestamp = `${d}/${m}/${y} ${h}:${min}`; const payload = { formId: r.id, nuevoStatus: status, fechaCierre: `${d}/${m}/${y}`, timestamp: timestamp, user: "Pendiente", vendor: group.vendor };
+                        const today = new Date(); const d = String(today.getDate()).padStart(2, '0'); const m = String(today.getMonth() + 1).padStart(2, '0'); const y = today.getFullYear(); const h = String(today.getHours()).padStart(2, '0'); const min = String(today.getMinutes()).padStart(2, '0'); const timestamp = `${d}/${m}/${y} ${h}:${min}`; const payload = { formId: r.id, nuevoStatus: btnStatus, fechaCierre: `${d}/${m}/${y}`, timestamp: timestamp, user: currentUser, vendor: group.vendor };
                         
                         const response = await fetch(paUrl, {
                             method: 'POST',
@@ -4048,11 +4052,20 @@ function renderizarEmailsTracker(groupedData) {
                         });
 
                         if (response.ok || response.type === 'opaque') {
-                            if (!currentSent.includes(r.id)) {
-                                currentSent.push(r.id);
-                                localStorage.setItem('interguide_sent_ids', JSON.stringify(currentSent));
+                            if (btnStatus === 'A VERIFICAR') {
+                                // Just gray out this button, restore others
+                                btn.innerHTML = `<i class="fas ${icon}"></i> ${label}`;
+                                btn.style.background = '#94a3b8';
+                                btn.disabled = true;
+                                btn.style.cursor = 'not-allowed';
+                                r.currentStatus = 'A VERIFICAR'; // Update memory
+                                Array.from(btnGroup.querySelectorAll('button')).forEach(b => {
+                                    if(b !== btn) b.disabled = false;
+                                });
+                            } else {
+                                // Final status: hide all buttons
+                                btnGroup.innerHTML = `<span style="color:${color}; font-weight:bold; font-size:0.8rem; padding: 6px;"><i class="fas fa-check-circle"></i> ${btnStatus}</span>`;
                             }
-                            btnGroup.innerHTML = `<span style="color:${color}; font-weight:bold; font-size:0.8rem; padding: 6px;"><i class="fas fa-check-circle"></i> ${status}</span>`;
                         } else {
                             throw new Error('Error ' + response.status);
                         }
@@ -4061,6 +4074,11 @@ function renderizarEmailsTracker(groupedData) {
                         alert("Error actualizando Excel: " + e.message);
                         btn.innerHTML = originalText;
                         Array.from(btnGroup.querySelectorAll('button')).forEach(b => b.disabled = false);
+                        // Re-disable the middle one if it was A VERIFICAR
+                        if (r.currentStatus && r.currentStatus.includes('A VERIFICAR')) {
+                            const middleBtn = btnGroup.children[1];
+                            if(middleBtn) middleBtn.disabled = true;
+                        }
                     }
                 };
                 return btn;
@@ -4073,6 +4091,10 @@ function renderizarEmailsTracker(groupedData) {
             itemDiv.appendChild(textSpan);
             itemDiv.appendChild(btnGroup);
             listDiv.appendChild(itemDiv);
+
+
+            
+
         });
 
         card.appendChild(listDiv);
@@ -4101,6 +4123,30 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
