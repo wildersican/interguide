@@ -281,10 +281,15 @@ function openRejectionModal() {
             extractedEmails = [...new Set(extracted)];
         }
     }
-    if (extractedEmails.length > 0) {
-        document.getElementById('rej-emails').value = extractedEmails.join('; ');
+    // OVERRIDE PARA COFACO
+    if (rawVendor.toUpperCase().includes('COFACO')) {
+        document.getElementById('rej-emails').value = 'angela.ghiorzo@intertek.com; norma.lozano@intertek.com';
     } else {
-        document.getElementById('rej-emails').value = '';
+        if (extractedEmails.length > 0) {
+            document.getElementById('rej-emails').value = extractedEmails.join('; ');
+        } else {
+            document.getElementById('rej-emails').value = '';
+        }
     }
 
     // Init dropdown and open modal
