@@ -30,23 +30,23 @@ const motivosManuales = [
     "Construction No Coincide con Fabric Details / Construction - Does Not Match Fabric Details",
     "Fabric RD No Coincide con ETRF Física / Fabric RD - Does Not Match Physical ETRF",
     "Heat Transfer Color No Coincide / Heat Transfer Color - Does Not Match",
-    "Estilo ETRF Additional No Coincide con Previo Full / ETRF Additional Style - Does Not Match Full Previo",
+    "Estilo ETRF Additional No Coincide con Reporte Previo Full / ETRF Additional Style - Does Not Match Full Previous Report",
     "Estilos PFAS No Coinciden con ETRF / PFAS Styles - Do Not Match ETRF",
     "Descripción PFAS No Coincide con ETRF / PFAS Description - Does Not Match ETRF",
     "RD Number PFAS No Coincide con ETRF Física / PFAS RD Number - Does Not Match Physical ETRF",
     "Color ETRF No Coincide con Muestra Física / ETRF Color - Does Not Match Physical Sample",
 
-    // --- Archivos Faltantes / Previews Not Attached ---
-    "Falta Previo de Care Label / Care Label Preview - Not Attached",
-    "Falta Previo de Heat Transfer / Heat Transfer Preview - Not Attached",
-    "Falta Previo de Woven Label / Woven Label Preview - Not Attached",
-    "Falta Previo de Size Label / Size Label Preview - Not Attached",
-    "Falta Previo de Print Development / Print Development Preview - Not Attached",
-    "Falta Previo de TRIM / TRIM Preview - Not Attached",
-    "Falta Previo de RFID / RFID Preview - Not Attached",
-    "Falta Previo de Fabric / Fabric Preview - Not Attached",
-    "Falta Previo de Trademark Label / Trademark Label Preview - Not Attached",
-    "Falta Previo de Etiqueta Extra o Promocional / Extra or Promotional Label Preview - Not Attached",
+    // --- Archivos Faltantes / Previous Reports Not Attached ---
+    "Falta Reporte Previo de Care Label / Care Label Previous Report - Not Attached",
+    "Falta Reporte Previo de Heat Transfer / Heat Transfer Previous Report - Not Attached",
+    "Falta Reporte Previo de Woven Label / Woven Label Previous Report - Not Attached",
+    "Falta Reporte Previo de Size Label / Size Label Previous Report - Not Attached",
+    "Falta Reporte Previo de Print Development / Print Development Previous Report - Not Attached",
+    "Falta Reporte Previo de TRIM / TRIM Previous Report - Not Attached",
+    "Falta Reporte Previo de RFID / RFID Previous Report - Not Attached",
+    "Falta Reporte Previo de Fabric / Fabric Previous Report - Not Attached",
+    "Falta Reporte Previo de Trademark Label / Trademark Label Previous Report - Not Attached",
+    "Falta Reporte Previo de Etiqueta Extra o Promocional / Extra or Promotional Label Previous Report - Not Attached",
     "Falta Documento de PFAS / PFAS Document - Not Attached",
     "Falta Certificado de Fibra / Fiber Certificate - Not Attached",
     "Muestra Física Sin Etiquetas / Physical Sample - Labels Not Included",
@@ -56,7 +56,7 @@ const motivosManuales = [
     "Sourcing Office Incorrecta / Sourcing Office - Incorrect",
     "Season Muestra Múltiples Temporadas / Season - Multiple Seasons Listed",
     "Selección de Múltiples Paquetes o Error / Multiple Package Selection or Error",
-    "No Indica Previo Full en Paquete Additional / Additional Package - Full Previo Not Indicated",
+    "No Indica Reporte Previo Full en Paquete Additional / Additional Package - Full Previous Report Not Indicated",
     "No Indica Pruebas en Individual Test / Individual Test - Tests Not Indicated",
     "No Indica Paquete a Utilizar / Package Required - Not Indicated",
     "No Indica Fibra o Porcentaje / Fiber Content or Percentage - Not Indicated",
@@ -64,7 +64,7 @@ const motivosManuales = [
     "Confirmar Vendor de Cobro / Billing Vendor Confirmation - Required",
     "Error de Sincronización o Reemplazo de ETRF / Synchronization Error or ETRF Replacement",
     "ETRF Duplicada / Duplicate ETRF",
-    "Archivos Previos Dañados (Requieren Nueva Carga) / Corrupted Previous Files - New Upload Required",
+    "Reportes Previos Dañados (Requieren Nueva Carga) / Corrupted Previous Reports - New Upload Required",
     "No se Puede Combinar Paquetes (Solo FULL o ADDITIONAL) / Packages Cannot Be Combined - Only FULL or ADDITIONAL",
     "Validar a Quién Corresponde Realizar el Cobro / Verify Who Is Responsible for Billing",
     "Actualizar Versión de PFAS / Update PFAS Version",
@@ -384,3 +384,4 @@ async function submitRejectionToPA(skipAuth = false) {
         btn.innerHTML = 'Submit Rejection <i class="fas fa-paper-plane" style="margin-left:5px;"></i>';
     }, 2000);
 }
+
