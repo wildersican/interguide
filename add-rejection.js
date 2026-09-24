@@ -60,7 +60,7 @@ const motivosManuales = [
     "Falta Reporte Previo de Etiqueta Extra o Promocional (Extra or Promotional Label Previous Report - Not Uploaded to the platform)",
     "Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)",
     "Falta Certificado de Fibra (Fiber Certificate - Not Uploaded to the platform)",
-    "Falta Previo de Parche (Missing Patch Pre-Test)",
+    "Falta Reporte Previo de Parches (Patches Previous Report - Not Uploaded to the platform)",
     "No cuenta con Labels / Etiquetas en la muestra física (Labels Not Included in the Physical Sample)",
     "No viene el Heat Transfer en la Muestra (Heat Transfer Not Included in the Sample)",
     
