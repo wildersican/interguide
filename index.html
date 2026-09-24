@@ -4158,7 +4158,8 @@ function renderizarEmailsTracker(groupedData) {
             itemDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px; flex-wrap: wrap; gap: 10px; margin-top:5px;';
             
             const textSpan = document.createElement('span');
-            textSpan.innerHTML = `<b>${r.id}</b>: ${r.reason}`;
+            const formattedReason = r.reason ? r.reason.replace(/\n/g, '<br>') : '';
+            textSpan.innerHTML = `<b>${r.id}</b>:<br>${formattedReason}`;
             textSpan.style.flex = "1";
             textSpan.style.minWidth = "200px";
             
