@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTERGUIDE 2.0 - ETRF & PREVS Analyzer</title>
+    <title>INTERGUIDE 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -3463,45 +3463,67 @@ function verificarCoincidenciaEstilos(textoPfas) {
 
     const textoPfasNormalizado = textoPfas.replace(/[\u200B-\u200D\uFEFF]/g, '');
     
-    let estilosETRF = window.estilosGlobalesETRF || [];
+    // Verificamos si es Fabric o Finished Product
+    const productStageEl = document.getElementById('d-product-stage');
+    const productStage = productStageEl ? productStageEl.textContent.trim().toLowerCase() : '';
+    const isFabric = productStage.includes('fabric');
+
+    let targetNumbers = [];
     
-    if (estilosETRF.length === 0) {
-        const vistaEtrf = document.getElementById('view-etrf');
-        if (vistaEtrf) {
-            const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
-            const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
-            const targetText = matchStyle ? matchStyle[1] : textoDom;
-            const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
-            estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
+    if (isFabric) {
+        const rdEl = document.getElementById('d-rd-num');
+        if (rdEl && rdEl.textContent && rdEl.textContent !== '--') {
+            const rawRd = rdEl.textContent.match(/\d{5,8}/g) || [];
+            targetNumbers = [...new Set(rawRd)];
         }
+    } else {
+        let estilosETRF = window.estilosGlobalesETRF || [];
+        
+        if (estilosETRF.length === 0) {
+            const vistaEtrf = document.getElementById('view-etrf');
+            if (vistaEtrf) {
+                const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+                const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
+                const targetText = matchStyle ? matchStyle[1] : textoDom;
+                const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
+                estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
+            }
+        }
+    
+        targetNumbers = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
     }
 
-    estilosETRF = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
-
-    if (estilosETRF.length === 0) {
+    if (targetNumbers.length === 0) {
+        const errorMsg = isFabric ? 'Missing RD Number in ETRF report.' : 'Missing ETRF report or Style Number.';
         return alertaVersionHTML + `
             <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
-                ⚠️ <b>Missing ETRF report:</b> Please analyze an ETRF PDF above first to cross-reference styles automatically.
+                ⚠️ <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
             </div>
         `;
     }
 
-    const coincidentes = estilosETRF.filter(est => {
+    const coincidentes = targetNumbers.filter(est => {
         const spacedDigits = est.split('').join('\\s*');
         const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
         return regex.test(textoPfasNormalizado);
     });
     
-    const faltantes = estilosETRF.filter(est => !coincidentes.includes(est));
+    const faltantes = targetNumbers.filter(est => !coincidentes.includes(est));
 
     let alertaEstilosHTML = '';
+
+    const passTitle = isFabric ? 'MATCHING RD NUMBERS' : 'MATCHING STYLES';
+    const passText = isFabric ? 'RD Numbers successfully verified in PFAS declaration:' : 'Styles successfully verified in PFAS declaration:';
+    
+    const failTitle = isFabric ? 'RD NUMBER DISCREPANCY' : 'STYLE DISCREPANCY';
+    const failText = isFabric ? 'ETRF RD Numbers not found in PFAS document:' : 'ETRF styles not found in PFAS document:';
 
     if (faltantes.length === 0 && coincidentes.length > 0) {
         alertaEstilosHTML = `
             <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <strong style="color: #2e7d32; font-size: 13px;">✔ MATCHING STYLES (PASS)</strong> — 
-                    <span>Styles successfully verified in PFAS declaration: <b>${coincidentes.join(', ')}</b></span>
+                    <strong style="color: #2e7d32; font-size: 13px;">✔ ${passTitle} (PASS)</strong> — 
+                    <span>${passText} <b>${coincidentes.join(', ')}</b></span>
                 </div>
             </div>
         `;
@@ -3509,8 +3531,8 @@ function verificarCoincidenciaEstilos(textoPfas) {
         alertaEstilosHTML = `
             <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
                 <div style="margin-bottom: 4px;">
-                    <strong style="color: #c62828; font-size: 13px;">❌ STYLE DISCREPANCY (FAIL)</strong> — 
-                    <span>ETRF styles not found in PFAS document:</span>
+                    <strong style="color: #c62828; font-size: 13px;">❌ ${failTitle} (FAIL)</strong> — 
+                    <span>${failText}</span>
                 </div>
                 ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">🚨 Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
                 ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">✔ Matched: ${coincidentes.join(', ')}</div>` : ''}
@@ -4272,3 +4294,44 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="add-rejection.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
