@@ -345,7 +345,7 @@ async function submitRejectionToPA(skipAuth = false) {
         return;
     }
     // Reemplazamos el "- " inicial por nada para que Excel guarde solo el texto limpio
-    const allReasons = currentRejectionReasons.map(r => r.replace(/^- /, '')).join('\n');
+    const allReasons = currentRejectionReasons.map(r => '• ' + r.replace(/^- /, '')).join('\n');
 
     const payload = {
         fechaRechazo: new Date().toLocaleDateString('en-GB'),
