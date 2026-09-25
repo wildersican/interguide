@@ -1,4 +1,4 @@
-const motivosManuales = [
+﻿const motivosManuales = [
     // --- Empty Fields ---
     "Producto Stage Campo Vacío (Stage Product - Empty Field)",
     "Type Of testing Campo Vacío (Type of Testing - Empty Field)",
@@ -167,32 +167,45 @@ function inicializarModalRechazos() {
 function openRejectionModal() {
     // Clear Global Reasons
     currentRejectionReasons = [];
-    const fieldsToCheck = [
-        { id: 'd-test-status', name: 'Test Status' },
-        { id: 'd-product-stage', name: 'Product Stage' },
-        { id: 'd-type-testing', name: 'Type of Testing' },
-        { id: 'd-intended-age', name: 'Intended Age' },
-        { id: 'd-style-no', name: 'Style Number' },
-        { id: 'd-rd-num', name: 'RD Number' },
-        { id: 'd-season', name: 'Season' },
-        { id: 'd-brand', name: 'Brand' },
-        { id: 'd-vendor', name: 'Vendor' },
-        { id: 'd-sourcing', name: 'Sourcing Office' }
-    ];
 
     if (typeof textoExtraido !== 'undefined' && textoExtraido) {
-        fieldsToCheck.forEach(f => {
-            const el = document.getElementById(f.id);
-            if (el && (el.classList.contains('missing') || el.textContent === '--' || el.textContent === 'Missing' || el.textContent === '')) {
-                currentRejectionReasons.push('- ' + f.name + ' Campo Vacío / ' + f.name + ' - Empty Field');
-            }
-        });
-
         // Check PFAS Discrepancy
         const pfasResult = document.getElementById('resultados-pfas-container');
         if (pfasResult && pfasResult.innerHTML.includes('STYLE DISCREPANCY (FAIL)')) {
-            currentRejectionReasons.push('- Estilos PFAS No Coinciden con ETRF / PFAS Styles - Do Not Match ETRF');
+            const isFabric = document.getElementById('d-product-stage') && document.getElementById('d-product-stage').textContent.toLowerCase().includes('fabric');
+            const discrepancyReason = isFabric 
+                ? "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)"
+                : "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)";
+            if (!currentRejectionReasons.includes(discrepancyReason)) currentRejectionReasons.push(discrepancyReason);
         }
+        if (pfasResult && pfasResult.innerHTML.includes('VERSION FAIL')) {
+            const versionReason = "Actualizar Versión de PFAS (Update PFAS Version)";
+            if (!currentRejectionReasons.includes(versionReason)) currentRejectionReasons.push(versionReason);
+        }
+
+        const alertMapping = {
+            'MISSING Season / Year': 'Season Campo vacío (Season - Empty Field)',
+            'TWO (or multiple) Season / Year detected': 'Season Viene más de una temporada (Season - More Than One Season Is Listed)',
+            'MISSING Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
+            'TWO (or multiple) Sourcing Office detected': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
+            'INVALID Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
+            'MISSING PLM Fabric Article (RD Number)': 'RD Number Campo Vacío (RD Number - Empty Field)',
+            'NO Test Type checked': 'Indidual Test/ No indica que pruebas (Individual Test - Tests Not Specified)',
+            'TWO (or multiple) Test Types checked': 'Selección de varios paquetes/Error (Multiple Package Selection / Error)',
+            'MISSING Reference Full Package Report Number': 'Aditional/no indica el Previo Full (Additional - Full Previo Not Indicated)',
+            'MISSING Fiber Content': 'No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)',
+            'MISSING CARE INSTRUCTIONS': 'No indica instrucciones de lavado (Washing Instructions Not Indicated)',
+            'MISSING Fabric Weight': 'Peso Campo Vacío (Weight - Empty Field)',
+            'MISSING Product Characteristics/Finishing': 'Finishing Campo vacío (Finishing - Empty Field)',
+            'MISSING Style No.': 'Style Campo Vacío (Style - Empty Field)',
+            'MISSING Style Description': 'Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)',
+            'MISSING Style Colors': 'Color Campo vacío (Color - Empty Field)',
+            'MISSING Retail Market': 'Campo Vacío Retail Market (Retail Market - Empty Field)',
+            'MISSING Channel': 'Channel Campo Vacío (Channel - Empty Field)',
+            'MISSING Destination Country': 'Campo Vacío Destination Country (Destination Country - Empty Field)',
+            'MISSING Ship to Country': 'Campo Vacío Ship to Country (Ship-to Country - Empty Field)',
+            'MISSING PFAS Certification': 'Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)'
+        };
 
         // Check Rejection Alerts panel
         const alertBox = document.getElementById('rejection-alerts');
@@ -200,30 +213,17 @@ function openRejectionModal() {
             const lis = alertBox.querySelectorAll('li');
             lis.forEach(li => {
                 const txt = li.textContent.trim();
-                if (txt.includes('INVALID Sourcing Office')) {
-                    const match = motivosManuales.find(m => m.includes('Sourcing Office Incorrecta'));
-                    if (match && !currentRejectionReasons.includes('- ' + match)) currentRejectionReasons.push('- ' + match);
-                } else if (txt.includes('MISSING')) {
-                    let fieldName = txt.replace('MISSING', '').trim();
-                    if (fieldName === 'Style No.') fieldName = 'Style Number';
-                    else if (fieldName === 'Ship to Country') fieldName = 'Ship-to Country';
-                    else if (fieldName === 'CARE INSTRUCTIONS' || fieldName === 'Care Instructions') {
-                        if (!currentRejectionReasons.includes('- Care Instructions Campo Vacío / Care Instructions - Empty Field')) {
-                            currentRejectionReasons.push('- Care Instructions Campo Vacío / Care Instructions - Empty Field');
-                        }
-                        return;
+                let matchedReason = null;
+                
+                for (const key in alertMapping) {
+                    if (txt.includes(key)) {
+                        matchedReason = alertMapping[key];
+                        break;
                     }
-                    else if (fieldName === 'FIBER CONTENT' || fieldName === 'Fiber Content') {
-                        if (!currentRejectionReasons.includes('- Fiber Content Campo Vacío / Fiber Content - Empty Field')) {
-                            currentRejectionReasons.push('- Fiber Content Campo Vacío / Fiber Content - Empty Field');
-                        }
-                        return;
-                    }
-                    
-                    const match = motivosManuales.find(m => m.toLowerCase().includes(fieldName.toLowerCase()) && m.includes('Campo Vacío'));
-                    if (match && !currentRejectionReasons.includes('- ' + match)) {
-                        currentRejectionReasons.push('- ' + match);
-                    }
+                }
+                
+                if (matchedReason && !currentRejectionReasons.includes(matchedReason)) {
+                    currentRejectionReasons.push(matchedReason);
                 }
             });
         }
@@ -231,7 +231,7 @@ function openRejectionModal() {
 
     // Render list
     renderRejectionReasons();
-    
+
     // Set Vendor and Style
     const vendorEl = document.getElementById('d-vendor');
     let rawVendor = vendorEl ? vendorEl.textContent.trim() : '';
