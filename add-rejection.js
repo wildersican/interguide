@@ -1,40 +1,40 @@
 ﻿const motivosManuales = [
     // --- Empty Fields ---
-    "Producto Stage Campo Vacío (Stage Product - Empty Field)",
-    "Type Of testing Campo Vacío (Type of Testing - Empty Field)",
-    "Style Campo Vacío (Style - Empty Field)",
-    "Color Campo vacío (Color - Empty Field)",
-    "Season Campo vacío (Season - Empty Field)",
-    "Item Type Campo vacío (Item Type - Empty Field)",
-    "RD Number Campo Vacío (RD Number - Empty Field)",
-    "Campos Vacíos de Products To Be Tested (Products to Be Tested - Empty Fields)",
+    "Producto Stage Campo Vac�o (Stage Product - Empty Field)",
+    "Type Of testing Campo Vac�o (Type of Testing - Empty Field)",
+    "Style Campo Vac�o (Style - Empty Field)",
+    "Color Campo vac�o (Color - Empty Field)",
+    "Season Campo vac�o (Season - Empty Field)",
+    "Item Type Campo vac�o (Item Type - Empty Field)",
+    "RD Number Campo Vac�o (RD Number - Empty Field)",
+    "Campos Vac�os de Products To Be Tested (Products to Be Tested - Empty Fields)",
     "No Indica Test Status - Develoment o Production (Test Status Not Indicated - Development or Production)",
-    "Campo Vacío Retail Market (Retail Market - Empty Field)",
-    "Campo Vacío Destination Country (Destination Country - Empty Field)",
-    "Campo Vacío Ship to Country (Ship-to Country - Empty Field)",
-    "Channel Campo Vacío (Channel - Empty Field)",
-    "YarnSize Campo vacío (Yarn Size - Empty Field)",
-    "Peso Campo Vacío (Weight - Empty Field)",
-    "Enlongation Campo vacío (Elongation - Empty Field)",
-    "Finishing Campo vacío (Finishing - Empty Field)",
+    "Campo Vac�o Retail Market (Retail Market - Empty Field)",
+    "Campo Vac�o Destination Country (Destination Country - Empty Field)",
+    "Campo Vac�o Ship to Country (Ship-to Country - Empty Field)",
+    "Channel Campo Vac�o (Channel - Empty Field)",
+    "YarnSize Campo vac�o (Yarn Size - Empty Field)",
+    "Peso Campo Vac�o (Weight - Empty Field)",
+    "Enlongation Campo vac�o (Elongation - Empty Field)",
+    "Finishing Campo vac�o (Finishing - Empty Field)",
 
     // --- Discrepancies / Mismatches ---
     "Itended Age No es el mismo al de la muestra enviada (Intended Age Does Not Match the Age of the Sample Submitted)",
     "La Edad Escrita en la ETRF, no coincide con la muestra enviada (The Age Indicated on the ETRF Does Not Match the Sample Submitted)",
     "Sourcing Office incorrecta (Incorrect Sourcing Office)",
-    "Season Viene más de una temporada (Season - More Than One Season Is Listed)",
+    "Season Viene m�s de una temporada (Season - More Than One Season Is Listed)",
     "Construction es diferente al de la muestra enviada (Construction Does Not Match the Sample Submitted)",
     "Peso debe coincidir con Fabric Details (Weight Must Match the Fabric Details)",
     "Construction debe coincidir con el Fabric Details (Construction Must Match the Fabric Details)",
     "Estilo de ETRF Additional no coincide con el Previo Full (ETRF Additional Style Does Not Match the Full Previo)",
     "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
-    "ETRF indica más de un color y en muestra física solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
-    "No Coincide el Fabric RD del Previo con la ETRF física (Fabric RD on the Previo Does Not Match the Physical ETRF)",
+    "ETRF indica m�s de un color y en muestra f�sica solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
+    "No Coincide el Fabric RD del Previo con la ETRF f�sica (Fabric RD on the Previo Does Not Match the Physical ETRF)",
     "Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)",
     "La muestra es FABRIC y en la ETRF declaran GARMENT (The sample is FABRIC, but the ETRF indicates GARMENT)",
     "La Muestra es GARMENT y en la ETRF declaran FABRIC (The sample is GARMENT, but the ETRF indicates FABRIC)",
     "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)",
-    "La Descripción del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
+    "La Descripci�n del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
     "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)",
 
     // --- Missing Information ---
@@ -44,7 +44,7 @@
     "No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)",
     "No indica instrucciones de lavado (Washing Instructions Not Indicated)",
     "Confirmar Vendor de Cobro/No indica (Billing Vendor Confirmation - Not Indicated)",
-    "Validar a quién corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
+    "Validar a qui�n corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
 
     // --- Not Uploaded to the platform / Missing Items ---
     "Falta Reporte Previo de Care Label (Care Label Previous Report - Not Uploaded to the platform)",
@@ -61,18 +61,20 @@
     "Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)",
     "Falta Certificado de Fibra (Fiber Certificate - Not Uploaded to the platform)",
     "Falta Reporte Previo de Parches (Patches Previous Report - Not Uploaded to the platform)",
-    "No cuenta con Labels / Etiquetas en la muestra física (Labels Not Included in the Physical Sample)",
+    "No cuenta con Labels / Etiquetas en la muestra f�sica (Labels Not Included in the Physical Sample)",
     "No viene el Heat Transfer en la Muestra (Heat Transfer Not Included in the Sample)",
     
     // --- System / Others ---
     "Muestra insuficiente para TEST (Insufficient sample for TEST)",
-    "Error de Sincronización/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
+    "Error de Sincronizaci�n/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
     "ETRF Duplicada (ETRF Duplicated)",
-    "Archivos Previos Dañados – Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
+    "Archivos Previos Da�ados � Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
     "No se puede combinar paquetes. Solo es FULL o ADITIONAL (Packages Cannot Be Combined - Only FULL or ADDITIONAL)",
-    "Selección de varios paquetes/Error (Multiple Package Selection / Error)",
-    "Actualizar Versión de PFAS (Update PFAS Version)",
-    "Actualizar Certificado de Fibra - Vencido (Update Fiber Certificate - Expired)"
+    "Selecci�n de varios paquetes/Error (Multiple Package Selection / Error)",
+    "Actualizar Versi�n de PFAS (Update PFAS Version)",
+    "Actualizar Certificado de Fibra - Vencido (Update Fiber Certificate - Expired)",
+    "BOM Number no coincide con la ETRF (BOM Number Does Not Match ETRF)",
+    "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)"
 ];
 
 let currentRejectionReasons = [];
@@ -179,31 +181,43 @@ function openRejectionModal() {
             if (!currentRejectionReasons.includes(discrepancyReason)) currentRejectionReasons.push(discrepancyReason);
         }
         if (pfasResult && pfasResult.innerHTML.includes('VERSION FAIL')) {
-            const versionReason = "Actualizar Versión de PFAS (Update PFAS Version)";
+            const versionReason = "Actualizar Versi�n de PFAS (Update PFAS Version)";
             if (!currentRejectionReasons.includes(versionReason)) currentRejectionReasons.push(versionReason);
         }
 
+        const bomResult = document.getElementById('resultados-bom-container');
+        if (bomResult) {
+            if (bomResult.innerHTML.includes('BOM NUMBER MISMATCH (FAIL)')) {
+                const bomReason = "BOM Number no coincide con la ETRF (BOM Number Does Not Match ETRF)";
+                if (!currentRejectionReasons.includes(bomReason)) currentRejectionReasons.push(bomReason);
+            }
+            if (bomResult.innerHTML.includes('NO BOM RDs FOUND IN ETRF (FAIL)')) {
+                const rdBomReason = "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)";
+                if (!currentRejectionReasons.includes(rdBomReason)) currentRejectionReasons.push(rdBomReason);
+            }
+        }
+
         const alertMapping = {
-            'MISSING Season / Year': 'Season Campo vacío (Season - Empty Field)',
-            'TWO (or multiple) Season / Year detected': 'Season Viene más de una temporada (Season - More Than One Season Is Listed)',
+            'MISSING Season / Year': 'Season Campo vac�o (Season - Empty Field)',
+            'TWO (or multiple) Season / Year detected': 'Season Viene m�s de una temporada (Season - More Than One Season Is Listed)',
             'MISSING Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
             'TWO (or multiple) Sourcing Office detected': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
             'INVALID Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
-            'MISSING PLM Fabric Article (RD Number)': 'RD Number Campo Vacío (RD Number - Empty Field)',
+            'MISSING PLM Fabric Article (RD Number)': 'RD Number Campo Vac�o (RD Number - Empty Field)',
             'NO Test Type checked': 'Indidual Test/ No indica que pruebas (Individual Test - Tests Not Specified)',
-            'TWO (or multiple) Test Types checked': 'Selección de varios paquetes/Error (Multiple Package Selection / Error)',
+            'TWO (or multiple) Test Types checked': 'Selecci�n de varios paquetes/Error (Multiple Package Selection / Error)',
             'MISSING Reference Full Package Report Number': 'Aditional/no indica el Previo Full (Additional - Full Previo Not Indicated)',
             'MISSING Fiber Content': 'No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)',
             'MISSING CARE INSTRUCTIONS': 'No indica instrucciones de lavado (Washing Instructions Not Indicated)',
-            'MISSING Fabric Weight': 'Peso Campo Vacío (Weight - Empty Field)',
-            'MISSING Product Characteristics/Finishing': 'Finishing Campo vacío (Finishing - Empty Field)',
-            'MISSING Style No.': 'Style Campo Vacío (Style - Empty Field)',
+            'MISSING Fabric Weight': 'Peso Campo Vac�o (Weight - Empty Field)',
+            'MISSING Product Characteristics/Finishing': 'Finishing Campo vac�o (Finishing - Empty Field)',
+            'MISSING Style No.': 'Style Campo Vac�o (Style - Empty Field)',
             'MISSING Style Description': 'Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)',
-            'MISSING Style Colors': 'Color Campo vacío (Color - Empty Field)',
-            'MISSING Retail Market': 'Campo Vacío Retail Market (Retail Market - Empty Field)',
-            'MISSING Channel': 'Channel Campo Vacío (Channel - Empty Field)',
-            'MISSING Destination Country': 'Campo Vacío Destination Country (Destination Country - Empty Field)',
-            'MISSING Ship to Country': 'Campo Vacío Ship to Country (Ship-to Country - Empty Field)',
+            'MISSING Style Colors': 'Color Campo vac�o (Color - Empty Field)',
+            'MISSING Retail Market': 'Campo Vac�o Retail Market (Retail Market - Empty Field)',
+            'MISSING Channel': 'Channel Campo Vac�o (Channel - Empty Field)',
+            'MISSING Destination Country': 'Campo Vac�o Destination Country (Destination Country - Empty Field)',
+            'MISSING Ship to Country': 'Campo Vac�o Ship to Country (Ship-to Country - Empty Field)',
             'MISSING PFAS Certification': 'Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)'
         };
 
@@ -286,13 +300,18 @@ function openRejectionModal() {
         }
     }
     // OVERRIDE PARA COFACO
+        // Set dataset with original emails for dropdown toggle
+    const emailsInput = document.getElementById('rej-emails');
+    emailsInput.dataset.originalEmails = extractedEmails.join('; ');
+
+    // OVERRIDE PARA COFACO
     if (rawVendor.toUpperCase().includes('COFACO')) {
-        document.getElementById('rej-emails').value = 'angela.ghiorzo@intertek.com; norma.lozano@intertek.com';
+        emailsInput.value = 'angela.ghiorzo@intertek.com; norma.lozano@intertek.com';
     } else {
         if (extractedEmails.length > 0) {
-            document.getElementById('rej-emails').value = extractedEmails.join('; ');
+            emailsInput.value = extractedEmails.join('; ');
         } else {
-            document.getElementById('rej-emails').value = '';
+            emailsInput.value = '';
         }
     }
 
@@ -329,7 +348,7 @@ async function submitRejectionToPA(skipAuth = false) {
     const btn = document.getElementById('btnSubmitRejection');
     const statusDiv = document.getElementById('rej-status');
     
-    // Siempre pedir contraseña al registrar un rechazo (como firma digital)
+    // Siempre pedir contrase�a al registrar un rechazo (como firma digital)
     if (!skipAuth) {
         window.pendingAction = () => submitRejectionToPA(true);
         const modal = document.getElementById('passwordModal');
@@ -345,7 +364,7 @@ async function submitRejectionToPA(skipAuth = false) {
         return;
     }
     // Reemplazamos el "- " inicial por nada para que Excel guarde solo el texto limpio
-    const allReasons = currentRejectionReasons.map(r => '• ' + r.replace(/^- /, '')).join('\n');
+    const allReasons = currentRejectionReasons.map(r => '\u2022 ' + r.replace(/^- /, '')).join('<br>');
 
     const payload = {
         fechaRechazo: new Date().toLocaleDateString('en-GB'),
@@ -389,3 +408,19 @@ async function submitRejectionToPA(skipAuth = false) {
     }, 2000);
 }
 
+
+// Dynamic Vendor Email Selection
+document.addEventListener('DOMContentLoaded', () => {
+    const rejVendorInput = document.getElementById('rej-vendor');
+    if (rejVendorInput) {
+        rejVendorInput.addEventListener('input', (e) => {
+            const vendorValue = e.target.value.toUpperCase();
+            const emailsInput = document.getElementById('rej-emails');
+            if (vendorValue.includes('COFACO')) {
+                emailsInput.value = 'angela.ghiorzo@intertek.com; norma.lozano@intertek.com';
+            } else if (emailsInput.value === 'angela.ghiorzo@intertek.com; norma.lozano@intertek.com') {
+                emailsInput.value = emailsInput.dataset.originalEmails || '';
+            }
+        });
+    }
+});

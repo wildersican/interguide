@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -386,6 +386,27 @@ footer {
                         <div id="resultados-pfas-container" style="margin-top: 8px;"></div>
                     </div>
 
+                    <!-- 🛠️ AUDITORÍA BOM -->
+                    <div style="margin: 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <div style="font-weight: bold; font-size: 12px; color: #1d4ed8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fas fa-boxes" style="margin-right: 5px;"></i> BOM Audit (Number Match)</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="archivoInput-bom" accept=".pdf" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
+                            <button id="btnAnalizar-bom" onclick="procesarArchivoBOM()" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; transition: background 0.2s;">
+                                Analyze BOM
+                            </button>
+                        </div>
+                        
+                        <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
+                            <div id="progressFill-bom" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.3s;"></div>
+                        </div>
+
+                        <!-- Alert Container -->
+                        <div id="resultados-bom-container" style="margin-top: 8px;"></div>
+                    </div>
+
                     <div class="viewer-tabs" role="tablist" aria-label="ETRF View Mode">
                         <button id="tabVisual" class="active" onclick="cambiarVista('visual')">Visual</button>
                         <button id="tabTexto" onclick="cambiarVista('texto')">Text</button>
@@ -470,6 +491,10 @@ footer {
 
                         <div class="det-section"><i class="fas fa-file-signature"></i>PFAS Certification</div>
                         <div id="d-declarations-block"><em style="color:#767676;font-size:12px;">—</em></div>
+
+                        <div class="det-section" style="margin-top: 15px;"><i class="fas fa-boxes"></i>Bill of Materials</div>
+                        <div class="det-row"><span class="det-label">BOM Number</span><span class="det-val empty" id="d-bom-num">--</span></div>
+                        <div class="det-row"><span class="det-label">BOM File</span><span class="det-val empty" id="d-bom-file" style="word-break: break-all;">--</span></div>
                     </div>
                 </div>
             </div>
@@ -1260,6 +1285,7 @@ async function extractAll(fileName) {
     setProgress(85);
 
     renderDeclarations();
+    extractBOMData(pageTexts.join(' '));
     renderComplementaryReports();
     setProgress(100);
 
@@ -1885,6 +1911,35 @@ function renderWashMethod() {
     else { el.textContent = '—'; el.className = 'det-val empty'; }
 }
 
+function extractBOMData(text) {
+    let bomNum = getTextBetween(text, 'Bill of Materials Number', ['Document Type', 'Bill of Materials', 'Is this a VMI style?', 'US IMPORTER', '*Is the finished product', 'File Name']);
+    if (!bomNum || bomNum.trim() === '') bomNum = '--';
+    
+    // Sometimes it extracts the next field label
+    if (bomNum.includes('Document Type')) {
+        bomNum = bomNum.split('Document Type')[0].trim();
+    }
+
+    let bomFile = getTextBetween(text, 'BOM File', ['Is this a VMI style?', '*Is the finished product', 'US IMPORTER', 'Adult Apparel']);
+    if (!bomFile || bomFile.trim() === '') {
+        const fileMatch = text.match(/BOM File\s+([a-zA-Z0-9_\-\.\s]+?\.pdf)/i);
+        if (fileMatch) bomFile = fileMatch[1].trim();
+        else bomFile = '--';
+    } else {
+        const pdfMatch = bomFile.match(/(.*?\.pdf)/i);
+        if (pdfMatch) bomFile = pdfMatch[1].trim();
+    }
+
+    setVal('d-bom-num', bomNum);
+    setVal('d-bom-file', bomFile);
+
+    const elNum = document.getElementById('d-bom-num');
+    if (elNum) elNum.className = bomNum !== '--' ? 'det-val found' : 'det-val empty';
+
+    const elFile = document.getElementById('d-bom-file');
+    if (elFile) elFile.className = bomFile !== '--' ? 'det-val found' : 'det-val empty';
+}
+
 function renderDeclarations() {
     const block = document.getElementById('d-declarations-block');
     const testStatus = (document.getElementById('d-test-status').textContent || '').toLowerCase();
@@ -1960,12 +2015,13 @@ function renderComplementaryReports() {
 
         if (compData.fabrics.length > 0) {
             fabricBody.innerHTML = compData.fabrics.map(f => 
-                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee;">` +
-                `<div style="display:flex; align-items:center; gap:10px;">` +
-                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>${esc(f.desc)}</span>` +
-                (f.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ${esc(f.color)}</span>` : '') +
+                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
+                `<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">` +
+                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>` + esc(f.desc) + `</span>` +
+                (f.rdNum ? `<span style="background:#f5f5f5; color:#555; border:1px solid #ddd; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">RD Number: ` + esc(f.rdNum) + `</span>` : '') +
+                (f.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ` + esc(f.color) + `</span>` : '') +
                 `</div>` +
-                `<span style="background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(f.report)}</span>` +
+                `<span style="background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">` + esc(f.report) + `</span>` +
                 `</div>`
             ).join('');
         } else {
@@ -2087,6 +2143,8 @@ function extractComplementaryReportsData() {
     let ccMinX = 0;
     let ccMaxX = 0;
     let lastSeenCcColor = '';
+    let rdMinX = 0;
+    let rdMaxX = 0;
     
     const COLOR_WHITELIST = ['WHITE', 'BLACK', 'NAVY', 'GREY', 'GRAY', 'COOL', 'BLUE', 'RED', 'GREEN', 'YELLOW', 'ORANGE', 'PINK', 'PURPLE', 'BROWN', 'BEIGE', 'CREAM', 'SALT', 'SEA', 'ROBBIE', 'DARK', 'LIGHT', 'HEATHER', 'OATMEAL'];
 
@@ -2103,7 +2161,7 @@ function extractComplementaryReportsData() {
             );
             rightNeighbors.sort((a, b) => a.x - b.x);
 
-            activeMinX = hDesc.x - 100;
+            activeMinX = hDesc.x - 20;
             if (rightNeighbors.length > 0) {
                 activeMaxX = rightNeighbors[0].x - 5;
             } else {
@@ -2132,14 +2190,23 @@ function extractComplementaryReportsData() {
             }
             
             if (rightNeighborsColor.length > 0) {
-                // Extend explicitly into the next column because its text is heavily blacklisted anyway
-                colorMaxX = rightNeighborsColor[0].x + 60;
+                // Do not extend into the next column for Fabrics because tests are dense
+                colorMaxX = rightNeighborsColor[0].x - 5;
             } else {
                 colorMaxX = hColor.x + 200;
             }
         } else if (hDesc) {
             colorMaxX = activeMaxX; // Right edge is the start of the next column
             colorMinX = activeMaxX - 150; // Look leftwards from the next column
+        }
+
+        let hRD = items.find(i => /fabric\s*article|article\s*\(rd|trim\s*item|rd\s*#/i.test(i.str.trim()));
+        if (!hRD && hDesc) {
+            hRD = items.find(i => Math.abs(i.y - hDesc.y) < 30 && (/article/i.test(i.str.trim()) || /^rd\b/i.test(i.str.trim())));
+        }
+        if (hRD) {
+            rdMinX = hRD.x - 40;
+            rdMaxX = hRD.x + 100;
         }
 
         const hCC = items.find(i => /colorway|color\s*way|\(cc\)/i.test(i.str.trim()));
@@ -2266,9 +2333,19 @@ function extractComplementaryReportsData() {
                 /^\d{5,9}$/.test(it.str.trim()) &&
                 it.x < item.x
             );
-            if (rdItems.length > 0) {
-                rdItems.sort((a, b) => b.x - a.x);
-                rdNum = rdItems[0].str.trim();
+            if (rdMaxX > 0) {
+                const exactRd = rdItems.find(it => it.x >= rdMinX && it.x <= rdMaxX);
+                if (exactRd) rdNum = exactRd.str.trim();
+            }
+            if (!rdNum && rdItems.length > 0) {
+                let plausibleRd = rdItems.filter(it => it.x > 80 && it.x < activeMinX - 30);
+                if (plausibleRd.length > 0) {
+                    plausibleRd.sort((a, b) => a.x - b.x);
+                    rdNum = plausibleRd[0].str.trim();
+                } else {
+                    rdItems.sort((a, b) => b.x - a.x);
+                    rdNum = rdItems[0].str.trim();
+                }
             }
 
             let extractedColorVal = '';
@@ -2517,7 +2594,7 @@ function extractComplementaryReportsData() {
                 }
             } else if (targetSection === 'FABRIC') {
                 if (!fabricPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
-                    fabricPairs.push({ desc: finalDesc, report: repNum, color: '', baseColor: baseColor, ccFinal: '', pageIdx: pageIdx });
+                    fabricPairs.push({ desc: finalDesc, report: repNum, rdNum: rdNum, color: '', baseColor: baseColor, ccFinal: '', pageIdx: pageIdx });
                 }
             }
         }
@@ -3608,6 +3685,146 @@ async function procesarArchivoPFAS() {
         if (progress) progress.style.width = '0%';
     } finally {
         if (btn) { btn.disabled = false; btn.textContent = 'Analyze PFAS'; }
+    }
+}
+
+async function procesarArchivoBOM() {
+    const input = document.getElementById('archivoInput-bom');
+    const archivo = input ? input.files[0] : null;
+    const btn = document.getElementById('btnAnalizar-bom');
+    const progress = document.getElementById('progressFill-bom');
+    const contenedor = document.getElementById('resultados-bom-container');
+
+    if (!archivo) {
+        alert("Please select a BOM PDF file.");
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Auditing...'; }
+    if (progress) progress.style.width = '40%';
+    if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying BOM Number...</p>';
+
+    try {
+        const textoExtraidoBom = await extraerTextoHibrido(archivo);
+        if (progress) progress.style.width = '80%';
+
+        // Retrieve BOM from ETRF
+        const elBom = document.getElementById('d-bom-num');
+        const etrfBom = elBom ? elBom.textContent.trim() : '--';
+        
+        let matchText = '';
+        if (etrfBom === '--' || etrfBom === '') {
+            matchText = '<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px;"><i class="fas fa-exclamation-triangle"></i> ETRF is missing BOM Number to compare</div>';
+        } else {
+            // Check if BOM Number from ETRF is in the BOM file text
+            const bomRegex = new RegExp(etrfBom.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
+            if (bomRegex.test(textoExtraidoBom)) {
+                matchText = '<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px;"><i class="fas fa-check-circle"></i> BOM NUMBER MATCH (PASS)</div>';
+            } else {
+                matchText = '<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px;"><i class="fas fa-times-circle"></i> BOM NUMBER MISMATCH (FAIL)</div>';
+            }
+        }
+        
+                        let rdsToCheck = [];
+        if (window.rdGlobalesETRF && window.rdGlobalesETRF.length > 0) {
+            rdsToCheck = window.rdGlobalesETRF;
+        }
+        
+                let rdMatchHtml = '';
+        
+        let bomFabricRds = [];
+        try {
+            const lecturaPdf = await leerPdf(archivo, false, false);
+            if (lecturaPdf && lecturaPdf.pageItems) {
+                let inFabricSection = false;
+                for (const items of lecturaPdf.pageItems) {
+                    const hProd = items.find(i => /^Product$/i.test(i.str.trim()));
+                    let maxX = hProd ? hProd.x + 100 : 150;
+                    
+                                        // Group items by approximate Y coordinate to reconstruct lines
+                    let lines = [];
+                    const sortedItems = [...items].sort((a, b) => b.y - a.y);
+                    let currentLine = null;
+                    for (const item of sortedItems) {
+                        if (!currentLine || Math.abs(currentLine.y - item.y) > 3) {
+                            if (currentLine) lines.push(currentLine);
+                            currentLine = { y: item.y, items: [item] };
+                        } else {
+                            currentLine.items.push(item);
+                        }
+                    }
+                    if (currentLine) lines.push(currentLine);
+
+                    for (const line of lines) {
+                        // Sort line items by X coordinate
+                        line.items.sort((a, b) => a.x - b.x);
+                        const lineText = line.items.map(i => i.str.trim()).join(' ');
+                        const firstItemText = line.items[0].str.trim();
+
+                        const cleanLine = lineText.replace(/^\s+/, '').trim();
+
+                        // Section headers are the first thing on a line
+                        if (/^Fabric/i.test(cleanLine)) {
+                            inFabricSection = true;
+                        } else if (/^(Trim|Packaging)/i.test(cleanLine)) {
+                            inFabricSection = false;
+                        }
+                        
+                        // Extract RDs from the Product column (x < maxX)
+                        for (const item of line.items) {
+                            const txt = item.str.trim();
+                            if (inFabricSection && /^\d{5,9}$/.test(txt) && item.x < maxX) {
+                                bomFabricRds.push(txt);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(e) {
+            console.error("Error reading PDF coords:", e);
+        }
+        bomFabricRds = [...new Set(bomFabricRds)];
+
+        if (bomFabricRds.length > 0) {
+            let matchedRds = [];
+            let missedInEtrf = [];
+            
+            bomFabricRds.forEach(rd => {
+                if (rdsToCheck.includes(rd)) {
+                    matchedRds.push(rd);
+                } else {
+                    missedInEtrf.push(rd);
+                }
+            });
+            
+            if (matchedRds.length > 0) {
+                rdMatchHtml = `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
+                if (missedInEtrf.length > 0) {
+                    rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> BOM RD MISSING IN ETRF: ` + missedInEtrf.join(', ') + `</div>`;
+                }
+            } else {
+                rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO BOM RDs FOUND IN ETRF (FAIL): ` + bomFabricRds.join(', ') + `</div>`;
+            }
+        } else {
+            rdMatchHtml = `<div style="padding:6px; background:#f5f5f5; color:#666; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-info-circle"></i> No Fabric RDs found in BOM</div>`;
+        }
+
+        if (contenedor) {
+            contenedor.innerHTML = matchText + rdMatchHtml;
+        }
+
+        if (progress) {
+            progress.style.width = '100%';
+            setTimeout(() => progress.style.width = '0%', 500);
+        }
+    } catch (error) {
+        console.error("BOM Module Error:", error);
+        if (contenedor) {
+            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message || error}</div>`;
+        }
+        if (progress) progress.style.width = '0%';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Analyze BOM'; }
     }
 }
 
