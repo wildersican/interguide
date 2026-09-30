@@ -1,25 +1,25 @@
-const motivosManuales = [
+﻿const motivosManuales = [
     // --- Empty Fields ---
     "Producto Stage Campo Vacío (Stage Product - Empty Field)",
     "Type Of testing Campo Vacío (Type of Testing - Empty Field)",
     "Style Campo Vacío (Style - Empty Field)",
-    "Color Campo vacío (Color - Empty Field)",
-    "Season Campo vacío (Season - Empty Field)",
-    "Item Type Campo vacío (Item Type - Empty Field)",
+    "Color Campo Vacío (Color - Empty Field)",
+    "Season Campo Vacío (Season - Empty Field)",
+    "Item Type Campo Vacío (Item Type - Empty Field)",
     "RD Number Campo Vacío (RD Number - Empty Field)",
     "Campos Vacíos de Products To Be Tested (Products to Be Tested - Empty Fields)",
-    "No Indica Test Status - Development o Production (Test Status Not Indicated - Development or Production)",
+    "No Indica Test Status - Develoment o Production (Test Status Not Indicated - Development or Production)",
     "Campo Vacío Retail Market (Retail Market - Empty Field)",
     "Campo Vacío Destination Country (Destination Country - Empty Field)",
     "Campo Vacío Ship to Country (Ship-to Country - Empty Field)",
     "Channel Campo Vacío (Channel - Empty Field)",
-    "YarnSize Campo vacío (Yarn Size - Empty Field)",
+    "YarnSize Campo Vacío (Yarn Size - Empty Field)",
     "Peso Campo Vacío (Weight - Empty Field)",
-    "Elongation Campo vacío (Elongation - Empty Field)",
-    "Finishing Campo vacío (Finishing - Empty Field)",
+    "Enlongation Campo Vacío (Elongation - Empty Field)",
+    "Finishing Campo Vacío (Finishing - Empty Field)",
 
     // --- Discrepancies / Mismatches ---
-    "Intended Age No es el mismo al de la muestra enviada (Intended Age Does Not Match the Age of the Sample Submitted)",
+    "Itended Age No es el mismo al de la muestra enviada (Intended Age Does Not Match the Age of the Sample Submitted)",
     "La Edad Escrita en la ETRF, no coincide con la muestra enviada (The Age Indicated on the ETRF Does Not Match the Sample Submitted)",
     "Sourcing Office incorrecta (Incorrect Sourcing Office)",
     "Season Viene más de una temporada (Season - More Than One Season Is Listed)",
@@ -27,25 +27,25 @@ const motivosManuales = [
     "Peso debe coincidir con Fabric Details (Weight Must Match the Fabric Details)",
     "Construction debe coincidir con el Fabric Details (Construction Must Match the Fabric Details)",
     "Estilo de ETRF Additional no coincide con el Previo Full (ETRF Additional Style Does Not Match the Full Previo)",
-    "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
+        "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
     "Reporte previo de tela no corresponde con el color de la Muestra (Previous fabric report does not match the sample color)",
-    "ETRF indica más de un color y en muestra física solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
-    "No Coincide el Fabric RD del Previo con la ETRF (Fabric RD on the Previo Does Not Match the ETRF)",
+    "ETRF indica más de un color y en muestra f?sica solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
+    "No Coincide el Fabric RD del Previo con la ETRF f?sica (Fabric RD on the Previo Does Not Match the Physical ETRF)",
     "Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)",
     "La muestra es FABRIC y en la ETRF declaran GARMENT (The sample is FABRIC, but the ETRF indicates GARMENT)",
     "La Muestra es GARMENT y en la ETRF declaran FABRIC (The sample is GARMENT, but the ETRF indicates FABRIC)",
     "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)",
-    "La Descripción del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
+    "La Descripci?n del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
     "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)",
 
     // --- Missing Information ---
-    "Additional/no indica el Previo Full (Additional - Full Previo Not Indicated)",
-    "Individual Test/ No indica qué pruebas (Individual Test - Tests Not Specified)",
-    "Indicar qué paquete Necesitan (Specify Which Package Is Needed)",
-    "No indica fibra y/o % (Fiber Content and/or Percentage Not Indicated)",
-    "No indica instrucciones de lavado (Care Instructions Not Indicated)",
+    "Aditional/no indica el Previo Full (Additional - Full Previo Not Indicated)",
+    "Indidual Test/ No indica que pruebas (Individual Test - Tests Not Specified)",
+    "Indicar que paquete Necesitan (Specify Which Package Is Needed)",
+    "No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)",
+    "No indica instrucciones de lavado (Washing Instructions Not Indicated)",
     "Confirmar Vendor de Cobro/No indica (Billing Vendor Confirmation - Not Indicated)",
-    "Validar a quién corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
+    "Validar a qui?n corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
 
     // --- Not Uploaded to the platform / Missing Items ---
     "Falta Reporte Previo de Care Label (Care Label Previous Report - Not Uploaded to the platform)",
@@ -62,15 +62,15 @@ const motivosManuales = [
     "Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)",
     "Falta Certificado de Fibra (Fiber Certificate - Not Uploaded to the platform)",
     "Falta Reporte Previo de Parches (Patches Previous Report - Not Uploaded to the platform)",
-    "No cuenta con Labels / Etiquetas en la muestra física (Labels Not Included in the Physical Sample)",
+    "No cuenta con Labels / Etiquetas en la muestra f?sica (Labels Not Included in the Physical Sample)",
     "No viene el Heat Transfer en la Muestra (Heat Transfer Not Included in the Sample)",
     
     // --- System / Others ---
     "Muestra insuficiente para TEST (Insufficient sample for TEST)",
-    "Error de Sincronización/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
+    "Error de Sincronizaci?n/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
     "ETRF Duplicada (ETRF Duplicated)",
-    "Archivos Previos Dañados   Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
-    "No se puede combinar paquetes. Solo es FULL o ADDITIONAL (Packages Cannot Be Combined - Only FULL or ADDITIONAL)",
+    "Archivos Previos Da?ados ? Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
+    "No se puede combinar paquetes. Solo es FULL o ADITIONAL (Packages Cannot Be Combined - Only FULL or ADDITIONAL)",
     "Selección de varios paquetes/Error (Multiple Package Selection / Error)",
     "Actualizar Versión de PFAS (Update PFAS Version)",
     "Actualizar Certificado de Fibra - Vencido (Update Fiber Certificate - Expired)",
@@ -83,11 +83,6 @@ let currentRejectionReasons = [];
 function renderRejectionReasons() {
     const container = document.getElementById('rej-reasons-container');
     if (!container) return;
-    
-    if (currentRejectionReasons.length === 0) {
-        container.innerHTML = '<div style="color:#ef4444; font-style:italic;">No reasons detected or added.</div>';
-        return;
-    }
 
     container.innerHTML = '';
     currentRejectionReasons.forEach((reason, index) => {
@@ -199,22 +194,22 @@ function openRejectionModal() {
         }
 
         const alertMapping = {
-            'MISSING Season / Year': 'Season Campo vacío (Season - Empty Field)',
+            'MISSING Season / Year': 'Season Campo Vacío (Season - Empty Field)',
             'TWO (or multiple) Season / Year detected': 'Season Viene más de una temporada (Season - More Than One Season Is Listed)',
             'MISSING Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
             'TWO (or multiple) Sourcing Office detected': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
             'INVALID Sourcing Office': 'Sourcing Office incorrecta (Incorrect Sourcing Office)',
             'MISSING PLM Fabric Article (RD Number)': 'RD Number Campo Vacío (RD Number - Empty Field)',
-            'NO Test Type checked': 'Individual Test/ No indica qué pruebas (Individual Test - Tests Not Specified)',
+            'NO Test Type checked': 'Indidual Test/ No indica que pruebas (Individual Test - Tests Not Specified)',
             'TWO (or multiple) Test Types checked': 'Selección de varios paquetes/Error (Multiple Package Selection / Error)',
-            'MISSING Reference Full Package Report Number': 'Additional/no indica el Previo Full (Additional - Full Previo Not Indicated)',
-            'MISSING Fiber Content': 'No indica fibra y/o % (Fiber Content and/or Percentage Not Indicated)',
-            'MISSING CARE INSTRUCTIONS': 'No indica instrucciones de lavado (Care Instructions Not Indicated)',
+            'MISSING Reference Full Package Report Number': 'Aditional/no indica el Previo Full (Additional - Full Previo Not Indicated)',
+            'MISSING Fiber Content': 'No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)',
+            'MISSING CARE INSTRUCTIONS': 'No indica instrucciones de lavado (Washing Instructions Not Indicated)',
             'MISSING Fabric Weight': 'Peso Campo Vacío (Weight - Empty Field)',
-            'MISSING Product Characteristics/Finishing': 'Finishing Campo vacío (Finishing - Empty Field)',
+            'MISSING Product Characteristics/Finishing': 'Finishing Campo Vacío (Finishing - Empty Field)',
             'MISSING Style No.': 'Style Campo Vacío (Style - Empty Field)',
             'MISSING Style Description': 'Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)',
-            'MISSING Style Colors': 'Color Campo vacío (Color - Empty Field)',
+            'MISSING Style Colors': 'Color Campo Vacío (Color - Empty Field)',
             'MISSING Retail Market': 'Campo Vacío Retail Market (Retail Market - Empty Field)',
             'MISSING Channel': 'Channel Campo Vacío (Channel - Empty Field)',
             'MISSING Destination Country': 'Campo Vacío Destination Country (Destination Country - Empty Field)',
@@ -349,7 +344,7 @@ async function submitRejectionToPA(skipAuth = false) {
     const btn = document.getElementById('btnSubmitRejection');
     const statusDiv = document.getElementById('rej-status');
     
-    // Siempre pedir contraseña al registrar un rechazo (como firma digital)
+    // Siempre pedir contrase?a al registrar un rechazo (como firma digital)
     if (!skipAuth) {
         window.pendingAction = () => submitRejectionToPA(true);
         const modal = document.getElementById('passwordModal');
@@ -360,24 +355,29 @@ async function submitRejectionToPA(skipAuth = false) {
         return;
     }
 
-    if (currentRejectionReasons.length === 0) {
+        if (currentRejectionReasons.length === 0) {
         statusDiv.innerHTML = '<span style="color:#ef4444;">You must have at least one rejection reason in the list.</span>';
+        return;
+    }
+    
+    if (!document.getElementById('rej-emails').value.trim()) {
+        statusDiv.innerHTML = '<span style="color:#ef4444;">Error: The "Detected Emails" field is empty. Please enter at least one email address.</span>';
         return;
     }
     // Reemplazamos el "- " inicial por nada para que Excel guarde solo el texto limpio
     const allReasons = currentRejectionReasons.map(r => '\u2022 ' + r.replace(/^- /, '')).join('<br>');
 
-    const payload = {
+        const payload = {
         fechaRechazo: new Date().toLocaleDateString('en-GB'),
         sitio: 'ITKSITE2',
-        tecnico: currentUser,
-        formId: document.getElementById('rej-form-id').value,
-        color: document.getElementById('rej-color').value,
-        style: document.getElementById('rej-style').value,
-        description: document.getElementById('rej-desc').value,
-        vendor: document.getElementById('rej-vendor').value,
-        reason: allReasons.trim(),
-        correos: document.getElementById('rej-emails').value
+        tecnico: currentUser || 'N/A',
+        formId: document.getElementById('rej-form-id').value || 'N/A',
+        color: document.getElementById('rej-color').value || 'N/A',
+        style: document.getElementById('rej-style').value || 'N/A',
+        description: document.getElementById('rej-desc').value || 'N/A',
+        vendor: document.getElementById('rej-vendor').value || 'N/A',
+        reason: allReasons.trim() || 'N/A',
+        correos: document.getElementById('rej-emails').value || 'N/A'
     };
 
     btn.disabled = true;
@@ -425,3 +425,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <!-- Importamos la librería pdf-lib desde CDN -->
+    <!-- Importamos la librer�a pdf-lib desde CDN -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <!-- Importamos SheetJS para procesar archivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -24,7 +24,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
             align-items: center; 
             padding: 10px 30px; 
             height: 60px; 
-            /* 👇 CÓDIGO NUEVO 👇 */
+            /* =G C�DIGO NUEVO =G */
             position: fixed;
             top: 0;
             left: 0;
@@ -43,7 +43,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
             height: 40px; 
             font-size: 13px; 
             font-weight: 600; 
-            /* 👇 CÓDIGO NUEVO 👇 */
+            /* =G C�DIGO NUEVO =G */
             position: fixed;
             top: 60px; /* Se ancla justo debajo de los 60px de la barra amarilla */
             left: 0;
@@ -57,7 +57,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
 
         main { 
             flex: 1; 
-            /* 👇 Modificamos el padding: 130px arriba, 50px derecha, 30px abajo, 50px izquierda 👇 */
+            /* =G Modificamos el padding: 130px arriba, 50px derecha, 30px abajo, 50px izquierda =G */
             padding: 130px 50px 30px 50px; 
             display: flex; 
             flex-direction: column; 
@@ -119,7 +119,7 @@ body { background-color: #f5f6f8; display: flex; flex-direction: column; min-hei
         .lowconf-tag { font-size: 10px; font-weight: 700; color: #8a6d00; border: 1px solid #ffe082; background: #fff8e1; border-radius: 8px; padding: 0 5px; margin-left: 5px; vertical-align: middle; }
 
         .check-pill { display: inline-block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
-        if (status === 'FAIL') return '<span class="check-pill fail-pill">❌ FAIL</span>';
+        if (status === 'FAIL') return '<span class="check-pill fail-pill">L FAIL</span>';
         .check-pill.data-pill { background: #e3f2fd; color: #0d47a1; border-color: #90caf9; }
         .check-pill.na-pill { background: #f5f5f5; color: #616161; border-color: #e0e0e0; }
         .cond-alert { background: #fff3cd; border: 1px solid #ffe082; border-radius: 4px; padding: 6px 10px; font-size: 12px; color: #7b5800; margin-top: 4px; }
@@ -145,7 +145,7 @@ footer {
             align-items: center; 
             padding: 15px 30px; 
             font-size: 12px; 
-            /* 👇 CÓDIGO NUEVO PARA FIJARLO 👇 */
+            /* =G C�DIGO NUEVO PARA FIJARLO =G */
             position: fixed; 
             bottom: 0; 
             left: 0;
@@ -333,7 +333,7 @@ footer {
     <div class="logo">INTERGUIDE <span>2.0</span></div>
     <div class="top-links">
             
-        <!-- 📧 BOTÓN DE CONTACTO -->
+        <!-- =� BOT�N DE CONTACTO -->
         <a href="mailto:wilder.sican@intertek.com" style="text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer;">
             <i class="far fa-envelope"></i> Contact Us
         </a>
@@ -363,7 +363,7 @@ footer {
                     <div class="inline-alert" id="alertaEtrf" role="alert"></div>
                     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-                    <!-- 🧪 AUDITORÍA PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
+                    <!-- >� AUDITOR�A PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
                     <div style="margin: 15px 0; padding: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #15803d; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                             <span>🧪 PFAS Audit (Styles & Version)</span>
@@ -386,7 +386,7 @@ footer {
                         <div id="resultados-pfas-container" style="margin-top: 8px;"></div>
                     </div>
 
-                    <!-- 🛠️ AUDITORÍA BOM -->
+                    <!-- =� AUDITOR�A BOM -->
                     <div style="margin: 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #1d4ed8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                             <span><i class="fas fa-boxes" style="margin-right: 5px;"></i> BOM Audit (Number Match)</span>
@@ -416,7 +416,7 @@ footer {
                         <input type="text" id="campoBusqueda" placeholder="Search in text..." oninput="buscarEnTexto()">
                         <span class="match-info" id="infoCoincidencias" aria-live="polite"></span>
                     </div>
-                    <!-- 🟢 CORREGIDO: Tipeo <Sdiv cambiado por <div para solucionar ruptura estructural -->
+                    <!-- =� CORREGIDO: Tipeo <Sdiv cambiado por <div para solucionar ruptura estructural -->
                       <div id="rejection-container" style="margin: 15px 0; display: flex; justify-content: flex-end; align-items: center; border-radius: 6px; transition: all 0.3s;">
                           <div id="rejection-alerts" style="text-align: left; flex: 1; display: none;"></div>
                           <button id="btnLogRejection" onclick="openRejectionModal()" style="background:#ef4444; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 3px 6px rgba(239,68,68,0.3); transition:all 0.2s; margin-left: 15px;"><i class="fas fa-ban"></i> Register Rejection</button>
@@ -426,7 +426,7 @@ footer {
                         <div class="pdf-text-view" id="pdfTextView"></div>
                     </div>
                     <div class="zoom-hint" id="zoomHint" style="display:none;">Click on a page to zoom in</div>
-                    <button class="debug-toggle" onclick="toggleDebug()">🔧 Debug</button>
+                    <button class="debug-toggle" onclick="toggleDebug()">=' Debug</button>
                     <div id="debug-panel"></div>
                 </div>
             </div>
@@ -490,11 +490,11 @@ footer {
                         <div class="det-row" id="row-prod-char" style="display:none;"><span class="det-label">Prod. Characteristics</span><span class="det-val" id="d-prod-char"></span></div>
 
                         <div class="det-section"><i class="fas fa-file-signature"></i>PFAS Certification</div>
-                        <div id="d-declarations-block"><em style="color:#767676;font-size:12px;">—</em></div>
+                        <div id="d-declarations-block"><em style="color:#767676;font-size:12px;"></em></div>
 
                         <div class="det-section" style="margin-top: 15px;"><i class="fas fa-boxes"></i>Bill of Materials</div>
                         <div class="det-row"><span class="det-label">BOM Number</span><span class="det-val empty" id="d-bom-num">--</span></div>
-                        <div class="det-row"><span class="det-label">BOM File</span><span class="det-val empty" id="d-bom-file" style="word-break: break-all;">--</span></div>
+                        <div class="det-row"><span class="det-label">BOM File</span><span class="det-val empty" id="d-bom-file" style="word-break: break-all;">-</span></div>
                     </div>
                 </div>
             </div>
@@ -513,7 +513,7 @@ footer {
                         <span style="font-weight: 700; font-size: 13px; color: #333;">Trim Certifier Test Report</span>
                     </div>
                     <div id="trim-report-body">
-                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
+                        <em style="color:#767676; font-size:12px; font-style: italic;"> Waiting for ETRF </em>
                     </div>
                 </div>
 
@@ -523,7 +523,7 @@ footer {
                         <span style="font-weight: 700; font-size: 13px; color: #333;">Fabric Test Report</span>
                     </div>
                     <div id="fabric-report-body">
-                        <em style="color:#767676; font-size:12px; font-style: italic;">— Waiting for ETRF —</em>
+                        <em style="color:#767676; font-size:12px; font-style: italic;"> Waiting for ETRF </em>
                     </div>
                 </div>
             </div>
@@ -560,7 +560,7 @@ footer {
                         <div class="pdf-text-view" id="pdfTextView-prev"></div>
                     </div>
                     <div class="zoom-hint" id="zoomHint-prev" style="display:none;">Click on a page to zoom in</div>
-                    <button class="debug-toggle" onclick="toggleDebugPrev()">🔧 Debug</button>
+                    <button class="debug-toggle" onclick="toggleDebugPrev()">=' Debug</button>
                     <div id="debug-panel-prev"></div>
                 </div>
             </div>
@@ -584,7 +584,7 @@ footer {
                         <div class="det-row"><span class="det-label">Date Out</span><span class="det-val" id="d-prev-date-out"></span></div>
 
                         <div class="det-section" style="margin-top:15px;"><i class="fas fa-flask"></i>PSR Test Results (RESULT SUMMARY)</div>
-                        <div id="d-prev-tests-block"><em style="color:#767676;font-size:12px;">—</em></div>
+                        <div id="d-prev-tests-block"><em style="color:#767676;font-size:12px;"></em></div>
                     </div>
                 </div>
             </div>
@@ -616,7 +616,7 @@ footer {
                         <ul class="file-list" id="fileListUnify"></ul>
                     </div>
 
-                    <!-- Botón y Estado -->
+                    <!-- Bot�n y Estado -->
                     <button class="btn-unify" id="mergeBtnUnify" disabled>Merge and Download PDF</button>
                     <button class="btn-clear" id="clearBtnUnify">Clear All Files</button>
                     <div id="unifyStatus"></div>
@@ -667,7 +667,7 @@ footer {
 
 <footer>
     <div class="footer-left">
-        <i class="fab fa-invision"></i> <span style="color:#ccc;">© 2026 INTERGUIDE | By WilderSican</span>
+        <i class="fab fa-invision"></i> <span style="color:#ccc;">� 2026 INTERGUIDE | By WilderSican</span>
     </div>
 </footer>
 
@@ -809,18 +809,18 @@ function esc(t) {
 
 function setVal(id, val, lowConfidence) {
     const el = document.getElementById(id); if (!el) return;
-    if (val && val !== '--' && val !== '—') {
+    if (val && val !== '--' && val !== '') {
         el.textContent = val;
         el.className = lowConfidence ? 'det-val lowconf' : 'det-val found';
         if (lowConfidence) {
             const tag = document.createElement('span');
             tag.className = 'lowconf-tag';
             tag.title = 'Low confidence detection: verify against original PDF';
-            tag.textContent = '≈';
+            tag.textContent = 'H';
             el.appendChild(tag);
         }
     } else {
-        el.textContent = '—'; el.className = 'det-val empty';
+        el.textContent = ''; el.className = 'det-val empty';
     }
 }
 
@@ -974,7 +974,7 @@ async function renderizarPaginas(pdfDoc, containerId, onClickPagina, onProgreso)
         const cv = document.createElement('canvas');
         cv.width = vp.width; cv.height = vp.height;
         cv.style.cssText = 'display:block;margin:0 auto 10px;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;';
-        cv.title = `Page ${i} — click to zoom in`;
+        cv.title = `Page ${i}  click to zoom in`;
         cv.setAttribute('role', 'button');
         cv.setAttribute('aria-label', `Zoom in page ${i} of ${pdfDoc.numPages}`);
         cv.onclick = onClickPagina;
@@ -1255,7 +1255,7 @@ async function extractAll(fileName) {
         let rdNumVal = extractRDNumber();
         if (!rdNumVal && isFabric) {
             const styleVal = document.getElementById('d-style-no').textContent;
-            if (styleVal && styleVal !== '--' && styleVal !== '—') rdNumVal = styleVal;
+            if (styleVal && styleVal !== '--' && styleVal !== '') rdNumVal = styleVal;
         }
         if (isFabric || rdNumVal) {
             document.getElementById('row-rd-num').style.display = '';
@@ -1302,7 +1302,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
         const el = document.getElementById(id);
         if (!el) return null;
         const txt = el.textContent.trim();
-        return (txt === '--' || txt === '—' || txt === '') ? null : txt;
+        return (txt === '--' || txt === '' || txt === '') ? null : txt;
     };
 
     const testStatus = (getVal('d-test-status') || '').toLowerCase();
@@ -1320,16 +1320,16 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
     if (!sourcing) {
         alerts.push('MISSING <strong>Sourcing Office</strong>');
     } else {
-        // 🛡️ LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
+        // =� LISTA BLANCA DE SOURCING OFFICES PERMITIDAS (Actualizada para AMERIC)
         const validSourcingRegex = /^\s*(?:GIS\s*[\-\._]*\s*)?(HONG\s*KONG|HK|SHANGAI|SHANGHAI|SH|CENTRAL\s*AMERICA?|CA|AMERICA?|VIETNAM|VN)\s*$/i;
         
         if (validSourcingRegex.test(sourcing)) {
-            // Es 100% válida (1 sola oficina). Lo dejamos pasar limpiecito.
+            // Es 100% v�lida (1 sola oficina). Lo dejamos pasar limpiecito.
         } else if ((sourcing.includes(',') || sourcing.includes(';') || sourcing.includes('&')) && /GIS/i.test(sourcing)) {
-            // Si tiene coma/separador Y además menciona la palabra "GIS", asumimos que intentaron poner 2 oficinas a la vez
+            // Si tiene coma/separador Y adem�s menciona la palabra "GIS", asumimos que intentaron poner 2 oficinas a la vez
             alerts.push('TWO (or multiple) <strong>Sourcing Office</strong> detected');
         } else {
-            // Si no pasó la lista blanca, y no son múltiples GIS, es inválida
+            // Si no pas� la lista blanca, y no son m�ltiples GIS, es inv�lida
             alerts.push('INVALID <strong>Sourcing Office</strong> (Detected: ' + sourcing + ')');
         }
     }
@@ -1344,7 +1344,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
     else if (chkCount > 1) alerts.push('TWO (or multiple) <strong>Test Types</strong> checked');
 
     const refNumEl = document.getElementById('d-ref-num');
-    if (refNumEl && (refNumEl.textContent === '--' || refNumEl.textContent === '—')) {
+    if (refNumEl && (refNumEl.textContent === '--' || refNumEl.textContent === '')) {
         alerts.push('MISSING <strong>Reference Full Package Report Number</strong>');
     }
 
@@ -1567,48 +1567,78 @@ function extractSeason(text) {
 }
 
 function extractRDNumber() {
-    let rdNumbers = [];
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
-        const hRD = items.find(i => {
-            const str = i.str.trim().toLowerCase();
-            return /\brd\b|rd\s*number|one\s*number\s*per/i.test(str);
-        });
-        if (!hRD) continue;
-
-        const nums = items.filter(i => {
-            const txt = i.str.trim();
-            if (!/\b\d{6,9}\b/.test(txt)) return false; 
-            if (Math.abs(i.x - hRD.x) > 45) return false; 
-            if (i.y <= hRD.y + 5 || i.y > hRD.y + 220) return false; 
-            return true;
-        });
-
-        for (const n of nums) {
-            const val = n.str.trim();
-            const matches = val.match(/\b\d{6,9}\b/g);
-            if (matches) {
-                matches.forEach(m => {
-                    if (!rdNumbers.includes(m)) rdNumbers.push(m);
-                });
-            } else {
-                if (!rdNumbers.includes(val)) rdNumbers.push(val);
+        
+        let rdHeaderItem = null;
+        let rdMatchStr = null;
+        for (let it of items) {
+            const str = it.str.toLowerCase();
+            if (str.includes("fabric article") || str.includes("rd number") || str.includes("rd #")) {
+                if (it.y < 400) { // must be in the top half
+                    rdHeaderItem = it;
+                    rdMatchStr = str.includes("fabric article") ? "fabric article" : (str.includes("rd number") ? "rd number" : "rd #");
+                    break;
+                }
             }
         }
-        if (rdNumbers.length > 0) break;
-    }
 
-    if (rdNumbers.length === 0) {
-        const fullText = pageTexts.join(' ');
-        const match = fullText.match(/(?:PLM\s*Fabric|RD\s*Number|Article)[\s\S]{0,150}?(\b\d{6,9}\b)/i);
-        if (match && match[1]) {
-            rdNumbers.push(match[1]);
+        if (!rdHeaderItem) continue;
+
+        let charIndex = rdHeaderItem.str.toLowerCase().indexOf(rdMatchStr);
+        let strLen = rdHeaderItem.str.length;
+        let w = rdHeaderItem.w || rdHeaderItem.width || (strLen * 5.5);
+        let approxX = rdHeaderItem.x + (charIndex / strLen) * w;
+
+        let candidates = [];
+        for (let it of items) {
+            if (it.y <= rdHeaderItem.y + 5 || it.y > rdHeaderItem.y + 250) continue;
+            let txt = it.str.trim();
+            let matches = txt.match(/\b\d{5,9}\b/g);
+            if (matches) {
+                for (let m of matches) {
+                    candidates.push({ val: m, x: it.x, y: it.y });
+                }
+            }
+        }
+
+        if (candidates.length > 0) {
+            candidates.sort((a, b) => {
+                let yDistA = Math.abs(a.y - rdHeaderItem.y);
+                let yDistB = Math.abs(b.y - rdHeaderItem.y);
+                if (Math.abs(yDistA - yDistB) > 10) return yDistA - yDistB; 
+                
+                let xDistA = Math.abs(a.x - approxX);
+                let xDistB = Math.abs(b.x - approxX);
+                return xDistA - xDistB;
+            });
+
+            for (let cand of candidates) {
+                if (cand.x > approxX - 100 && cand.x < approxX + 150) {
+                    return cand.val;
+                }
+            }
+            
+            for (let cand of candidates) {
+                if (cand.x > 80) return cand.val;
+            }
         }
     }
 
-    return rdNumbers.length > 0 ? rdNumbers.join(', ') : null;
-}
+    const fullText = pageTexts.join(' ');
+    let match = fullText.match(/(?:PLM\s*Fabric\s*Article|RD\s*Number)[\s\S]{0,120}?(\d{5,9})[\s\S]{1,50}?(\d{5,9})/i);
+    if (match) {
+        if (match[2] && match[1].length === 7 && match[1].startsWith("206")) {
+             return match[2]; 
+        }
+        return match[1];
+    }
+    
+    let singleMatch = fullText.match(/(?:PLM\s*Fabric|RD\s*Number)[\s\S]{0,100}?(\b\d{5,9}\b)/i);
+    if (singleMatch) return singleMatch[1];
 
+    return null;
+}
 function extractRequestedTests() {
     let requestedTests = [];
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
@@ -1624,7 +1654,7 @@ function extractRequestedTests() {
 
         rawItems = rawItems.filter(i => {
             const s = i.str.trim().toLowerCase();
-            if (/^[xv✓✔☑☒■þoo☐]$/i.test(s)) return false;
+            if (/^[xXvV\u2713\u2611\u2714]$/i.test(s)) return false;
             if (s === 'claims' || s === 'special' || s === 'test') return false;
             if (s.includes('form no')) return false;
             if (s.includes('page ')) return false;
@@ -1650,8 +1680,8 @@ function extractRequestedTests() {
 
 function isBoxChecked(labelText) {
     const lowerLabel = labelText.toLowerCase();
-    const checkChars = ['þ', '✓', '✔', '☑', '☒', '■', '[x]', '(x)'];
-    const emptyChars = ['☐', 'o ', 'O ', '[ ]'];
+    const checkChars = ['x', 'X', 'v', 'V', '\u2713', '\u2714', '\u2611', '[x]', '(x)', '[X]', '(X)'];
+    const emptyChars = ['o', 'O', '\u2610', '\u25A1', '[ ]', '( )'];
 
     for (let pageIdx = 0; pageIdx < pageTexts.length; pageIdx++) {
         const text = pageTexts[pageIdx] || '';
@@ -1682,7 +1712,7 @@ function isBoxChecked(labelText) {
         const nearby = items.find(i =>
             Math.abs(i.y - labelItem.y) < 8 &&
             i.x < labelItem.x && i.x > labelItem.x - 20 &&
-            /^[þ✓✔☑☒■xX]$/.test(i.str.trim())
+            /^[��xX]$/.test(i.str.trim())
         );
         if (nearby) return true;
     }
@@ -1707,7 +1737,7 @@ function renderTestTypeBlock(full, additional, special, psr, perf, requestedTest
         html = '<p style="color:#767676;font-size:12px;padding:4px 0;">No checkbox marked detected.</p>';
     } else {
         for (const c of marked) {
-            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill">✓ ${esc(c.label)}</span></span></div>`;
+            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill"> ${esc(c.label)}</span></span></div>`;
         }
     }
 
@@ -1908,7 +1938,7 @@ function renderWashMethod() {
     else if (text.includes('GARMENTWASH')) method = 'Garment Wash';
 
     if (method) { el.textContent = method; el.className = 'det-val found'; }
-    else { el.textContent = '—'; el.className = 'det-val empty'; }
+    else { el.textContent = ''; el.className = 'det-val empty'; }
 }
 
 function extractBOMData(text) {
@@ -2036,9 +2066,9 @@ function extractComplementaryReportsData() {
 
     let currentSection = 'OTHER';
 
-    // 🟢 PLAN 0: LA BASE DE DATOS HISTÓRICA COMPLETA UNIFICADA
+    // =� PLAN 0: LA BASE DE DATOS HIST�RICA COMPLETA UNIFICADA
     const knownReports = {
-        // 🏷️ T-LABEL / JOKER LABEL
+        // <� T-LABEL / JOKER LABEL
         "82260780111": "T-LABEL", 
         "(8226)078-0111": "T-LABEL",
         "TRM-0002134267": "JOKER LABEL", "(8225)318-0244": "JOKER LABEL",
@@ -2052,7 +2082,7 @@ function extractComplementaryReportsData() {
         "GUAT26008388": "JOKER LABEL",
         "GUAT25016153": "JOKER LABEL",
         
-        // 🔥 HEAT SEAL / HEAT TRANSFER
+        // =% HEAT SEAL / HEAT TRANSFER
         "82260780113": "HEAT SEAL LABEL", 
         "(8226)078-0113": "HEAT SEAL LABEL",
         "TRM-0002137778": "HEAT TRANSFER", "(8225)330-0003": "HEAT TRANSFER",
@@ -2081,7 +2111,7 @@ function extractComplementaryReportsData() {
         "(7725)300-0012": "HEAT TRANSFER",
         "GUAT26003431": "HEAT TRANSFER",
         
-        // 🧺 CARE LABEL
+        // >� CARE LABEL
         "TRM-0002116687": "CARE LABEL", "KORT25054351": "CARE LABEL",
         "TRM-0002404929": "CARE LABEL", "GUAT26000399": "CARE LABEL",
         "TRM-0002521152": "CARE LABEL", "GUAT26003439": "CARE LABEL",
@@ -2092,7 +2122,7 @@ function extractComplementaryReportsData() {
         "(9625)322-0178": "CARE LABEL",
         "KORT26019945": "CARE LABEL",
         
-        // 📡 RFID LABEL
+        // =� RFID LABEL
         "TRM-0002521145": "RFID LABEL", "GUAT26003408": "RFID LABEL",
         "TRM-0002019463": "RFID LABEL", "GUAT25016940": "RFID LABEL",
         "GUAT25031760": "RFID LABEL",
@@ -2105,7 +2135,7 @@ function extractComplementaryReportsData() {
         "(9625)333-0080": "RFID LABEL",
         "TRM-0002119728": "RFID LABEL", "GUAT25031282": "RFID LABEL",
         
-        // 📦 MIXTOS Y OTROS
+        // =� MIXTOS Y OTROS
         "TRM-0002145940": "JOKER LABEL & CARE LABEL", "77253380006": "JOKER LABEL & CARE LABEL",
         "TRM-0002520854": "WOVEN LABEL", "GUAT26003442": "WOVEN LABEL",
         "(9625)235-0143": "MOBILON TAPE",
@@ -2230,7 +2260,7 @@ function extractComplementaryReportsData() {
                 currentSection = 'TRIM';
             } else if (/fabric\s*test|reports\s*for\s*fabrics/i.test(txt)) {
                 currentSection = 'FABRIC';
-            // 🛑 ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
+            // =� ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
             } else if (/\bcoc['s]*\b|attestation|compliance|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
                 if (item.x < 280) {
                     currentSection = 'OTHER';
@@ -2240,7 +2270,7 @@ function extractComplementaryReportsData() {
         }
         cocHeadersY.sort((a, b) => a - b);
 
-        // 🚀 EXTRACCIÓN SEGURA: Permite números unidos a guiones bajos (ej. \d{10,12}_)
+        // =� EXTRACCI�N SEGURA: Permite n�meros unidos a guiones bajos (ej. \d{10,12}_)
         let rawAnchors = items
             .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
             .sort((a, b) => a.y - b.y);
@@ -2299,7 +2329,7 @@ function extractComplementaryReportsData() {
             const rowItems = items.filter(it => it.y >= topLimitY && it.y <= bottomLimitY);
             const rowText = rowItems.map(it => it.str).join(' ');
             
-            // 🛑 ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
+            // =� ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
             if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum|telephone|phone|fax|vendor\s*attestation|form\s*no|page\s*\d+\s*of\s*\d+/i.test(rowText)) continue;
 
             const cellItems = items.filter(it => 
@@ -2314,7 +2344,7 @@ function extractComplementaryReportsData() {
                 .replace(/TRM\s*[-_]?\s*/ig, 'TRM-')
                 .replace(/(TRM-[A-Z0-9_]+)\s+(?=[A-Z0-9_])/ig, '$1'); 
 
-            // 🚀 EXTRACCIÓN SEGURA: Captura el número incluso si está pegado a un guion bajo `_`
+            // =� EXTRACCI�N SEGURA: Captura el n�mero incluso si est� pegado a un guion bajo `_`
             const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
             if (!match) continue;
             let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
@@ -2400,7 +2430,7 @@ function extractComplementaryReportsData() {
                     }
 
                     if (!hasValidColorWord && fileHasValidColorWord) {
-                        // El texto de la columna no tiene colores reales y parece basura impredecible, pero el archivo SÍ tiene un color real!
+                        // El texto de la columna no tiene colores reales y parece basura impredecible, pero el archivo S� tiene un color real!
                         baseColor = fileExtractedColor;
                     } else {
                         baseColor = colorText;
@@ -2686,13 +2716,133 @@ async function procesarPDF() {
         window.estilosGlobalesETRF = [...new Set(estilosEncontrados)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202'));
         
         const rawRdETRF = document.getElementById('d-rd-num') ? document.getElementById('d-rd-num').textContent : '';
-        let rdList = rawRdETRF.split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '--' && r !== '-');
-        try {
-            const compData = extractComplementaryReportsData();
-            if (compData.trims) compData.trims.forEach(t => { if (t.rdNum) rdList.push(...t.rdNum.split(/[,;]/).map(x=>x.trim())); });
-            if (compData.fabrics) compData.fabrics.forEach(f => { if (f.rdNum) rdList.push(...f.rdNum.split(/[,;]/).map(x=>x.trim())); });
-        } catch(e){}
-        window.rdGlobalesETRF = [...new Set(rdList)].filter(x => x);
+        let legacyRdList = rawRdETRF.split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '--' && r !== '-'); let rdList = []; let trimRdList = [];
+                  try {
+              const compData = extractComplementaryReportsData();
+              // if (compData.trims) compData.trims.forEach(t => { if (t.rdNum) rdList.push(...t.rdNum.split(/[,;]/).map(x=>x.trim())); });
+              // if (compData.fabrics) compData.fabrics.forEach(f => { if (f.rdNum) rdList.push(...f.rdNum.split(/[,;]/).map(x=>x.trim())); });
+          } catch(e){}
+
+                            // ABSOLUTE RAW SCAN PARA RDs (Bypass 100% tolerante)
+            try {
+                                                                      let inFabricTable = false;
+                  window.debugCoords = [];
+                  let rdColX = null;
+                  let millColX = null;
+                  let millList = [];
+                  let inTrimTable = false;
+                  let trimRdColX = null;
+                    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
+                      const items = pageItems[pageIdx];
+                      
+                      let rows = [];
+                      items.forEach(it => {
+                          let added = false;
+                          for (let r of rows) {
+                              if (Math.abs(r.y - it.y) < 5) {
+                                  r.items.push(it);
+                                  added = true;
+                                  break;
+                              }
+                          }
+                          if (!added) { rows.push({ y: it.y, items: [it] }); }
+                      });
+                      
+                      rows.sort((a, b) => a.y - b.y);
+                      rows.forEach(r => r.items.sort((a, b) => a.x - b.x));
+                      rows.forEach(r => { r.text = r.items.map(it => it.str).join(" ").toLowerCase(); });
+  
+                      for (let r of rows) {
+                          if (/fabric\s*test\s*report|fabric\s*details/i.test(r.text)) { 
+                              inFabricTable = true; 
+                              inTrimTable = false;
+                              rdColX = null; 
+                              millColX = null; 
+                          } else if (/trim\s*certif.*test\s*report|vendor-sourced\s*trims/i.test(r.text)) {
+                              inTrimTable = true;
+                              inFabricTable = false;
+                              trimRdColX = null;
+                          } else if (/vendor\s*attestation|compliance|traceability/i.test(r.text)) {
+                              inFabricTable = false;
+                              inTrimTable = false;
+                          }
+  
+                          if (inFabricTable) {
+                              if (rdColX === null && /article|rd\s*#/i.test(r.text)) { let rdItem = r.items.find(it => /article|rd/i.test(it.str)); if (rdItem) { let strL = rdItem.str.toLowerCase(); let idx = strL.indexOf("article"); if (idx === -1) idx = strL.indexOf("rd"); rdColX = rdItem.x + (idx / strL.length) * (rdItem.width || (strL.length * 6)); } } if (millColX === null && /mill/i.test(r.text) && !/vendor|nominated/i.test(r.text)) { let millItem = r.items.find(it => /mill/i.test(it.str)); if (millItem) { let strL = millItem.str.toLowerCase(); let idx = strL.indexOf("mill"); millColX = millItem.x + (idx / strL.length) * (millItem.width || (strL.length * 6)); } }
+                          } else if (inTrimTable) {
+                              if (trimRdColX === null && /id\s*number/i.test(r.text) && !/vendor-sourced/i.test(r.text)) { let tItem = r.items.find(it => /id\s*number/i.test(it.str)); if (tItem) { let strL = tItem.str.toLowerCase(); let idx = strL.indexOf("id number"); trimRdColX = tItem.x + (idx / strL.length) * (tItem.width || (strL.length * 6)); } }
+                          }
+  
+                          if (inFabricTable || inTrimTable) {
+                                if (/form\s*no|page\s*\d|rev\d|barcode/i.test(r.text)) { /* skip footer rows */ }
+                                else r.items.forEach(it => {
+                                  const matches = it.str.match(/\d{5,9}/g);
+                                  if (matches) {
+                                      let searchOffset = 0;
+                                      matches.forEach(txt => {
+                                          const idx = it.str.indexOf(txt, searchOffset);
+                                          searchOffset = idx + txt.length;
+                                          
+                                          let w = it.width;
+                                          if (!w || w < 20) w = 500;
+                                          let approxX = it.x;
+                                          if (it.str.length > 0) approxX = it.x + (idx / it.str.length) * (it.width || (it.str.length * 6));
+  
+                                          if (inFabricTable) {
+                                              window.debugCoords.push(`T:${txt} aX:${Math.round(approxX)} rX:${rdColX?Math.round(rdColX):"N"} mX:${millColX?Math.round(millColX):"N"}`);
+                                              if (millColX !== null && Math.abs(approxX - millColX) < 60) {
+                                                  millList.push(txt);
+                                              } else if (rdColX !== null) {
+                                                  if (Math.abs(approxX - rdColX) < 150) {
+                                                      rdList.push(txt);
+                                                  }
+                                              } else {
+                                                  if (approxX > 120 && approxX < 450) {
+                                                      rdList.push(txt);
+                                                  }
+                                              }
+                                          } else if (inTrimTable) {
+                                              window.debugCoords.push(`TRIM:${txt} aX:${Math.round(approxX)} trX:${trimRdColX?Math.round(trimRdColX):"N"}`);
+                                              if (trimRdColX !== null) {
+                                                  if (Math.abs(approxX - trimRdColX) < 150) {
+                                                      trimRdList.push(txt);
+                                                  }
+                                              } else {
+                                                  if (approxX > 200 && approxX < 400) {
+                                                      trimRdList.push(txt);
+                                                  }
+                                              }
+                                          }
+                                      });
+                                  }
+                              });
+                          }
+                      }
+                  }
+                  if (rdList.length === 0) rdList = legacyRdList;
+                  window.globalRawRdList = [...new Set(rdList)];
+                  window.globalMillList = [...new Set(millList)];
+                  window.globalRawTrimRdList = [...new Set(trimRdList)];
+            } catch(e) { console.error('ETRF SCANNER ERROR:', e); }
+            
+        const elStyleEtrf = document.getElementById('d-style-no');
+        const styleNumEtrf = elStyleEtrf ? elStyleEtrf.textContent.trim() : '';
+
+        let debugEtrfHtml = `<div style="margin-top:10px; font-size:10px; color:#555; background:#eee; padding:5px; border-radius:4px;"><b>COORDS DEBUG:</b><br>` + (window.debugCoords ? window.debugCoords.join("<br>") : "null") + `</div><div style="margin-top:10px; font-size:10px; color:#555; background:#eee; padding:5px; border-radius:4px;">
+          <b>SCANNER DEBUG:</b><br>
+                      Raw rdList: <br>
+            Raw trimRdList: <br>
+          Raw millList: ${window.globalMillList ? window.globalMillList.join(', ') : 'null'}<br>
+          StyleNumEtrf: ${styleNumEtrf}
+        </div>`;
+        const resultsDiv = document.getElementById('resultados-etrf-container');
+        if (resultsDiv) resultsDiv.innerHTML += debugEtrfHtml;
+
+        window.rdGlobalesETRF = [...new Set(rdList)].filter(x => { if (!x) return false; if (x === styleNumEtrf) return false; return true; });
+        
+ window.trimRdGlobalesETRF = [...new Set(trimRdList)].filter(x => { if (!x) return false; if (x === styleNumEtrf) return false; return true; });
+
+
 
     } catch (e) {
         dbg('ERROR: ' + e.message);
@@ -2890,7 +3040,7 @@ async function escanearTablaResultadosPSR() {
             encActivo = enc;
             tablaEncontrada = true;
         } else if (encActivo && pageIdx > 0 && pageIdx <= 3) {
-            // Asumir que la tabla continúa en la página 2 o 3
+            // Asumir que la tabla contin�a en la p�gina 2 o 3
             enc = encActivo;
         } else {
             continue;
@@ -2939,7 +3089,7 @@ async function escanearTablaResultadosPSR() {
         for (const lin of lineasTexto) {
             lin.items.sort((a, b) => a.x - b.x);
             let textoLinea = lin.items.map(it => it.str.trim()).join(' ').replace(/\s{2,}/g, ' ').trim();
-            textoLinea = textoLinea.replace(/^[-–—•\*\.\s]+/, '').trim();
+            textoLinea = textoLinea.replace(/^[-"\*\.\s]+/, '').trim();
 
             if (textoLinea.length < 2) continue;
 
@@ -2964,7 +3114,7 @@ async function escanearTablaResultadosPSR() {
             const centroY = bloque.lineas.reduce((sum, l) => sum + l.y, 0) / bloque.lineas.length;
             let estado = null;
 
-            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && (/^[☑✔✓þvVxX■]$/i.test(it.str.trim()) || /^(pass|fail|n\s*\/\s*a|na|not applicable|data)$/i.test(it.str.trim())));
+            const checkTexto = items.find(it => Math.abs(it.y - centroY) < 14 && it.x > (colPass.x - 30) && (/^[�vVxX�]$/i.test(it.str.trim()) || /^(pass|fail|n\s*\/\s*a|na|not applicable|data)$/i.test(it.str.trim())));
             if (checkTexto) {
                 const txt = checkTexto.str.trim().toUpperCase();
                 if (/^(PASS|FAIL|DATA)$/.test(txt)) {
@@ -3007,7 +3157,7 @@ async function escanearTablaResultadosPSR() {
 function renderTablaResultadosPSR(filas) {
     const cont = document.getElementById('d-prev-tests-block');
     if (!filas || filas.length === 0) {
-        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">PSR results table (RESULT SUMMARY) not detected in this PDF. (Enable 🔧 Debug for details)</span></div>';
+        cont.innerHTML = '<div class="det-row"><span class="det-label" style="width:100%; text-align:center; color:#767676; font-style:italic;">PSR results table (RESULT SUMMARY) not detected in this PDF. (Enable \"Debug\" for details)</span></div>';
         return;
     }
 
@@ -3028,8 +3178,8 @@ function renderTablaResultadosPSR(filas) {
     }
 
     const pillFor = (status) => {
-        if (status === 'PASS') return '<span class="check-pill">✓ PASS</span>';
-        if (status === 'FAIL') return '<span class="check-pill fail-pill">❌ FAIL</span>';
+        if (status === 'PASS') return '<span class="check-pill"> PASS</span>';
+        if (status === 'FAIL') return '<span class="check-pill fail-pill">L FAIL</span>';
         if (status === 'DATA') return '<span class="check-pill data-pill">DATA</span>';
         if (status === 'UNKNOWN') return '<span class="check-pill" style="background:#e0e0e0; color:#555;">UNKNOWN</span>';
         return '<span class="check-pill na-pill">NA</span>';
@@ -3384,25 +3534,25 @@ async function procesarPDFPrev() {
         const matchDate = fullTextPrev.match(/(?:DATE\s*OUT|ISSUE\s*DATE|DATE|Report\s*Date)[\s:\-\.]*(\d{1,2}[\-\s\/]+[A-Za-z]{3}[\-\s\/]+\d{2,4}|[A-Za-z]{3}[\-\s\/]+\d{1,2}[,\-\s\/]+\d{2,4}|\d{1,2}[\-\/]\d{1,2}[\-\/]\d{2,4}|\d{4}[\-\/]\d{2}[\-\/]\d{2})/i);
         if (matchDate) dateOutPrev = matchDate[1].trim();
 
-        // ════════════════════════════════════════════════
-        // 🚀 EL ENRUTADOR SECUENCIAL (A PRUEBA DE BALAS)
-        // ════════════════════════════════════════════════
+        // PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+        // =� EL ENRUTADOR SECUENCIAL (A PRUEBA DE BALAS)
+        // PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
         let escaneo = { encontrada: false, filas: [] };
 
-        // 1️⃣ INTENTO 1: Escáner A (Intertek Estándar - Checkboxes)
+        // 1� INTENTO 1: Esc�ner A (Intertek Est�ndar - Checkboxes)
         escaneo = await escanearTablaResultadosPSR();
 
-        // 2️⃣ INTENTO 2: Escáner C (Bureau Veritas)
+        // 2� INTENTO 2: Esc�ner C (Bureau Veritas)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaBV();
         }
 
-        // 3️⃣ INTENTO 3: Escáner B (Intertek Textual Antiguo)
+        // 3� INTENTO 3: Esc�ner B (Intertek Textual Antiguo)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaConclusions();
         }
 
-        // 4️⃣ INTENTO 4: Escáner D (Matriz X - Fallback)
+        // 4� INTENTO 4: Esc�ner D (Matriz X - Fallback)
         if (!escaneo.encontrada || escaneo.filas.length === 0) {
             escaneo = await escanearTablaMatrizX();
         }
@@ -3422,10 +3572,10 @@ async function procesarPDFPrev() {
             let etiquetasHTML = '';
             
             if (validadoHistorial.length > 0) {
-                etiquetasHTML += `<span style="font-size:10px; color:#2e7d32; background:#e8f5e9; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; margin-right:5px; border: 1px solid #c8e6c9;">✅ DB Match: ${validadoHistorial.join(', ')}</span>`;
+                etiquetasHTML += `<span style="font-size:10px; color:#2e7d32; background:#e8f5e9; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; margin-right:5px; border: 1px solid #c8e6c9;"> DB Match: ${validadoHistorial.join(', ')}</span>`;
             }
             if (pruebasLive.length > 0) {
-                etiquetasHTML += `<span style="font-size:10px; color:#0277bd; background:#e1f5fe; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; border: 1px solid #b3e5fc;">🌐 PDF Live: ${pruebasLive.join(', ')}</span>`;
+                etiquetasHTML += `<span style="font-size:10px; color:#0277bd; background:#e1f5fe; padding:2px 5px; border-radius:4px; margin-top:4px; display:inline-block; border: 1px solid #b3e5fc;">< PDF Live: ${pruebasLive.join(', ')}</span>`;
             }
 
             refEl.innerHTML = `${reportNoPrev || 'N/A'} <br> ${etiquetasHTML}`;
@@ -3446,245 +3596,22 @@ async function procesarPDFPrev() {
                 return regex.test(fullTextPrev);
             });
             if (matchedRDs.length > 0) {
-                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#1565c0; background:#e3f2fd; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #90caf9;"><i class="fas fa-link" style="margin-right: 4px;"></i>ETRF Match: ${matchedRDs.join(', ')}</span></div>`;
+                rdMatchPrevHTML = `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> ETRF MATCH (PASS): ` + matchedRDs.join(', ') + `</div>`;
             } else {
-                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#c62828; background:#ffebee; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #ef9a9a;"><i class="fas fa-exclamation-circle" style="margin-right: 4px;"></i>No ETRF match for: ${rdListToSearch.join(', ')}</span></div>`;
+                rdMatchPrevHTML = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF MATCH FOUND (FAIL)</div>`;
             }
         }
         
-        const dateOutSpan = document.getElementById('d-prev-date-out');
-        if (dateOutSpan) {
-            dateOutSpan.innerHTML = `${dateOutPrev || 'N/A'}${rdMatchPrevHTML}`;
-        }
-
-        if (escaneo.encontrada && escaneo.filas.length > 0) {
-            renderTablaResultadosPSR(escaneo.filas);
-        } else {
-            renderTablaResultadosPSR(null);
-        }
-
-        cambiarVistaPrev('visual');
-        document.getElementById('progressFill-prev').style.width = '100%';
-        setTimeout(() => { document.getElementById('progressFill-prev').style.width = '0%'; }, 500);
-    } catch (e) {
-        console.error(e);
-        mostrarAlerta('alertaPrev', 'An error occurred while processing the PDF: ' + e.message, 'error');
-        document.getElementById('progressFill-prev').style.width = '0%';
-    } finally {
-        btn.disabled = false; btn.textContent = 'Analyze PREVS';
-    }
-}
-
-function abrirModalPrev() { abrirModalConPdf(pdfDocPrev); }
-function cambiarVistaPrev(v) {
-    cambiarVistaGenerica({ tabVisual: 'tabVisual-prev', tabTexto: 'tabTexto-prev', pdfPages: 'pdfPages-prev', pdfTextView: 'pdfTextView-prev' }, v);
-}
-function buscarEnTextoPrev() {
-    buscarEnTextoGenerico({ campoBusqueda: 'campoBusqueda-prev', pdfTextView: 'pdfTextView-prev', infoCoincidencias: 'infoCoincidencias-prev' }, textoExtraidoPrev, cambiarVistaPrev);
-}
-
-/* ============================================================================
-   MODULE 3: PFAS LOGIC (HYBRID DOCX / PDF ENGINE)
-============================================================================ */
-let textoExtraidoPfas = '';
-let tipoArchivoPfas = '';
-
-async function extraerTextoHibrido(archivo) {
-    const extension = archivo.name.split('.').pop().toLowerCase();
-    tipoArchivoPfas = extension.toUpperCase();
-
-    if (extension === 'pdf') {
-        console.log("📄 Reading PFAS with PDF.js Engine...");
-        const lectura = await leerPdf(archivo, true, false);
-        return lectura.textoExtraido || lectura.pageTexts.join(' ');
+        document.getElementById('prev-match-alert').innerHTML = rdMatchPrevHTML;
         
-    } else if (extension === 'docx' || extension === 'doc') {
-        console.log("📝 Reading PFAS with Mammoth.js (Word) Engine...");
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const arrayBuffer = event.target.result;
-                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                    .then(function(result) {
-                        resolve(result.value);
-                    })
-                    .catch(function(err) {
-                        reject("Error extracting text from Word document: " + err.message);
-                    });
-            };
-            reader.onerror = () => reject("Could not open local Word file.");
-            reader.readAsArrayBuffer(archivo);
-        });
-    } else {
-        throw new Error("Unsupported format. Please upload a .docx or .pdf file");
-    }
-}
-
-function verificarCoincidenciaEstilos(textoPfas) {
-    let alertaVersionHTML = '';
-    
-    const esVersionVieja = /PFAS\s*Policy\s*\|\s*([A-Za-z]+\s*)?2023/i.test(textoPfas) || 
-                           /August\s*2023/i.test(textoPfas) ||
-                           /Fall\s*2023\s*orders/i.test(textoPfas);
-
-    if (esVersionVieja) {
-        alertaVersionHTML = `
-            <div style="padding: 10px 12px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ff8f00; border-radius: 4px; margin-bottom: 8px; font-size: 12px; color: #795548; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <strong style="color: #e65100;">⚠️ 2023 VERSION DETECTED:</strong> 
-                    <span>Policy requires version <b>2024</b> or newer. Request supplier update.</span>
-                </div>
-            </div>
-        `;
-    }
-
-    const textoPfasNormalizado = textoPfas.replace(/[\u200B-\u200D\uFEFF]/g, '');
-    
-    // Verificamos si es Fabric o Finished Product
-    const productStageEl = document.getElementById('d-product-stage');
-    const productStage = productStageEl ? productStageEl.textContent.trim().toLowerCase() : '';
-    const isFabric = productStage.includes('fabric');
-
-    let targetNumbers = [];
-    
-    if (isFabric) {
-        const rdEl = document.getElementById('d-rd-num');
-        if (rdEl && rdEl.textContent && rdEl.textContent !== '--') {
-            const rawRd = rdEl.textContent.match(/\d{5,8}/g) || [];
-            targetNumbers = [...new Set(rawRd)];
-        }
-    } else {
-        let estilosETRF = window.estilosGlobalesETRF || [];
-        
-        if (estilosETRF.length === 0) {
-            const vistaEtrf = document.getElementById('view-etrf');
-            if (vistaEtrf) {
-                const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
-                const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
-                const targetText = matchStyle ? matchStyle[1] : textoDom;
-                const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
-                estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
-            }
-        }
-    
-        targetNumbers = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
-    }
-
-    if (targetNumbers.length === 0) {
-        const errorMsg = isFabric ? 'Missing RD Number in ETRF report.' : 'Missing ETRF report or Style Number.';
-        return alertaVersionHTML + `
-            <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
-                ⚠️ <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
-            </div>
-        `;
-    }
-
-    const coincidentes = targetNumbers.filter(est => {
-        const spacedDigits = est.split('').join('\\s*');
-        const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
-        return regex.test(textoPfasNormalizado);
-    });
-    
-    const faltantes = targetNumbers.filter(est => !coincidentes.includes(est));
-
-    let alertaEstilosHTML = '';
-
-    const passTitle = isFabric ? 'MATCHING RD NUMBERS' : 'MATCHING STYLES';
-    const passText = isFabric ? 'RD Numbers successfully verified in PFAS declaration:' : 'Styles successfully verified in PFAS declaration:';
-    
-    const failTitle = isFabric ? 'RD NUMBER DISCREPANCY' : 'STYLE DISCREPANCY';
-    const failText = isFabric ? 'ETRF RD Numbers not found in PFAS document:' : 'ETRF styles not found in PFAS document:';
-
-    if (faltantes.length === 0 && coincidentes.length > 0) {
-        alertaEstilosHTML = `
-            <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <strong style="color: #2e7d32; font-size: 13px;">✔ ${passTitle} (PASS)</strong> — 
-                    <span>${passText} <b>${coincidentes.join(', ')}</b></span>
-                </div>
-            </div>
-        `;
-    } else {
-        alertaEstilosHTML = `
-            <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
-                <div style="margin-bottom: 4px;">
-                    <strong style="color: #c62828; font-size: 13px;">❌ ${failTitle} (FAIL)</strong> — 
-                    <span>${failText}</span>
-                </div>
-                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">🚨 Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
-                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">✔ Matched: ${coincidentes.join(', ')}</div>` : ''}
-            </div>
-        `;
-    }
-    // --- AUTO ADD REJECTION REASONS ---
-    try {
-        if (typeof currentRejectionReasons !== 'undefined' && typeof renderRejectionReasons === 'function') {
-            if (esVersionVieja) {
-                const versionReason = "Actualizar Versión de PFAS (Update PFAS Version)";
-                if (!currentRejectionReasons.includes(versionReason)) {
-                    currentRejectionReasons.push(versionReason);
-                }
-            }
-            
-            if (faltantes.length > 0) {
-                const discrepancyReason = isFabric 
-                    ? "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)"
-                    : "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)";
-                    
-                if (!currentRejectionReasons.includes(discrepancyReason)) {
-                    currentRejectionReasons.push(discrepancyReason);
-                }
-            }
-            
-            if (esVersionVieja || faltantes.length > 0) {
-                renderRejectionReasons();
-            }
-        }
-    } catch (e) {
-        console.warn("Auto-rejection add failed:", e);
-    }
-
-    return alertaVersionHTML + alertaEstilosHTML;
-}
-
-async function procesarArchivoPFAS() {
-    const input = document.getElementById('archivoInput-pfas');
-    const archivo = input ? input.files[0] : null;
-    const btn = document.getElementById('btnAnalizar-pfas');
-    const progress = document.getElementById('progressFill-pfas');
-    const contenedor = document.getElementById('resultados-pfas-container');
-
-    if (!archivo) {
-        alert("Please select a PFAS PDF or Word (.docx) file.");
-        return;
-    }
-
-    if (btn) { btn.disabled = true; btn.textContent = 'Auditing...'; }
-    if (progress) progress.style.width = '40%';
-    if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying styles and policy version...</p>';
-
-    try {
-        textoExtraidoPfas = await extraerTextoHibrido(archivo);
-        if (progress) progress.style.width = '80%';
-
-        const alertasHTML = verificarCoincidenciaEstilos(textoExtraidoPfas);
-        
-        if (contenedor) {
-            contenedor.innerHTML = alertasHTML;
-        }
-
-        if (progress) {
-            progress.style.width = '100%';
-            setTimeout(() => progress.style.width = '0%', 500);
-        }
     } catch (error) {
-        console.error("PFAS Module Error:", error);
-        if (contenedor) {
-            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">❌ Error: ${error.message || error}</div>`;
-        }
-        if (progress) progress.style.width = '0%';
+        console.error("Error analizando documento previo:", error);
+        alert("Error reading Previous File.");
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Analyze PFAS'; }
+        const btn = document.getElementById('btnAnalizar-prev');
+        const progress = document.getElementById('progressFill-prev');
+        if (btn) { btn.disabled = false; btn.textContent = 'Analyze Previous File'; }
+        if (progress) progress.style.width = '0%';
     }
 }
 
@@ -3705,7 +3632,8 @@ async function procesarArchivoBOM() {
     if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying BOM Number...</p>';
 
     try {
-        const textoExtraidoBom = await extraerTextoHibrido(archivo);
+        const lectura = await leerPdf(archivo, false);
+        const textoExtraidoBom = lectura.textoExtraido;
         if (progress) progress.style.width = '80%';
 
         // Retrieve BOM from ETRF
@@ -3719,66 +3647,69 @@ async function procesarArchivoBOM() {
             // Check if BOM Number from ETRF is in the BOM file text
             const bomRegex = new RegExp(etrfBom.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
             if (bomRegex.test(textoExtraidoBom)) {
-                matchText = '<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px;"><i class="fas fa-check-circle"></i> BOM NUMBER MATCH (PASS)</div>';
+                matchText = '<div style="padding:6px; background:#e0f2fe; color:#0369a1; font-size:11px; border-radius:4px;"><i class="fas fa-check-circle"></i> BOM NUMBER MATCH (PASS)</div>';
             } else {
                 matchText = '<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px;"><i class="fas fa-times-circle"></i> BOM NUMBER MISMATCH (FAIL)</div>';
             }
         }
-        
-                        let rdsToCheck = [];
-        if (window.rdGlobalesETRF && window.rdGlobalesETRF.length > 0) {
-            rdsToCheck = window.rdGlobalesETRF;
-        }
-        
-                let rdMatchHtml = '';
-        
+
+        let rdMatchHtml = '';
         let bomFabricRds = [];
+        let rdsToCheck = [];
+        if (window.rdGlobalesETRF) rdsToCheck = [...window.rdGlobalesETRF];
+
+        let bomTrimDetails = {};
         try {
-            const lecturaPdf = await leerPdf(archivo, false, false);
-            if (lecturaPdf && lecturaPdf.pageItems) {
-                let inFabricSection = false;
-                for (const items of lecturaPdf.pageItems) {
-                    const hProd = items.find(i => /^Product$/i.test(i.str.trim()));
-                    let maxX = hProd ? hProd.x + 100 : 150;
-                    
-                                        // Group items by approximate Y coordinate to reconstruct lines
-                    let lines = [];
-                    const sortedItems = [...items].sort((a, b) => b.y - a.y);
-                    let currentLine = null;
-                    for (const item of sortedItems) {
-                        if (!currentLine || Math.abs(currentLine.y - item.y) > 3) {
-                            if (currentLine) lines.push(currentLine);
-                            currentLine = { y: item.y, items: [item] };
-                        } else {
-                            currentLine.items.push(item);
-                        }
+            const pdfData = new Uint8Array(await archivo.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({data: pdfData}).promise;
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                const items = textContent.items;
+                
+                // Sort by Y (top to bottom) then X (left to right) for natural reading order
+                items.sort((a, b) => {
+                    if (Math.abs(a.y - b.y) > 5) return b.y - a.y; // PDF Y goes bottom to top
+                    return a.x - b.x;
+                });
+                
+                let fullText = items.map(it => it.str).join(" ").replace(/\s+/g, " ");
+                let textL = fullText.toLowerCase();
+
+                items.forEach(it => {
+                    const txt = it.str.trim();
+                    if (/^\d{5,9}$/.test(txt)) {
+                        bomFabricRds.push(txt);
                     }
-                    if (currentLine) lines.push(currentLine);
+                });
 
-                    for (const line of lines) {
-                        // Sort line items by X coordinate
-                        line.items.sort((a, b) => a.x - b.x);
-                        const lineText = line.items.map(i => i.str.trim()).join(' ');
-                        const firstItemText = line.items[0].str.trim();
-
-                        const cleanLine = lineText.replace(/^\s+/, '').trim();
-
-                        // Section headers are the first thing on a line
-                        if (/^Fabric/i.test(cleanLine)) {
-                            inFabricSection = true;
-                        } else if (/^(Trim|Packaging)/i.test(cleanLine)) {
-                            inFabricSection = false;
+                // For each found RD, search the next 250 characters in natural reading order
+                // This gracefully handles multi-line cells and complex table structures
+                bomFabricRds.forEach((rd, index) => {
+                    let idx = textL.indexOf(rd);
+                    if (idx !== -1) {
+                        let nextIdx = textL.length;
+                        if (index + 1 < bomFabricRds.length) {
+                            let nIdx = textL.indexOf(bomFabricRds[index + 1], idx + rd.length);
+                            if (nIdx !== -1) nextIdx = nIdx;
                         }
                         
-                        // Extract RDs from the Product column (x < maxX)
-                        for (const item of line.items) {
-                            const txt = item.str.trim();
-                            if (inFabricSection && /^\d{5,9}$/.test(txt) && item.x < maxX) {
-                                bomFabricRds.push(txt);
-                            }
+                        let windowLen = Math.min(nextIdx - idx, 400);
+                        let windowText = textL.substring(idx, idx + windowLen);
+                        
+                        let labelType = null;
+                        if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|main[\s\-]*label)\b/i.test(windowText)) labelType = "Heat Transfer";
+                        else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(windowText)) labelType = "Care Label";
+                        else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(windowText)) labelType = "Joker Label";
+                        else if (/\b(rfid[\s\-]*label|rfid[\s\-]*sew[\s\-]*in|rfid)\b/i.test(windowText)) labelType = "RFID Label";
+                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)\b/i.test(windowText)) labelType = "Woven Label";
+
+                        if (labelType) {
+                            bomTrimDetails[rd] = labelType;
                         }
                     }
-                }
+                });
             }
         } catch(e) {
             console.error("Error reading PDF coords:", e);
@@ -3787,28 +3718,84 @@ async function procesarArchivoBOM() {
 
         if (bomFabricRds.length > 0) {
             let matchedRds = [];
-            let missedInEtrf = [];
+            let missingInBom = [];
             
-            bomFabricRds.forEach(rd => {
-                if (rdsToCheck.includes(rd)) {
+            // Filter out Style and BOM numbers from the display to avoid confusion
+            const elStyle = document.getElementById('d-style-no');
+            const styleNum = elStyle ? elStyle.textContent.trim() : '';
+            
+            bomFabricRds = bomFabricRds.filter(rd => rd !== styleNum && rd !== etrfBom);
+
+                        rdsToCheck.forEach(rd => {
+                if (bomFabricRds.includes(rd)) {
                     matchedRds.push(rd);
                 } else {
-                    missedInEtrf.push(rd);
+                    missingInBom.push(rd);
+                }
+            });
+
+            let matchedTrims = [];
+            let missingTrimInBom = [];
+            let trimsToCheck = [];
+            if (window.trimRdGlobalesETRF) trimsToCheck = [...window.trimRdGlobalesETRF];
+
+            trimsToCheck.forEach(rd => {
+                if (bomFabricRds.includes(rd)) {
+                    matchedTrims.push(rd);
+                } else {
+                    missingTrimInBom.push(rd);
                 }
             });
             
-            if (matchedRds.length > 0) {
-                rdMatchHtml = `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
-                if (missedInEtrf.length > 0) {
-                    rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> BOM RD MISSING IN ETRF: ` + missedInEtrf.join(', ') + `</div>`;
-                }
-            } else {
-                rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO BOM RDs FOUND IN ETRF (FAIL): ` + bomFabricRds.join(', ') + `</div>`;
-            }
-        } else {
-            rdMatchHtml = `<div style="padding:6px; background:#f5f5f5; color:#666; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-info-circle"></i> No Fabric RDs found in BOM</div>`;
-        }
+            let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
+                <strong style="color:#0f172a;">=� DEBUG INFO:</strong><br>
+                <div style="margin-top:5px;"><b>= RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">` + (bomFabricRds.length > 0 ? bomFabricRds.join(', ') : 'Ninguno') + `</span></div>
+                <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
+<div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
+                <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
+                <div style="margin-top:5px;"><b>RAW ETRF LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawRdList ? window.globalRawRdList.join(', ') : 'null') + `</span></div>
+<div style="margin-top:5px;"><b>RAW TRIM LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawTrimRdList ? window.globalRawTrimRdList.join(', ') : 'null') + `</span></div>
+                <div style="margin-top:5px;"><b>MILL LIST (Deleted):</b> <span style="font-family:monospace; color:#dc2626;">` + (window.globalMillList ? window.globalMillList.join(', ') : 'null') + `</span></div>
+            </div>`;
 
+                                    rdMatchHtml = '';
+            if (matchedRds.length > 0) {
+                rdMatchHtml += `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
+            } else if (rdsToCheck.length > 0) {
+                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF FABRIC RDs FOUND IN BOM (FAIL)</div>`;
+            }
+            
+            if (matchedTrims.length > 0) {
+                let displayTrims = matchedTrims.map(rd => {
+                    return bomTrimDetails[rd] ? `${bomTrimDetails[rd]} (${rd})` : rd;
+                });
+                rdMatchHtml += `<div style="padding:6px; background:#f3e8ff; color:#6b21a8; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> TRIM MATCH (PASS): ` + displayTrims.join(', ') + `</div>`;
+            } else if (trimsToCheck.length > 0) {
+                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF TRIM RDs FOUND IN BOM (FAIL)</div>`;
+            }
+            
+            if (missingInBom.length > 0) {
+                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF FABRIC RD MISSING IN BOM: ` + missingInBom.join(', ') + `</div>`;
+            }
+            
+            if (missingTrimInBom.length > 0) {
+                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF TRIM RD MISSING IN BOM: ` + missingTrimInBom.join(', ') + `</div>`;
+            }
+
+            rdMatchHtml += debugHtml;
+        } else {
+            let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
+                <strong style="color:#0f172a;">=� DEBUG INFO:</strong><br>
+                <div style="margin-top:5px;"><b>= RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">Ninguno</span></div>
+                <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
+<div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
+                <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
+                <div style="margin-top:5px;"><b>RAW ETRF LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawRdList ? window.globalRawRdList.join(', ') : 'null') + `</span></div>
+<div style="margin-top:5px;"><b>RAW TRIM LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawTrimRdList ? window.globalRawTrimRdList.join(', ') : 'null') + `</span></div>
+                <div style="margin-top:5px;"><b>MILL LIST (Deleted):</b> <span style="font-family:monospace; color:#dc2626;">` + (window.globalMillList ? window.globalMillList.join(', ') : 'null') + `</span></div>
+            </div>`;
+            rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> BOM could not be parsed for RDs (Ninguno)</div>` + debugHtml;
+        }
         if (contenedor) {
             contenedor.innerHTML = matchText + rdMatchHtml;
         }
@@ -4257,7 +4244,7 @@ function procesarDataTrackerCloud(jsonData) {
 
             let rawEmails = String(row[keyEmails] || "").trim();
             
-            // CORRECCIÓN AUTOMÁTICA DE CORREOS
+            // CORRECCI�N AUTOM�TICA DE CORREOS
             rawEmails = rawEmails.replace(/@saea\.com/gi, '@sae-a.com');
             
             if (!rawEmails) return; // Si no hay correos, ignorar
@@ -4479,6 +4466,208 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+/* ============================================================================
+   MODULE 3: PFAS LOGIC (HYBRID DOCX / PDF ENGINE)
+============================================================================ */
+let textoExtraidoPfas = '';
+let tipoArchivoPfas = '';
+
+async function extraerTextoHibrido(archivo) {
+    const extension = archivo.name.split('.').pop().toLowerCase();
+    tipoArchivoPfas = extension.toUpperCase();
+
+    if (extension === 'pdf') {
+        console.log("?? Reading PFAS with PDF.js Engine...");
+        const lectura = await leerPdf(archivo, true, false);
+        return lectura.textoExtraido || lectura.pageTexts.join(' ');
+        
+    } else if (extension === 'docx' || extension === 'doc') {
+        console.log("?? Reading PFAS with Mammoth.js (Word) Engine...");
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const arrayBuffer = event.target.result;
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                    .then(function(result) {
+                        resolve(result.value);
+                    })
+                    .catch(function(err) {
+                        reject("Error extracting text from Word document: " + err.message);
+                    });
+            };
+            reader.onerror = () => reject("Could not open local Word file.");
+            reader.readAsArrayBuffer(archivo);
+        });
+    } else {
+        throw new Error("Unsupported format. Please upload a .docx or .pdf file");
+    }
+}
+
+function verificarCoincidenciaEstilos(textoPfas) {
+    let alertaVersionHTML = '';
+    
+    const esVersionVieja = /PFAS\s*Policy\s*\|\s*([A-Za-z]+\s*)?2023/i.test(textoPfas) || 
+                           /August\s*2023/i.test(textoPfas) ||
+                           /Fall\s*2023\s*orders/i.test(textoPfas);
+
+    if (esVersionVieja) {
+        alertaVersionHTML = `
+            <div style="padding: 10px 12px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ff8f00; border-radius: 4px; margin-bottom: 8px; font-size: 12px; color: #795548; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #e65100;"><i class="fas fa-exclamation-triangle"></i> 2023 VERSION DETECTED:</strong> 
+                    <span>Policy requires version <b>2024</b> or newer. Request supplier update.</span>
+                </div>
+            </div>
+        `;
+    }
+
+    const textoPfasNormalizado = textoPfas.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    
+    // Verificamos si es Fabric o Finished Product
+    const productStageEl = document.getElementById('d-product-stage');
+    const productStage = productStageEl ? productStageEl.textContent.trim().toLowerCase() : '';
+    const isFabric = productStage.includes('fabric');
+
+    let targetNumbers = [];
+    
+    if (isFabric) {
+        const rdEl = document.getElementById('d-rd-num');
+        if (rdEl && rdEl.textContent && rdEl.textContent !== '--') {
+            const rawRd = rdEl.textContent.match(/\d{5,8}/g) || [];
+            targetNumbers = [...new Set(rawRd)];
+        }
+    } else {
+        let estilosETRF = window.estilosGlobalesETRF || [];
+        
+        if (estilosETRF.length === 0) {
+            const vistaEtrf = document.getElementById('view-etrf');
+            if (vistaEtrf) {
+                const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+                const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
+                const targetText = matchStyle ? matchStyle[1] : textoDom;
+                const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
+                estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
+            }
+        }
+    
+        targetNumbers = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
+    }
+
+    if (targetNumbers.length === 0) {
+        const errorMsg = isFabric ? 'Missing RD Number in ETRF report.' : 'Missing ETRF report or Style Number.';
+        return alertaVersionHTML + `
+            <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
+                ?? <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
+            </div>
+        `;
+    }
+
+    const coincidentes = targetNumbers.filter(est => {
+        const spacedDigits = est.split('').join('\\s*');
+        const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
+        return regex.test(textoPfasNormalizado);
+    });
+    
+    const faltantes = targetNumbers.filter(est => !coincidentes.includes(est));
+
+    let alertaEstilosHTML = '';
+
+    const passTitle = isFabric ? 'MATCHING RD NUMBERS' : 'MATCHING STYLES';
+    const passText = isFabric ? 'RD Numbers successfully verified in PFAS declaration:' : 'Styles successfully verified in PFAS declaration:';
+    
+    const failTitle = isFabric ? 'RD NUMBER DISCREPANCY' : 'STYLE DISCREPANCY';
+    const failText = isFabric ? 'ETRF RD Numbers not found in PFAS document:' : 'ETRF styles not found in PFAS document:';
+
+    if (faltantes.length === 0 && coincidentes.length > 0) {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #2e7d32; font-size: 13px;"><i class="fas fa-check-circle"></i> ${passTitle} (PASS)</strong> - <span>${passText} <b>${coincidentes.join(', ')}</b></span>
+                </div>
+            </div>
+        `;
+    } else {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
+                <div style="margin-bottom: 4px;">
+                    <strong style="color: #c62828; font-size: 13px;"><i class="fas fa-times-circle"></i> ${failTitle} (FAIL)</strong> - <span>${failText}</span>
+                </div>
+                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;"><i class="fas fa-exclamation-triangle"></i> Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
+                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;"><i class="fas fa-check-circle"></i> Matched: ${coincidentes.join(', ')}</div>` : ''}
+            </div>
+        `;
+    }
+    // --- AUTO ADD REJECTION REASONS ---
+    try {
+        if (typeof currentRejectionReasons !== 'undefined' && typeof renderRejectionReasons === 'function') {
+            if (esVersionVieja) {
+                const versionReason = "Actualizar Versi�n de PFAS (Update PFAS Version)";
+                if (!currentRejectionReasons.includes(versionReason)) {
+                    currentRejectionReasons.push(versionReason);
+                }
+            }
+            
+            if (faltantes.length > 0) {
+                const discrepancyReason = isFabric 
+                    ? "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)"
+                    : "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)";
+                    
+                if (!currentRejectionReasons.includes(discrepancyReason)) {
+                    currentRejectionReasons.push(discrepancyReason);
+                }
+            }
+            
+            if (esVersionVieja || faltantes.length > 0) {
+                renderRejectionReasons();
+            }
+        }
+    } catch (e) {
+        console.warn("Auto-rejection add failed:", e);
+    }
+
+    return alertaVersionHTML + alertaEstilosHTML;
+}
+
+async function procesarArchivoPFAS() {
+    const input = document.getElementById('archivoInput-pfas');
+    const archivo = input ? input.files[0] : null;
+    const btn = document.getElementById('btnAnalizar-pfas');
+    const progress = document.getElementById('progressFill-pfas');
+    const contenedor = document.getElementById('resultados-pfas-container');
+
+    if (!archivo) {
+        alert("Please select a PFAS PDF or Word (.docx) file.");
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Auditing...'; }
+    if (progress) progress.style.width = '40%';
+    if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying styles and policy version...</p>';
+
+    try {
+        textoExtraidoPfas = await extraerTextoHibrido(archivo);
+        if (progress) progress.style.width = '80%';
+
+        const alertasHTML = verificarCoincidenciaEstilos(textoExtraidoPfas);
+        
+        if (contenedor) {
+            contenedor.innerHTML = alertasHTML;
+        }
+
+        if (progress) {
+            progress.style.width = '100%';
+            setTimeout(() => progress.style.width = '0%', 500);
+        }
+    } catch (error) {
+        console.error("PFAS Module Error:", error);
+        if (contenedor) {
+            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">? Error: ${error.message || error}</div>`;
+        }
+        if (progress) progress.style.width = '0%';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Analyze PFAS'; }
+    }
+}
 </script>
 <!-- REJECTION MODAL -->
 <div id="rejectionModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
@@ -4539,6 +4728,89 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="add-rejection.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
