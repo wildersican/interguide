@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1572,7 +1572,7 @@ function extractRDNumber() {
         const items = pageItems[pageIdx];
         const hRD = items.find(i => {
             const str = i.str.trim().toLowerCase();
-            return /\brd\b|rd\s*number|one\s*number\s*per/i.test(str) && i.y < 350;
+            return /\brd\b|rd\s*number|one\s*number\s*per/i.test(str);
         });
         if (!hRD) continue;
 
@@ -2686,131 +2686,13 @@ async function procesarPDF() {
         window.estilosGlobalesETRF = [...new Set(estilosEncontrados)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202'));
         
         const rawRdETRF = document.getElementById('d-rd-num') ? document.getElementById('d-rd-num').textContent : '';
-        let legacyRdList = rawRdETRF.split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '--' && r !== '-'); let rdList = []; let trimRdList = [];
-                  try {
-              const compData = extractComplementaryReportsData();
-              // if (compData.trims) compData.trims.forEach(t => { if (t.rdNum) rdList.push(...t.rdNum.split(/[,;]/).map(x=>x.trim())); });
-              // if (compData.fabrics) compData.fabrics.forEach(f => { if (f.rdNum) rdList.push(...f.rdNum.split(/[,;]/).map(x=>x.trim())); });
-          } catch(e){}
-
-                            // ABSOLUTE RAW SCAN PARA RDs (Bypass 100% tolerante)
-            try {
-                                                                      let inFabricTable = false;
-                  window.debugCoords = [];
-                  let rdColX = null;
-                  let millColX = null;
-                  let millList = [];
-                  let inTrimTable = false;
-                  let trimRdColX = null;
-                    for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
-                      const items = pageItems[pageIdx];
-                      
-                      let rows = [];
-                      items.forEach(it => {
-                          let added = false;
-                          for (let r of rows) {
-                              if (Math.abs(r.y - it.y) < 5) {
-                                  r.items.push(it);
-                                  added = true;
-                                  break;
-                              }
-                          }
-                          if (!added) { rows.push({ y: it.y, items: [it] }); }
-                      });
-                      
-                      rows.sort((a, b) => a.y - b.y);
-                      rows.forEach(r => r.items.sort((a, b) => a.x - b.x));
-                      rows.forEach(r => { r.text = r.items.map(it => it.str).join(" ").toLowerCase(); });
-  
-                      for (let r of rows) {
-                          if (/fabric\s*test\s*report|fabric\s*details/i.test(r.text)) { 
-                              inFabricTable = true; 
-                              inTrimTable = false;
-                              rdColX = null; 
-                              millColX = null; 
-                          } else if (/trim\s*certif.*test\s*report|vendor-sourced\s*trims/i.test(r.text)) {
-                              inTrimTable = true;
-                              inFabricTable = false;
-                              trimRdColX = null;
-                          } else if (/vendor\s*attestation|compliance|traceability/i.test(r.text)) {
-                              inFabricTable = false;
-                              inTrimTable = false;
-                          }
-  
-                          if (inFabricTable) {
-                              if (rdColX === null && /article|rd\s*#/i.test(r.text)) { let rdItem = r.items.find(it => /article|rd/i.test(it.str)); if (rdItem) { let strL = rdItem.str.toLowerCase(); let idx = strL.indexOf("article"); if (idx === -1) idx = strL.indexOf("rd"); rdColX = rdItem.x + (idx / strL.length) * (rdItem.width || (strL.length * 6)); } } if (millColX === null && /mill/i.test(r.text) && !/vendor|nominated/i.test(r.text)) { let millItem = r.items.find(it => /mill/i.test(it.str)); if (millItem) { let strL = millItem.str.toLowerCase(); let idx = strL.indexOf("mill"); millColX = millItem.x + (idx / strL.length) * (millItem.width || (strL.length * 6)); } }
-                          } else if (inTrimTable) {
-                              if (trimRdColX === null && /id\s*number/i.test(r.text) && !/vendor-sourced/i.test(r.text)) { let tItem = r.items.find(it => /id\s*number/i.test(it.str)); if (tItem) { let strL = tItem.str.toLowerCase(); let idx = strL.indexOf("id number"); trimRdColX = tItem.x + (idx / strL.length) * (tItem.width || (strL.length * 6)); } }
-                          }
-  
-                          if (inFabricTable || inTrimTable) {
-                                if (/form\s*no|page\s*\d|rev\d|barcode/i.test(r.text)) { /* skip footer rows */ }
-                                else r.items.forEach(it => {
-                                  const matches = it.str.match(/\d{5,9}/g);
-                                  if (matches) {
-                                      let searchOffset = 0;
-                                      matches.forEach(txt => {
-                                          const idx = it.str.indexOf(txt, searchOffset);
-                                          searchOffset = idx + txt.length;
-                                          
-                                          let w = it.width;
-                                          if (!w || w < 20) w = 500;
-                                          let approxX = it.x;
-                                          if (it.str.length > 0) approxX = it.x + (idx / it.str.length) * (it.width || (it.str.length * 6));
-  
-                                          if (inFabricTable) {
-                                              window.debugCoords.push(`T:${txt} aX:${Math.round(approxX)} rX:${rdColX?Math.round(rdColX):"N"} mX:${millColX?Math.round(millColX):"N"}`);
-                                              if (millColX !== null && Math.abs(approxX - millColX) < 45) {
-                                                  millList.push(txt);
-                                              } else if (rdColX !== null) {
-                                                  if (Math.abs(approxX - rdColX) < 45) {
-                                                      rdList.push(txt);
-                                                  }
-                                              } else {
-                                                  if (approxX > 120 && approxX < 450) {
-                                                      rdList.push(txt);
-                                                  }
-                                              }
-                                          } else if (inTrimTable) {
-                                              window.debugCoords.push(`TRIM:${txt} aX:${Math.round(approxX)} trX:${trimRdColX?Math.round(trimRdColX):"N"}`);
-                                              if (trimRdColX !== null) {
-                                                  if (Math.abs(approxX - trimRdColX) < 45) {
-                                                      trimRdList.push(txt);
-                                                  }
-                                              } else {
-                                                  if (approxX > 200 && approxX < 400) {
-                                                      trimRdList.push(txt);
-                                                  }
-                                              }
-                                          }
-                                      });
-                                  }
-                              });
-                          }
-                      }
-                  }
-                  if (rdList.length === 0) rdList = legacyRdList;
-                  window.globalRawRdList = [...new Set(rdList)];
-                  window.globalMillList = [...new Set(millList)];
-                  window.globalRawTrimRdList = [...new Set(trimRdList)];
-            } catch(e) { console.error('ETRF SCANNER ERROR:', e); }
-            
-        const elStyleEtrf = document.getElementById('d-style-no');
-        const styleNumEtrf = elStyleEtrf ? elStyleEtrf.textContent.trim() : '';
-
-        let debugEtrfHtml = `<div style="margin-top:10px; font-size:10px; color:#555; background:#eee; padding:5px; border-radius:4px;"><b>COORDS DEBUG:</b><br>` + (window.debugCoords ? window.debugCoords.join("<br>") : "null") + `</div><div style="margin-top:10px; font-size:10px; color:#555; background:#eee; padding:5px; border-radius:4px;">
-          <b>SCANNER DEBUG:</b><br>
-                      Raw rdList: <br>
-            Raw trimRdList: <br>
-          Raw millList: ${window.globalMillList ? window.globalMillList.join(', ') : 'null'}<br>
-          StyleNumEtrf: ${styleNumEtrf}
-        </div>`;
-        const resultsDiv = document.getElementById('resultados-etrf-container');
-        if (resultsDiv) resultsDiv.innerHTML += debugEtrfHtml;
-
-        window.rdGlobalesETRF = [...new Set(rdList)].filter(x => { if (!x) return false; if (x === styleNumEtrf) return false; return true; }); window.trimRdGlobalesETRF = [...new Set(trimRdList)].filter(x => { if (!x) return false; if (x === styleNumEtrf) return false; return true; });
-
-
+        let rdList = rawRdETRF.split(/[,;]/).map(r => r.trim()).filter(r => r && r !== '--' && r !== '-');
+        try {
+            const compData = extractComplementaryReportsData();
+            if (compData.trims) compData.trims.forEach(t => { if (t.rdNum) rdList.push(...t.rdNum.split(/[,;]/).map(x=>x.trim())); });
+            if (compData.fabrics) compData.fabrics.forEach(f => { if (f.rdNum) rdList.push(...f.rdNum.split(/[,;]/).map(x=>x.trim())); });
+        } catch(e){}
+        window.rdGlobalesETRF = [...new Set(rdList)].filter(x => x);
 
     } catch (e) {
         dbg('ERROR: ' + e.message);
@@ -3564,22 +3446,245 @@ async function procesarPDFPrev() {
                 return regex.test(fullTextPrev);
             });
             if (matchedRDs.length > 0) {
-                rdMatchPrevHTML = `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> ETRF MATCH (PASS): ` + matchedRDs.join(', ') + `</div>`;
+                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#1565c0; background:#e3f2fd; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #90caf9;"><i class="fas fa-link" style="margin-right: 4px;"></i>ETRF Match: ${matchedRDs.join(', ')}</span></div>`;
             } else {
-                rdMatchPrevHTML = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF MATCH FOUND (FAIL)</div>`;
+                rdMatchPrevHTML = `<div style="margin-top: 5px;"><span style="font-size:10px; color:#c62828; background:#ffebee; padding:3px 6px; border-radius:4px; font-weight: bold; border: 1px solid #ef9a9a;"><i class="fas fa-exclamation-circle" style="margin-right: 4px;"></i>No ETRF match for: ${rdListToSearch.join(', ')}</span></div>`;
             }
         }
         
-        document.getElementById('prev-match-alert').innerHTML = rdMatchPrevHTML;
-        
-    } catch (error) {
-        console.error("Error analizando documento previo:", error);
-        alert("Error reading Previous File.");
+        const dateOutSpan = document.getElementById('d-prev-date-out');
+        if (dateOutSpan) {
+            dateOutSpan.innerHTML = `${dateOutPrev || 'N/A'}${rdMatchPrevHTML}`;
+        }
+
+        if (escaneo.encontrada && escaneo.filas.length > 0) {
+            renderTablaResultadosPSR(escaneo.filas);
+        } else {
+            renderTablaResultadosPSR(null);
+        }
+
+        cambiarVistaPrev('visual');
+        document.getElementById('progressFill-prev').style.width = '100%';
+        setTimeout(() => { document.getElementById('progressFill-prev').style.width = '0%'; }, 500);
+    } catch (e) {
+        console.error(e);
+        mostrarAlerta('alertaPrev', 'An error occurred while processing the PDF: ' + e.message, 'error');
+        document.getElementById('progressFill-prev').style.width = '0%';
     } finally {
-        const btn = document.getElementById('btnAnalizar-prev');
-        const progress = document.getElementById('progressFill-prev');
-        if (btn) { btn.disabled = false; btn.textContent = 'Analyze Previous File'; }
+        btn.disabled = false; btn.textContent = 'Analyze PREVS';
+    }
+}
+
+function abrirModalPrev() { abrirModalConPdf(pdfDocPrev); }
+function cambiarVistaPrev(v) {
+    cambiarVistaGenerica({ tabVisual: 'tabVisual-prev', tabTexto: 'tabTexto-prev', pdfPages: 'pdfPages-prev', pdfTextView: 'pdfTextView-prev' }, v);
+}
+function buscarEnTextoPrev() {
+    buscarEnTextoGenerico({ campoBusqueda: 'campoBusqueda-prev', pdfTextView: 'pdfTextView-prev', infoCoincidencias: 'infoCoincidencias-prev' }, textoExtraidoPrev, cambiarVistaPrev);
+}
+
+/* ============================================================================
+   MODULE 3: PFAS LOGIC (HYBRID DOCX / PDF ENGINE)
+============================================================================ */
+let textoExtraidoPfas = '';
+let tipoArchivoPfas = '';
+
+async function extraerTextoHibrido(archivo) {
+    const extension = archivo.name.split('.').pop().toLowerCase();
+    tipoArchivoPfas = extension.toUpperCase();
+
+    if (extension === 'pdf') {
+        console.log("📄 Reading PFAS with PDF.js Engine...");
+        const lectura = await leerPdf(archivo, true, false);
+        return lectura.textoExtraido || lectura.pageTexts.join(' ');
+        
+    } else if (extension === 'docx' || extension === 'doc') {
+        console.log("📝 Reading PFAS with Mammoth.js (Word) Engine...");
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const arrayBuffer = event.target.result;
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                    .then(function(result) {
+                        resolve(result.value);
+                    })
+                    .catch(function(err) {
+                        reject("Error extracting text from Word document: " + err.message);
+                    });
+            };
+            reader.onerror = () => reject("Could not open local Word file.");
+            reader.readAsArrayBuffer(archivo);
+        });
+    } else {
+        throw new Error("Unsupported format. Please upload a .docx or .pdf file");
+    }
+}
+
+function verificarCoincidenciaEstilos(textoPfas) {
+    let alertaVersionHTML = '';
+    
+    const esVersionVieja = /PFAS\s*Policy\s*\|\s*([A-Za-z]+\s*)?2023/i.test(textoPfas) || 
+                           /August\s*2023/i.test(textoPfas) ||
+                           /Fall\s*2023\s*orders/i.test(textoPfas);
+
+    if (esVersionVieja) {
+        alertaVersionHTML = `
+            <div style="padding: 10px 12px; background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid #ff8f00; border-radius: 4px; margin-bottom: 8px; font-size: 12px; color: #795548; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #e65100;">⚠️ 2023 VERSION DETECTED:</strong> 
+                    <span>Policy requires version <b>2024</b> or newer. Request supplier update.</span>
+                </div>
+            </div>
+        `;
+    }
+
+    const textoPfasNormalizado = textoPfas.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    
+    // Verificamos si es Fabric o Finished Product
+    const productStageEl = document.getElementById('d-product-stage');
+    const productStage = productStageEl ? productStageEl.textContent.trim().toLowerCase() : '';
+    const isFabric = productStage.includes('fabric');
+
+    let targetNumbers = [];
+    
+    if (isFabric) {
+        const rdEl = document.getElementById('d-rd-num');
+        if (rdEl && rdEl.textContent && rdEl.textContent !== '--') {
+            const rawRd = rdEl.textContent.match(/\d{5,8}/g) || [];
+            targetNumbers = [...new Set(rawRd)];
+        }
+    } else {
+        let estilosETRF = window.estilosGlobalesETRF || [];
+        
+        if (estilosETRF.length === 0) {
+            const vistaEtrf = document.getElementById('view-etrf');
+            if (vistaEtrf) {
+                const textoDom = (vistaEtrf.innerText || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+                const matchStyle = textoDom.match(/(?:Style\s*(?:No\.?|Number|#)|Estilo)[\s:\.\-]*([0-9,\s\-]+)/i);
+                const targetText = matchStyle ? matchStyle[1] : textoDom;
+                const rawMatchesEtrf = targetText.match(/(?:^|[^0-9])[0-9]{6,8}(?=[^0-9]|$)/g) || [];
+                estilosETRF = rawMatchesEtrf.map(m => m.replace(/[^0-9]/g, ''));
+            }
+        }
+    
+        targetNumbers = [...new Set(estilosETRF)].filter(num => !['1017254', '2042812'].includes(num) && !num.startsWith('202') && !num.startsWith('260'));
+    }
+
+    if (targetNumbers.length === 0) {
+        const errorMsg = isFabric ? 'Missing RD Number in ETRF report.' : 'Missing ETRF report or Style Number.';
+        return alertaVersionHTML + `
+            <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
+                ⚠️ <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
+            </div>
+        `;
+    }
+
+    const coincidentes = targetNumbers.filter(est => {
+        const spacedDigits = est.split('').join('\\s*');
+        const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
+        return regex.test(textoPfasNormalizado);
+    });
+    
+    const faltantes = targetNumbers.filter(est => !coincidentes.includes(est));
+
+    let alertaEstilosHTML = '';
+
+    const passTitle = isFabric ? 'MATCHING RD NUMBERS' : 'MATCHING STYLES';
+    const passText = isFabric ? 'RD Numbers successfully verified in PFAS declaration:' : 'Styles successfully verified in PFAS declaration:';
+    
+    const failTitle = isFabric ? 'RD NUMBER DISCREPANCY' : 'STYLE DISCREPANCY';
+    const failText = isFabric ? 'ETRF RD Numbers not found in PFAS document:' : 'ETRF styles not found in PFAS document:';
+
+    if (faltantes.length === 0 && coincidentes.length > 0) {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #e8f5e9; border: 1px solid #c8e6c9; border-left: 4px solid #2e7d32; border-radius: 4px; font-size: 12px; color: #1b5e20; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong style="color: #2e7d32; font-size: 13px;">✔ ${passTitle} (PASS)</strong> — 
+                    <span>${passText} <b>${coincidentes.join(', ')}</b></span>
+                </div>
+            </div>
+        `;
+    } else {
+        alertaEstilosHTML = `
+            <div style="padding: 10px 12px; background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 4px; font-size: 12px; color: #b71c1c;">
+                <div style="margin-bottom: 4px;">
+                    <strong style="color: #c62828; font-size: 13px;">❌ ${failTitle} (FAIL)</strong> — 
+                    <span>${failText}</span>
+                </div>
+                ${faltantes.length > 0 ? `<div style="background: #ffcdd2; padding: 4px 8px; border-radius: 3px; font-weight: bold; margin-top: 4px; display: inline-block;">🚨 Missing in PFAS: ${faltantes.join(', ')}</div>` : ''}
+                ${coincidentes.length > 0 ? `<div style="color: #2e7d32; margin-top: 4px;">✔ Matched: ${coincidentes.join(', ')}</div>` : ''}
+            </div>
+        `;
+    }
+    // --- AUTO ADD REJECTION REASONS ---
+    try {
+        if (typeof currentRejectionReasons !== 'undefined' && typeof renderRejectionReasons === 'function') {
+            if (esVersionVieja) {
+                const versionReason = "Actualizar Versión de PFAS (Update PFAS Version)";
+                if (!currentRejectionReasons.includes(versionReason)) {
+                    currentRejectionReasons.push(versionReason);
+                }
+            }
+            
+            if (faltantes.length > 0) {
+                const discrepancyReason = isFabric 
+                    ? "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)"
+                    : "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)";
+                    
+                if (!currentRejectionReasons.includes(discrepancyReason)) {
+                    currentRejectionReasons.push(discrepancyReason);
+                }
+            }
+            
+            if (esVersionVieja || faltantes.length > 0) {
+                renderRejectionReasons();
+            }
+        }
+    } catch (e) {
+        console.warn("Auto-rejection add failed:", e);
+    }
+
+    return alertaVersionHTML + alertaEstilosHTML;
+}
+
+async function procesarArchivoPFAS() {
+    const input = document.getElementById('archivoInput-pfas');
+    const archivo = input ? input.files[0] : null;
+    const btn = document.getElementById('btnAnalizar-pfas');
+    const progress = document.getElementById('progressFill-pfas');
+    const contenedor = document.getElementById('resultados-pfas-container');
+
+    if (!archivo) {
+        alert("Please select a PFAS PDF or Word (.docx) file.");
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Auditing...'; }
+    if (progress) progress.style.width = '40%';
+    if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying styles and policy version...</p>';
+
+    try {
+        textoExtraidoPfas = await extraerTextoHibrido(archivo);
+        if (progress) progress.style.width = '80%';
+
+        const alertasHTML = verificarCoincidenciaEstilos(textoExtraidoPfas);
+        
+        if (contenedor) {
+            contenedor.innerHTML = alertasHTML;
+        }
+
+        if (progress) {
+            progress.style.width = '100%';
+            setTimeout(() => progress.style.width = '0%', 500);
+        }
+    } catch (error) {
+        console.error("PFAS Module Error:", error);
+        if (contenedor) {
+            contenedor.innerHTML = `<div style="padding:8px 12px; background:#ffebee; color:#c62828; font-size:12px; border-radius:4px; margin-top:5px;">❌ Error: ${error.message || error}</div>`;
+        }
         if (progress) progress.style.width = '0%';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Analyze PFAS'; }
     }
 }
 
@@ -3600,8 +3705,7 @@ async function procesarArchivoBOM() {
     if (contenedor) contenedor.innerHTML = '<p style="color:#666; font-size:12px; margin:5px 0;">Verifying BOM Number...</p>';
 
     try {
-        const lectura = await leerPdf(archivo, false);
-        const textoExtraidoBom = lectura.textoExtraido;
+        const textoExtraidoBom = await extraerTextoHibrido(archivo);
         if (progress) progress.style.width = '80%';
 
         // Retrieve BOM from ETRF
@@ -3620,26 +3724,59 @@ async function procesarArchivoBOM() {
                 matchText = '<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px;"><i class="fas fa-times-circle"></i> BOM NUMBER MISMATCH (FAIL)</div>';
             }
         }
-
-        let rdMatchHtml = '';
+        
+                        let rdsToCheck = [];
+        if (window.rdGlobalesETRF && window.rdGlobalesETRF.length > 0) {
+            rdsToCheck = window.rdGlobalesETRF;
+        }
+        
+                let rdMatchHtml = '';
+        
         let bomFabricRds = [];
-        let rdsToCheck = [];
-        if (window.rdGlobalesETRF) rdsToCheck = [...window.rdGlobalesETRF];
-
         try {
-            // Vacuum ALL 5 to 9 digit numbers from the BOM, ignoring columns and sections
-            const pdfData = new Uint8Array(await archivo.arrayBuffer());
-            const pdf = await pdfjsLib.getDocument({data: pdfData}).promise;
+            const lecturaPdf = await leerPdf(archivo, false, false);
+            if (lecturaPdf && lecturaPdf.pageItems) {
+                let inFabricSection = false;
+                for (const items of lecturaPdf.pageItems) {
+                    const hProd = items.find(i => /^Product$/i.test(i.str.trim()));
+                    let maxX = hProd ? hProd.x + 100 : 150;
+                    
+                                        // Group items by approximate Y coordinate to reconstruct lines
+                    let lines = [];
+                    const sortedItems = [...items].sort((a, b) => b.y - a.y);
+                    let currentLine = null;
+                    for (const item of sortedItems) {
+                        if (!currentLine || Math.abs(currentLine.y - item.y) > 3) {
+                            if (currentLine) lines.push(currentLine);
+                            currentLine = { y: item.y, items: [item] };
+                        } else {
+                            currentLine.items.push(item);
+                        }
+                    }
+                    if (currentLine) lines.push(currentLine);
 
-            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                const page = await pdf.getPage(pageNum);
-                const textContent = await page.getTextContent();
-                const items = textContent.items;
+                    for (const line of lines) {
+                        // Sort line items by X coordinate
+                        line.items.sort((a, b) => a.x - b.x);
+                        const lineText = line.items.map(i => i.str.trim()).join(' ');
+                        const firstItemText = line.items[0].str.trim();
 
-                for (const item of items) {
-                    const txt = item.str.trim();
-                    if (/^\d{5,9}$/.test(txt)) {
-                        bomFabricRds.push(txt);
+                        const cleanLine = lineText.replace(/^\s+/, '').trim();
+
+                        // Section headers are the first thing on a line
+                        if (/^Fabric/i.test(cleanLine)) {
+                            inFabricSection = true;
+                        } else if (/^(Trim|Packaging)/i.test(cleanLine)) {
+                            inFabricSection = false;
+                        }
+                        
+                        // Extract RDs from the Product column (x < maxX)
+                        for (const item of line.items) {
+                            const txt = item.str.trim();
+                            if (inFabricSection && /^\d{5,9}$/.test(txt) && item.x < maxX) {
+                                bomFabricRds.push(txt);
+                            }
+                        }
                     }
                 }
             }
@@ -3650,81 +3787,28 @@ async function procesarArchivoBOM() {
 
         if (bomFabricRds.length > 0) {
             let matchedRds = [];
-            let missingInBom = [];
+            let missedInEtrf = [];
             
-            // Filter out Style and BOM numbers from the display to avoid confusion
-            const elStyle = document.getElementById('d-style-no');
-            const styleNum = elStyle ? elStyle.textContent.trim() : '';
-            
-            bomFabricRds = bomFabricRds.filter(rd => rd !== styleNum && rd !== etrfBom);
-
-                        rdsToCheck.forEach(rd => {
-                if (bomFabricRds.includes(rd)) {
+            bomFabricRds.forEach(rd => {
+                if (rdsToCheck.includes(rd)) {
                     matchedRds.push(rd);
                 } else {
-                    missingInBom.push(rd);
-                }
-            });
-
-            let matchedTrims = [];
-            let missingTrimInBom = [];
-            let trimsToCheck = [];
-            if (window.trimRdGlobalesETRF) trimsToCheck = [...window.trimRdGlobalesETRF];
-
-            trimsToCheck.forEach(rd => {
-                if (bomFabricRds.includes(rd)) {
-                    matchedTrims.push(rd);
-                } else {
-                    missingTrimInBom.push(rd);
+                    missedInEtrf.push(rd);
                 }
             });
             
-            let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155;">
-                <strong style="color:#0f172a;">🛠 DEBUG INFO:</strong><br>
-                <div style="margin-top:5px;"><b>🔍 RDs Extraídos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">` + (bomFabricRds.length > 0 ? bomFabricRds.join(', ') : 'Ninguno') + `</span></div>
-                <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
-<div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
-                <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
-                <div style="margin-top:5px;"><b>RAW ETRF LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawRdList ? window.globalRawRdList.join(', ') : 'null') + `</span></div>
-<div style="margin-top:5px;"><b>RAW TRIM LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawTrimRdList ? window.globalRawTrimRdList.join(', ') : 'null') + `</span></div>
-                <div style="margin-top:5px;"><b>MILL LIST (Deleted):</b> <span style="font-family:monospace; color:#dc2626;">` + (window.globalMillList ? window.globalMillList.join(', ') : 'null') + `</span></div>
-            </div>`;
-
-                                    rdMatchHtml = '';
             if (matchedRds.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
-            } else if (rdsToCheck.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF FABRIC RDs FOUND IN BOM (FAIL)</div>`;
+                rdMatchHtml = `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
+                if (missedInEtrf.length > 0) {
+                    rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> BOM RD MISSING IN ETRF: ` + missedInEtrf.join(', ') + `</div>`;
+                }
+            } else {
+                rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO BOM RDs FOUND IN ETRF (FAIL): ` + bomFabricRds.join(', ') + `</div>`;
             }
-            
-            if (matchedTrims.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#f3e8ff; color:#6b21a8; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> TRIM RD MATCH (PASS): ` + matchedTrims.join(', ') + `</div>`;
-            } else if (trimsToCheck.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF TRIM RDs FOUND IN BOM (FAIL)</div>`;
-            }
-            
-            if (missingInBom.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF FABRIC RD MISSING IN BOM: ` + missingInBom.join(', ') + `</div>`;
-            }
-            
-            if (missingTrimInBom.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF TRIM RD MISSING IN BOM: ` + missingTrimInBom.join(', ') + `</div>`;
-            }
-
-            rdMatchHtml += debugHtml;
         } else {
-            let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155;">
-                <strong style="color:#0f172a;">🛠 DEBUG INFO:</strong><br>
-                <div style="margin-top:5px;"><b>🔍 RDs Extraídos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">Ninguno</span></div>
-                <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
-<div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
-                <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
-                <div style="margin-top:5px;"><b>RAW ETRF LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawRdList ? window.globalRawRdList.join(', ') : 'null') + `</span></div>
-<div style="margin-top:5px;"><b>RAW TRIM LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawTrimRdList ? window.globalRawTrimRdList.join(', ') : 'null') + `</span></div>
-                <div style="margin-top:5px;"><b>MILL LIST (Deleted):</b> <span style="font-family:monospace; color:#dc2626;">` + (window.globalMillList ? window.globalMillList.join(', ') : 'null') + `</span></div>
-            </div>`;
-            rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> BOM could not be parsed for RDs (Ninguno)</div>` + debugHtml;
+            rdMatchHtml = `<div style="padding:6px; background:#f5f5f5; color:#666; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-info-circle"></i> No Fabric RDs found in BOM</div>`;
         }
+
         if (contenedor) {
             contenedor.innerHTML = matchText + rdMatchHtml;
         }
@@ -4455,68 +4539,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="add-rejection.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
