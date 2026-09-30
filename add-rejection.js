@@ -30,7 +30,7 @@ const motivosManuales = [
     "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
     "Reporte previo de tela no corresponde con el color de la Muestra (Previous fabric report does not match the sample color)",
     "ETRF indica más de un color y en muestra física solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
-    "No Coincide el Fabric RD del Previo con la ETRF física (Fabric RD on the Previo Does Not Match the Physical ETRF)",
+    "No Coincide el Fabric RD del Previo con la ETRF (Fabric RD on the Previo Does Not Match the ETRF)",
     "Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)",
     "La muestra es FABRIC y en la ETRF declaran GARMENT (The sample is FABRIC, but the ETRF indicates GARMENT)",
     "La Muestra es GARMENT y en la ETRF declaran FABRIC (The sample is GARMENT, but the ETRF indicates FABRIC)",
