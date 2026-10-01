@@ -1571,13 +1571,11 @@ function extractRDNumber() {
         const items = pageItems[pageIdx];
         
         let rdHeaderItem = null;
-        let rdMatchStr = null;
         for (let it of items) {
             const str = it.str.toLowerCase();
             if (str.includes("fabric article") || str.includes("rd number") || str.includes("rd #")) {
-                if (it.y < 400) { // must be in the top half
+                if (!str.includes("trim")) {
                     rdHeaderItem = it;
-                    rdMatchStr = str.includes("fabric article") ? "fabric article" : (str.includes("rd number") ? "rd number" : "rd #");
                     break;
                 }
             }
@@ -1585,14 +1583,16 @@ function extractRDNumber() {
 
         if (!rdHeaderItem) continue;
 
-        let charIndex = rdHeaderItem.str.toLowerCase().indexOf(rdMatchStr);
+        let charIndex = rdHeaderItem.str.toLowerCase().indexOf("rd number") > -1 ? rdHeaderItem.str.toLowerCase().indexOf("rd number") : 
+                        (rdHeaderItem.str.toLowerCase().indexOf("fabric article") > -1 ? rdHeaderItem.str.toLowerCase().indexOf("fabric article") : 
+                        rdHeaderItem.str.toLowerCase().indexOf("rd #"));
         let strLen = rdHeaderItem.str.length;
         let w = rdHeaderItem.w || rdHeaderItem.width || (strLen * 5.5);
         let approxX = rdHeaderItem.x + (charIndex / strLen) * w;
 
         let candidates = [];
         for (let it of items) {
-            if (it.y <= rdHeaderItem.y + 5 || it.y > rdHeaderItem.y + 250) continue;
+            if (Math.abs(it.y - rdHeaderItem.y) > 350) continue;
             let txt = it.str.trim();
             let matches = txt.match(/\b\d{5,9}\b/g);
             if (matches) {
@@ -1603,43 +1603,37 @@ function extractRDNumber() {
         }
 
         if (candidates.length > 0) {
+            // Sort by X distance to the RD Number text first.
             candidates.sort((a, b) => {
-                let yDistA = Math.abs(a.y - rdHeaderItem.y);
-                let yDistB = Math.abs(b.y - rdHeaderItem.y);
-                if (Math.abs(yDistA - yDistB) > 10) return yDistA - yDistB; 
-                
                 let xDistA = Math.abs(a.x - approxX);
                 let xDistB = Math.abs(b.x - approxX);
+                if (Math.abs(xDistA - xDistB) < 30) {
+                    return Math.abs(rdHeaderItem.y - a.y) - Math.abs(rdHeaderItem.y - b.y);
+                }
                 return xDistA - xDistB;
             });
 
             for (let cand of candidates) {
-                if (cand.x > approxX - 100 && cand.x < approxX + 150) {
+                if (Math.abs(cand.x - approxX) < 150) {
                     return cand.val;
                 }
             }
-            
-            for (let cand of candidates) {
-                if (cand.x > 80) return cand.val;
-            }
+            return candidates[0].val;
         }
     }
 
     const fullText = pageTexts.join(' ');
-    let match = fullText.match(/(?:PLM\s*Fabric\s*Article|RD\s*Number)[\s\S]{0,120}?(\d{5,9})[\s\S]{1,50}?(\d{5,9})/i);
-    if (match) {
-        if (match[2] && match[1].length === 7 && match[1].startsWith("206")) {
-             return match[2]; 
+    let idx = fullText.toLowerCase().indexOf('fabric article');
+    if (idx === -1) idx = fullText.toLowerCase().indexOf('rd number');
+    if (idx !== -1) {
+        let afterText = fullText.substring(idx, idx + 200);
+        let m = afterText.match(/\b\d{5,9}\b/g);
+        if (m) {
+            return m[m.length - 1]; 
         }
-        return match[1];
     }
-    
-    let singleMatch = fullText.match(/(?:PLM\s*Fabric|RD\s*Number)[\s\S]{0,100}?(\b\d{5,9}\b)/i);
-    if (singleMatch) return singleMatch[1];
-
     return null;
-}
-function extractRequestedTests() {
+}function extractRequestedTests() {
     let requestedTests = [];
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
@@ -4728,6 +4722,7 @@ async function procesarArchivoPFAS() {
 <script src="add-rejection.js"></script>
 </body>
 </html>
+
 
 
 
