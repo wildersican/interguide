@@ -29,13 +29,14 @@
     "Estilo de ETRF Additional no coincide con el Previo Full (ETRF Additional Style Does Not Match the Full Previo)",
         "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
     "Reporte previo de tela no corresponde con el color de la Muestra (Previous fabric report does not match the sample color)",
-    "ETRF indica más de un color y en muestra f?sica solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
-    "No Coincide el Fabric RD del Previo con la ETRF f?sica (Fabric RD on the Previo Does Not Match the Physical ETRF)",
+    "ETRF indica más de un color y en muestra fisica solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
+    "No Coincide el Fabric RD del Previo con la ETRF fisica (Fabric RD on the Previo Does Not Match the Physical ETRF)",
     "Style Description No corresponde a la muestra enviada (Style Description Does Not Match the Sample Submitted)",
     "La muestra es FABRIC y en la ETRF declaran GARMENT (The sample is FABRIC, but the ETRF indicates GARMENT)",
     "La Muestra es GARMENT y en la ETRF declaran FABRIC (The sample is GARMENT, but the ETRF indicates FABRIC)",
     "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)",
-    "La Descripci?n del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
+    "La Descripcion del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
+    "Product stage incorrecto / tipo de muestra no corresponde con la ETRF (Incorrect product stage / sample type does not match the ETRF)",
     "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)",
 
     // --- Missing Information ---
@@ -45,7 +46,7 @@
     "No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)",
     "No indica instrucciones de lavado (Washing Instructions Not Indicated)",
     "Confirmar Vendor de Cobro/No indica (Billing Vendor Confirmation - Not Indicated)",
-    "Validar a qui?n corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
+    "Validar a quien corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
 
     // --- Not Uploaded to the platform / Missing Items ---
     "Falta Reporte Previo de Care Label (Care Label Previous Report - Not Uploaded to the platform)",
@@ -62,14 +63,14 @@
     "Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)",
     "Falta Certificado de Fibra (Fiber Certificate - Not Uploaded to the platform)",
     "Falta Reporte Previo de Parches (Patches Previous Report - Not Uploaded to the platform)",
-    "No cuenta con Labels / Etiquetas en la muestra f?sica (Labels Not Included in the Physical Sample)",
+    "No cuenta con Labels / Etiquetas en la muestra fisica (Labels Not Included in the Physical Sample)",
     "No viene el Heat Transfer en la Muestra (Heat Transfer Not Included in the Sample)",
     
     // --- System / Others ---
     "Muestra insuficiente para TEST (Insufficient sample for TEST)",
-    "Error de Sincronizaci?n/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
+    "Error de Sincronizacion/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
     "ETRF Duplicada (ETRF Duplicated)",
-    "Archivos Previos Da?ados ? Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
+    "Archivos Previos Dañados Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
     "No se puede combinar paquetes. Solo es FULL o ADITIONAL (Packages Cannot Be Combined - Only FULL or ADDITIONAL)",
     "Selección de varios paquetes/Error (Multiple Package Selection / Error)",
     "Actualizar Versión de PFAS (Update PFAS Version)",
