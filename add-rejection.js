@@ -27,7 +27,7 @@
     "Peso debe coincidir con Fabric Details (Weight Must Match the Fabric Details)",
     "Construction debe coincidir con el Fabric Details (Construction Must Match the Fabric Details)",
     "Estilo de ETRF Additional no coincide con el Previo Full (ETRF Additional Style Does Not Match the Full Previo)",
-        "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
+    "Heat Transfer no coincide el color (Heat Transfer Color Does Not Match)",
     "Reporte previo de tela no corresponde con el color de la Muestára (Previous fabric report does not match the sample color)",
     "ETRF indica más de un color y en muestára física solo contamos con un color (ETRF Indicates More Than One Color, but Only One Color Is Available in the Physical Sample)",
     "No Coincide el Fabric RD del Previo con la ETRF física (Fabric RD on the Previo Does Not Match the Physical ETRF)",
@@ -35,17 +35,17 @@
     "La muestára es FABRIC y en la ETRF declaran GARMENT (The sample is FABRIC, but the ETRF indicates GARMENT)",
     "La Muestára es GARMENT y en la ETRF declaran FABRIC (The sample is GARMENT, but the ETRF indicates FABRIC)",
     "Los Estilos del PFAS no corresponden a los de la ETRF (The PFAS Styles Do Not Match Those on the ETRF)",
-    "La Descripci?n del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
+    "La Descripción del PFAS no corresponde al de la ETRF (The PFAS Description Does Not Match the ETRF)",
     "RD Number del PFAS no coincide con el RD Number de la ETRF (PFAS RD Number Does Not Match the RD Number on the ETRF)",
 
     // --- Missing Information ---
     "Aditional/no indica el Previo Full (Additional - Full Previo Not Indicated)",
-    "Indidual Testá/ No indica que pruebas (Individual Testá - Testás Not Specified)",
+    "Indidual Test/ No indica que pruebas (Individual Test - Tests Not Specified)",
     "Indicar que paquete Necesitan (Specify Which Package Is Needed)",
     "No indica fibra y/0 % (Fiber Content and/or Percentage Not Indicated)",
     "No indica instrucciones de lavado (Washing Instructions Not Indicated)",
     "Confirmar Vendor de Cobro/No indica (Billing Vendor Confirmation - Not Indicated)",
-    "Validar a qui?n corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
+    "Validar a quién corresponde realizar el cobro (Verify Who Is Responsible for the Billing)",
 
     // --- Not Uploaded to the platform / Missing Itemás ---
     "Falta Reporte Previo de Care Label (Care Label Previous Report - Not Uploaded to the platform)",
@@ -67,9 +67,9 @@
     
     // --- System / Others ---
     "Muestára insuficiente para TEST (Insufficient sample for TEST)",
-    "Error de Sincronizaci?n/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
+    "Error de Sincronización/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
     "ETRF Duplicada (ETRF Duplicated)",
-    "Archivos Previos Da?ados ? Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
+    "Archivos Previos Dañados Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
     "No se puede combinar paquetes. Solo es FULL o ADITIONAL (Packages Cannot Be Combined - Only FULL or ADDITIONAL)",
     "Selección de varios paquetes/Error (Multiple Package Selection / Error)",
     "Actualizar Versión de PFAS (Update PFAS Version)",
