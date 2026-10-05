@@ -1464,7 +1464,7 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
 
     const pfasBlock = document.getElementById('d-declarations-block');
     if (pfasBlock && pfasBlock.innerHTML.includes('missing but required')) {
-        alerts.push('MISSING <strong>PFAS Certification</strong>');
+        alerts.push('MISSING <strong>PFAS Certification</strong> <br><span style="font-size: 10px; font-weight: normal; color: #555;">(Please verify if PFAS is uploaded in INTERLINK before rejecting) <i class="fas fa-info-circle" style="color:#e53935; font-size:13px; margin-left:2px; cursor:help;" title="Muchas veces los vendors cargan el documento PFAS en INTERLINK pero olvidan declararlo o no actualizan la ETRF. Verifica siempre el sistema antes de emitir un rechazo."></i></span>');
     }
 
     const alertBox = document.getElementById('rejection-alerts');
