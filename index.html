@@ -4125,6 +4125,15 @@ if (trackerHistoryBtn) {
             for(let i = historyData.length - 1; i >= 0; i--) {
                 const row = historyData[i];
                 
+                // Parse Excel Dates
+                let dateStr = row['DATE'] || '';
+                if (!isNaN(dateStr) && parseFloat(dateStr) > 40000) {
+                    const excelDate = parseFloat(dateStr);
+                    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+                    const pad = n => n.toString().padStart(2, '0');
+                    dateStr = pad(date.getUTCDate()) + '/' + pad(date.getUTCMonth()+1) + '/' + date.getUTCFullYear() + ' ' + pad(date.getUTCHours()) + ':' + pad(date.getUTCMinutes());
+                }
+                
                 // Formatear Form IDs
                 const rawForms = row['FORM ID'] || '';
                 const formsHtml = rawForms.split(/[,;]+/).map(s => s.trim()).filter(s=>s)
@@ -4137,7 +4146,7 @@ if (trackerHistoryBtn) {
 
                 tableHtml += `
                     <tr class="history-row" style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 10px; white-space: nowrap; vertical-align: top;">${row['DATE'] || ''}</td>
+                        <td style="padding: 10px; white-space: nowrap; vertical-align: top;">${dateStr}</td>
                         <td style="padding: 10px; font-weight: bold; color: #334155; vertical-align: top;">${row['VENDOR'] || ''}</td>
                         <td style="padding: 10px; vertical-align: top;">${formsHtml}</td>
                         <td style="padding: 10px; font-size: 0.75rem; vertical-align: top;">${recipsHtml}</td>
@@ -4884,6 +4893,7 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
 
 
 
