@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -332,9 +332,10 @@ footer {
 <header class="top-bar">
     <div class="logo">INTERGUIDE <span>2.0</span></div>
     <div class="top-links">
-            
-        <!-- =? BOT?N DE CONTACTO -->
-        <a href="mailto:wilder.sican@intertek.com" style="text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer;">
+        <button onclick="openTipsModal()" style="background: none; border: none; text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer; font-size: 14px; font-weight: 500; padding: 0;">
+            <i class="fas fa-code"></i> TIPS Scripts
+        </button>
+        <a href="mailto:wilder.sican@intertek.com" style="text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer; margin-left: 5px;">
             <i class="far fa-envelope"></i> Contact Us
         </a>
     </div>
@@ -352,13 +353,13 @@ footer {
         <div class="dashboard-cards">
             <div class="card">
                 <div class="card-header">
-                    <div><i class="fas fa-file-pdf title-icon"></i> ETRF Analyzer</div>
+                    <div><i class="fas fa-file-alt title-icon"></i> ETRF Analyzer</div>
                     <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
                 </div>
                 <div class="card-content">
                     <div style="margin: 0 0 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #475569; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #334155; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fas fa-file-signature" style="margin-right: 5px;"></i> Main ETRF Document</span>
+                            <span><i class="fas fa-file-pdf" style="margin-right: 5px;"></i> ETRF</span>
                         </div>
                         
                         <label class="visually-hidden" for="archivoPdf">Select ETRF PDF file</label>
@@ -377,7 +378,7 @@ footer {
                     <!-- >? AUDITOR?A PFAS (MUDADA A LA COLUMNA IZQUIERDA) -->
                     <div style="margin: 15px 0; padding: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #15803d; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fas fa-vial" style="margin-right: 5px;"></i> PFAS Audit</span>
+                            <span><i class="fas fa-vial" style="margin-right: 5px;"></i> PFAS</span>
                         </div>
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
@@ -399,7 +400,7 @@ footer {
                     <!-- =? AUDITOR?A BOM -->
                     <div style="margin: 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 12px; color: #1d4ed8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fas fa-boxes" style="margin-right: 5px;"></i> BOM Audit</span>
+                            <span><i class="fas fa-boxes" style="margin-right: 5px;"></i> BOM</span>
                         </div>
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
@@ -510,17 +511,17 @@ footer {
             </div>
         </div>
 
-        <!-- Complementary Reports Section -->
+        <!-- Declared Previous Reports Section -->
         <div class="card" style="width: 100%; max-width: 1200px; min-height: auto;">
             <div class="card-header">
-                <div><i class="fas fa-folder-open title-icon"></i> Complementary Test Reports</div>
+                <div><i class="fas fa-folder-open title-icon"></i> Declared Previous Reports</div>
                 <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
             </div>
             <div class="card-content" style="display: flex; gap: 30px; flex-wrap: wrap; padding: 25px;">
                 <div style="flex: 1; min-width: 300px; background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 6px; padding: 15px;" id="box-trim-report">
                     <div style="display: flex; align-items: center; border-bottom: 2px solid #ffc800; padding-bottom: 8px; margin-bottom: 12px;">
-                        <i class="fas fa-cut" style="color: #2b2b2b; font-size: 16px; margin-right: 8px;"></i>
-                        <span style="font-weight: 700; font-size: 13px; color: #333;">Trim Certifier Test Report</span>
+                        <i class="fas fa-tag" style="color: #2b2b2b; font-size: 16px; margin-right: 8px;"></i>
+                        <span style="font-weight: 700; font-size: 13px; color: #333;">Trim</span>
                     </div>
                     <div id="trim-report-body">
                         <em style="color:#767676; font-size:12px; font-style: italic;">Waiting for ETRF</em>
@@ -530,7 +531,7 @@ footer {
                 <div style="flex: 1; min-width: 300px; background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 6px; padding: 15px;" id="box-fabric-report">
                     <div style="display: flex; align-items: center; border-bottom: 2px solid #ffc800; padding-bottom: 8px; margin-bottom: 12px;">
                         <i class="fas fa-scroll" style="color: #2b2b2b; font-size: 16px; margin-right: 8px;"></i>
-                        <span style="font-weight: 700; font-size: 13px; color: #333;">Fabric Test Report</span>
+                        <span style="font-weight: 700; font-size: 13px; color: #333;">Fabric</span>
                     </div>
                     <div id="fabric-report-body">
                         <em style="color:#767676; font-size:12px; font-style: italic;">Waiting for ETRF</em>
@@ -705,7 +706,7 @@ footer {
 
 <footer>
     <div class="footer-left">
-        <i class="fab fa-invision"></i> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By WilderSican</span>
+        <i class="fab fa-invision"></i> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By Wilder Sicán</span>
     </div>
 </footer>
 
@@ -729,7 +730,67 @@ footer {
     </div>
 </div>
 
+<div class="modal-overlay" id="tipsModal" style="display: none; align-items: center; justify-content: center; z-index: 10000; background: rgba(0,0,0,0.6);">
+    <div style="width: 500px; max-width: 90%; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden;">
+        <div style="background: #ffc800; color: #333; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 16px; font-weight: bold;"><i class="fas fa-code"></i> TIPS Scripts Installation</h3>
+            <button onclick="closeTipsModal()" style="background: none; border: none; color: #333; cursor: pointer; font-size: 24px; font-weight: bold; padding: 0; line-height: 1;">&times;</button>
+        </div>
+        <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <p style="margin-bottom: 15px; font-size: 13px; color: #555;">Here you can find the links and instructions to install the required scripts.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;" id="tipsScriptsList">
+                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado Requerimientos</div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://gist.github.com/wildersican/b7384e89ba403177a35af28b6c5e261f/raw/modulo-y-llenado-requerimientos.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
+                        <button onclick="navigator.clipboard.writeText('https://gist.github.com/wildersican/b7384e89ba403177a35af28b6c5e261f/raw/modulo-y-llenado-requerimientos.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autodigitación</div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://gist.githubusercontent.com/wildersican/95464492e91a030ebeabb4eeb7bc3068/raw/auto-digitacion.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/95464492e91a030ebeabb4eeb7bc3068/raw/auto-digitacion.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado BSF</div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://gist.githubusercontent.com/Boris-End/a74a799b6af8bf5175277784bf2f3436/raw/autollenado-etrf.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/Boris-End/a74a799b6af8bf5175277784bf2f3436/raw/autollenado-etrf.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado Correos</div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://gist.githubusercontent.com/wildersican/7d5fd735a4c61d835469b6abd9cc4ec8/raw/selector-automatico-contactos.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/7d5fd735a4c61d835469b6abd9cc4ec8/raw/selector-automatico-contactos.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Borrar comentarios en español</div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="https://gist.githubusercontent.com/wildersican/d07d30a892f8ff9b84ff8b21e759c600/raw/boton-clean-flotante.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/d07d30a892f8ff9b84ff8b21e759c600/raw/boton-clean-flotante.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+function openTipsModal() {
+    document.getElementById('tipsModal').style.display = 'flex';
+}
+function closeTipsModal() {
+    document.getElementById('tipsModal').style.display = 'none';
+}
 /* ============================================================================
    MAIN NAVIGATION
 ============================================================================ */
