@@ -342,6 +342,7 @@ footer {
 <nav class="sub-nav" role="tablist" aria-label="Sections">
     <div class="nav-tab active" onclick="switchMainTab('etrf')">ETRF</div>
     <div class="nav-tab" onclick="switchMainTab('prevs')">PREVS</div>
+    <div class="nav-tab" onclick="switchMainTab('bomcompare')">BOM COMPARE</div>
     <div class="nav-tab" onclick="switchMainTab('unifying')">UNIFYING</div>
     <div class="nav-tab" onclick="switchMainTab('tracker')">TRACKER</div>
 </nav>
@@ -592,7 +593,35 @@ footer {
     </div>
 
     <!-- UNIFYING VIEW -->
-    <div id="view-unifying" class="view-wrapper">
+        <!-- VISTA BOM COMPARE -->
+    <div id="view-bomcompare" class="view-wrapper">
+        <div class="dashboard-cards">
+            <div class="card" style="width: 100%;">
+                <div class="card-header">
+                    <div><i class="fas fa-balance-scale title-icon"></i> BOM Compare</div>
+                </div>
+                <div class="card-content" style="padding: 15px;">
+                    <p style="text-align: center; color: #555; margin-bottom: 10px; font-size: 0.9rem;">Drop multiple BOMs to analyze and compare their RDs.</p>
+                    <div class="dropzone" id="dropzoneBomCompare" onclick="document.getElementById('fileInputBomCompare').click()">
+                        <svg viewBox="0 0 24 24"><path d="M19 13v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5a1 1 0 0 1 2 0v5h10v-5a1 1 0 0 1 2 0zM12 3a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L11 13.586V4a1 1 0 0 1 1-1z"/></svg>
+                        <span>Click here or drag and drop your BOM files</span>
+                        <input type="file" id="fileInputBomCompare" multiple accept=".pdf" style="display:none;">
+                    </div>
+
+                    <div class="file-section" id="fileSectionBomCompare" style="display: none;">
+                        <h3>BOMs Loaded</h3>
+                        <ul class="file-list" id="bomCompareFileList"></ul>
+                    </div>
+
+                    <button class="btn-unify" id="mergeBtnBomCompare" onclick="startBomCompare()" style="display:none;">Merge and Compare</button>
+                    <button class="btn-clear" id="clearBtnBomCompare" onclick="clearBomCompare()" style="display:none;">Clear All Files</button>
+                    
+                    <div id="bomCompareResults" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="view-unifying" class="view-wrapper">
         <div class="dashboard-cards">
             <div class="card" style="width: 100%;">
                 <div class="card-header">
@@ -1567,73 +1596,49 @@ function extractSeason(text) {
 }
 
 function extractRDNumber() {
+    let rdNumbers = [];
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
-        
-        let rdHeaderItem = null;
-        for (let it of items) {
-            const str = it.str.toLowerCase();
-            if (str.includes("fabric article") || str.includes("rd number") || str.includes("rd #")) {
-                if (!str.includes("trim")) {
-                    rdHeaderItem = it;
-                    break;
-                }
-            }
-        }
+        const hRD = items.find(i => {
+            const str = i.str.trim().toLowerCase();
+            return /\brd\b|rd\s*number|one\s*number\s*per/i.test(str);
+        });
+        if (!hRD) continue;
 
-        if (!rdHeaderItem) continue;
+        const nums = items.filter(i => {
+            const txt = i.str.trim();
+            if (!/\b\d{6,9}\b/.test(txt)) return false; 
+            if (Math.abs(i.x - hRD.x) > 45) return false; 
+            if (i.y <= hRD.y + 5 || i.y > hRD.y + 220) return false; 
+            return true;
+        });
 
-        let charIndex = rdHeaderItem.str.toLowerCase().indexOf("rd number") > -1 ? rdHeaderItem.str.toLowerCase().indexOf("rd number") : 
-                        (rdHeaderItem.str.toLowerCase().indexOf("fabric article") > -1 ? rdHeaderItem.str.toLowerCase().indexOf("fabric article") : 
-                        rdHeaderItem.str.toLowerCase().indexOf("rd #"));
-        let strLen = rdHeaderItem.str.length;
-        let w = rdHeaderItem.w || rdHeaderItem.width || (strLen * 5.5);
-        let approxX = rdHeaderItem.x + (charIndex / strLen) * w;
-
-        let candidates = [];
-        for (let it of items) {
-            if (Math.abs(it.y - rdHeaderItem.y) > 350) continue;
-            let txt = it.str.trim();
-            let matches = txt.match(/\b\d{5,9}\b/g);
+        for (const n of nums) {
+            const val = n.str.trim();
+            const matches = val.match(/\b\d{6,9}\b/g);
             if (matches) {
-                for (let m of matches) {
-                    candidates.push({ val: m, x: it.x, y: it.y });
-                }
+                matches.forEach(m => {
+                    if (!rdNumbers.includes(m)) rdNumbers.push(m);
+                });
+            } else {
+                if (!rdNumbers.includes(val)) rdNumbers.push(val);
             }
         }
+        if (rdNumbers.length > 0) break;
+    }
 
-        if (candidates.length > 0) {
-            // Sort by X distance to the RD Number text first.
-            candidates.sort((a, b) => {
-                let xDistA = Math.abs(a.x - approxX);
-                let xDistB = Math.abs(b.x - approxX);
-                if (Math.abs(xDistA - xDistB) < 30) {
-                    return Math.abs(rdHeaderItem.y - a.y) - Math.abs(rdHeaderItem.y - b.y);
-                }
-                return xDistA - xDistB;
-            });
-
-            for (let cand of candidates) {
-                if (Math.abs(cand.x - approxX) < 150) {
-                    return cand.val;
-                }
-            }
-            return candidates[0].val;
+    if (rdNumbers.length === 0) {
+        const fullText = pageTexts.join(' ');
+        const match = fullText.match(/(?:PLM\s*Fabric|RD\s*Number|Article)[\s\S]{0,150}?(\b\d{6,9}\b)/i);
+        if (match && match[1]) {
+            rdNumbers.push(match[1]);
         }
     }
 
-    const fullText = pageTexts.join(' ');
-    let idx = fullText.toLowerCase().indexOf('fabric article');
-    if (idx === -1) idx = fullText.toLowerCase().indexOf('rd number');
-    if (idx !== -1) {
-        let afterText = fullText.substring(idx, idx + 200);
-        let m = afterText.match(/\b\d{5,9}\b/g);
-        if (m) {
-            return m[m.length - 1]; 
-        }
-    }
-    return null;
-}function extractRequestedTests() {
+    return rdNumbers.length > 0 ? rdNumbers.join(', ') : null;
+}
+
+function extractRequestedTests() {
     let requestedTests = [];
     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
         const items = pageItems[pageIdx];
@@ -1731,7 +1736,7 @@ function renderTestTypeBlock(full, additional, special, psr, perf, requestedTest
         html = '<p style="color:#767676;font-size:12px;padding:4px 0;">No checkbox marked detected.</p>';
     } else {
         for (const c of marked) {
-            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill"> ${esc(c.label)}</span></span></div>`;
+            html += `<div class="det-row"><span class="det-label">Test Type</span><span class="det-val"><span class="check-pill">${esc(c.label).replace(/[^\x20-\x7E]/g, '').trim()}</span></span></div>`;
         }
     }
 
@@ -1945,10 +1950,12 @@ function extractBOMData(text) {
     }
 
     let bomFile = getTextBetween(text, 'BOM File', ['Is this a VMI style?', '*Is the finished product', 'US IMPORTER', 'Adult Apparel']);
+    if (bomFile) bomFile = bomFile.replace(/[^\x20-\x7E]/g, '').trim();
+    if (bomFile) bomFile = bomFile.replace(/[^\x20-\x7E]/g, '').trim();
     if (!bomFile || bomFile.trim() === '') {
         const fileMatch = text.match(/BOM File\s+([a-zA-Z0-9_\-\.\s]+?\.pdf)/i);
         if (fileMatch) bomFile = fileMatch[1].trim();
-        else bomFile = '--';
+        else bomFile = '-';
     } else {
         const pdfMatch = bomFile.match(/(.*?\.pdf)/i);
         if (pdfMatch) bomFile = pdfMatch[1].trim();
@@ -1961,7 +1968,7 @@ function extractBOMData(text) {
     if (elNum) elNum.className = bomNum !== '--' ? 'det-val found' : 'det-val empty';
 
     const elFile = document.getElementById('d-bom-file');
-    if (elFile) elFile.className = bomFile !== '--' ? 'det-val found' : 'det-val empty';
+    if (elFile) elFile.className = bomFile !== '--' && bomFile !== '-' ? 'det-val found' : 'det-val empty';
 }
 
 function renderDeclarations() {
@@ -3743,7 +3750,8 @@ async function procesarArchivoBOM() {
             
             let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
                 <strong style="color:#0f172a;">=� DEBUG INFO:</strong><br>
-                <div style="margin-top:5px;"><b>= RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">` + (bomFabricRds.length > 0 ? bomFabricRds.join(', ') : 'Ninguno') + `</span></div>
+                <div style="margin-top:5px;"><b>=
+ RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">` + (bomFabricRds.length > 0 ? bomFabricRds.join(', ') : 'Ninguno') + `</span></div>
                 <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
 <div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
                 <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
@@ -3780,7 +3788,8 @@ async function procesarArchivoBOM() {
         } else {
             let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
                 <strong style="color:#0f172a;">=� DEBUG INFO:</strong><br>
-                <div style="margin-top:5px;"><b>= RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">Ninguno</span></div>
+                <div style="margin-top:5px;"><b>=
+ RDs Extra�dos del BOM:</b> <span style="font-family:monospace; color:#2563eb;">Ninguno</span></div>
                 <div style="margin-top:5px;"><b>?? RDs de Fabric de la ETRF:</b> <span style="font-family:monospace; color:#ea580c;">` + (rdsToCheck.length > 0 ? rdsToCheck.join(', ') : 'Ninguno') + `</span></div>
 <div style="margin-top:5px;"><b>? RDs de Trim de la ETRF:</b> <span style="font-family:monospace; color:#8b5cf6;">` + (trimsToCheck.length > 0 ? trimsToCheck.join(', ') : 'Ninguno') + `</span></div>
                 <div style="margin-top:5px;"><b>COORDS:</b> <span style="font-family:monospace; color:#0f766e;">` + (window.debugCoords ? window.debugCoords.join(" | ") : "null") + `</span></div>
@@ -4551,13 +4560,13 @@ function verificarCoincidenciaEstilos(textoPfas) {
         const errorMsg = isFabric ? 'Missing RD Number in ETRF report.' : 'Missing ETRF report or Style Number.';
         return alertaVersionHTML + `
             <div style="padding: 8px 12px; background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px; font-size: 12px; color: #e65100;">
-                ?? <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
+                &#9888;&#65039; <b>${errorMsg}</b> Please analyze an ETRF PDF above first to cross-reference automatically.
             </div>
         `;
     }
 
     const coincidentes = targetNumbers.filter(est => {
-        const spacedDigits = est.split('').join('\\s*');
+        const spacedDigits = est.split('').join('\s*');
         const regex = new RegExp('(?:^|[^0-9])' + spacedDigits + '(?=[^0-9]|$)', 'i');
         return regex.test(textoPfasNormalizado);
     });
@@ -4720,8 +4729,170 @@ async function procesarArchivoPFAS() {
     </div>
 </div>
 <script src="add-rejection.js"></script>
+<script>
+/* ============================================================================
+   MODULE: BOM COMPARE LOGIC
+============================================================================ */
+let bomCompareFiles = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropzoneBom = document.getElementById('dropzoneBomCompare');
+    const fileInputBom = document.getElementById('fileInputBomCompare');
+    
+    if (dropzoneBom && fileInputBom) {
+        dropzoneBom.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropzoneBom.classList.add('dragover');
+        });
+        dropzoneBom.addEventListener('dragleave', () => dropzoneBom.classList.remove('dragover'));
+        dropzoneBom.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzoneBom.classList.remove('dragover');
+            handleBomCompareFiles(e.dataTransfer.files);
+        });
+        fileInputBom.addEventListener('change', e => {
+            handleBomCompareFiles(e.target.files);
+        });
+    }
+});
+
+function handleBomCompareFiles(files) {
+    for (let f of files) {
+        if (f.type === 'application/pdf') {
+            bomCompareFiles.push(f);
+        }
+    }
+    renderBomCompareList();
+}
+
+function renderBomCompareList() {
+    const list = document.getElementById('bomCompareFileList');
+    const sec = document.getElementById('fileSectionBomCompare');
+    const btnMerge = document.getElementById('mergeBtnBomCompare');
+    const btnClear = document.getElementById('clearBtnBomCompare');
+    list.innerHTML = '';
+    
+    if (bomCompareFiles.length === 0) {
+        sec.style.display = 'none';
+        btnMerge.style.display = 'none';
+        btnClear.style.display = 'none';
+        return;
+    }
+    
+    sec.style.display = 'block';
+    btnMerge.style.display = 'inline-block';
+    btnClear.style.display = 'inline-block';
+    
+    bomCompareFiles.forEach((f, i) => {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        li.innerHTML = `
+            <div style="display:flex; align-items:center; overflow:hidden; flex-grow: 1;">
+                <span class="file-order">${i + 1}</span>
+                <span class="file-name" title="${f.name}">${f.name}</span>
+            </div>
+            <button class="btn-delete-item" onclick="removeBomCompareFile(${i})" title="Remove file">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        list.appendChild(li);
+    });
+}
+
+function removeBomCompareFile(i) {
+    bomCompareFiles.splice(i, 1);
+    renderBomCompareList();
+    document.getElementById('bomCompareResults').innerHTML = '';
+}
+
+function clearBomCompare() {
+    bomCompareFiles = [];
+    document.getElementById('fileInputBomCompare').value = '';
+    renderBomCompareList();
+    document.getElementById('bomCompareResults').innerHTML = '';
+}
+
+async function startBomCompare() {
+    if (bomCompareFiles.length < 2) {
+        alert("Please upload at least 2 BOMs to compare.");
+        return;
+    }
+
+    const resultsDiv = document.getElementById('bomCompareResults');
+    resultsDiv.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Analyzing and comparing BOMs...</p></div>';
+
+    let extractedBoms = [];
+    
+    for (let f of bomCompareFiles) {
+        try {
+            const arr = await f.arrayBuffer();
+            const pdfData = new Uint8Array(arr);
+            const pdf = await pdfjsLib.getDocument({data: pdfData}).promise;
+            
+            let rds = [];
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                for (const item of textContent.items) {
+                    const txt = item.str.trim();
+                    if (/^\d{5,9}$/.test(txt)) {
+                        rds.push(txt);
+                    }
+                }
+            }
+            rds = [...new Set(rds)]; // deduplicate
+            extractedBoms.push({ name: f.name, rds: rds });
+        } catch (e) {
+            console.error("Error parsing BOM " + f.name, e);
+        }
+    }
+
+    // Compare logic
+    let allRdsSet = new Set();
+    extractedBoms.forEach(b => b.rds.forEach(rd => allRdsSet.add(rd)));
+    
+    let commonRds = [...allRdsSet].filter(rd => {
+        return extractedBoms.every(b => b.rds.includes(rd));
+    });
+
+    let html = `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; margin-top:20px;">`;
+    html += `<h3 style="margin-top:0; color:#1e293b; border-bottom:1px solid #cbd5e1; padding-bottom:8px;"><i class="fas fa-check-double" style="color:#10b981;"></i> Common RDs (Match)</h3>`;
+    
+    if (commonRds.length > 0) {
+        html += `<table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; text-align:left;">
+            <thead>
+                <tr style="background:#e2e8f0; color:#334155;">
+                    <th style="padding:8px; border:1px solid #cbd5e1;">#</th>
+                    <th style="padding:8px; border:1px solid #cbd5e1;">Matched RD Number</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        commonRds.forEach((rd, idx) => {
+            html += `<tr>
+                <td style="padding:8px; border:1px solid #cbd5e1; width:50px;">${idx + 1}</td>
+                <td style="padding:8px; border:1px solid #cbd5e1; font-family:monospace; color:#0f172a; font-weight:bold;">${rd}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+    } else {
+        html += `<div style="margin-top:15px; color:#b91c1c; font-weight:bold;">No RDs matched across all uploaded BOMs.</div>`;
+    }
+
+    html += `</div>`;
+    resultsDiv.innerHTML = html;
+}
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
