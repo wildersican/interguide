@@ -2803,6 +2803,7 @@ async function procesarPDF() {
                   let millColX = null;
                   let millList = [];
                   let inTrimTable = false;
+                    let isVendorSourcedTable = false;
                   let trimRdColX = null;
                   let trimSupplierColX = null;
                   window.globalTrimSuppliers = {};
@@ -2832,7 +2833,15 @@ async function procesarPDF() {
                               inTrimTable = false;
                               rdColX = null; 
                               millColX = null; 
-                          } else if (/trim\s*certif.*test\s*report|vendor-sourced\s*trims/i.test(r.text)) {
+                          } else if (/trim\s*certif.*test\s*report/i.test(r.text)) {
+                                inTrimTable = true;
+                                inFabricTable = false;
+                                isVendorSourcedTable = false;
+                                trimRdColX = null;
+                            } else if (/vendor[-\s]*sourced\s*trims/i.test(r.text)) {
+                                inTrimTable = true;
+                                inFabricTable = false;
+                                isVendorSourcedTable = true;
                               inTrimTable = true;
                               inFabricTable = false;
                               trimRdColX = null;
@@ -2891,7 +2900,7 @@ async function procesarPDF() {
                                                   }
                                               }
                                               
-                                              if (isTrim) { let supplier = ''; if (/vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
+                                              if (isTrim) { let supplier = ''; if (isVendorSourcedTable || /vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
                                           }
                                       });
                                   }
@@ -5194,6 +5203,8 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
+
 
 
 
