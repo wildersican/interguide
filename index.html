@@ -354,7 +354,10 @@ footer {
             <div class="card">
                 <div class="card-header">
                     <div><i class="fas fa-file-alt title-icon"></i> ETRF Analyzer</div>
-                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                    <div style="display: flex; align-items: center;">
+                        <button onclick="clearETRFCard()" style="background:transparent; border:1px solid #dc2626; color:#dc2626; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-right:8px; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'" title="Clear all ETRF, PFAS, and BOM data"><i class="fas fa-trash-alt"></i> Clear</button>
+                        <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                    </div>
                 </div>
                 <div class="card-content">
                     <div style="margin: 0 0 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #475569; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
@@ -538,7 +541,10 @@ footer {
             <div class="card">
                 <div class="card-header">
                     <div><i class="fas fa-file-pdf title-icon"></i> Previous Report Analyzer</div>
-                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                    <div style="display: flex; align-items: center;">
+                        <button onclick="clearPREVSCard()" style="background:transparent; border:1px solid #dc2626; color:#dc2626; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-right:8px; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'" title="Clear PREVS data"><i class="fas fa-trash-alt"></i> Clear</button>
+                        <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
+                    </div>
                 </div>
                 <div class="card-content">
                     <label class="visually-hidden" for="archivoPdf-prev">Select PREVS PDF file</label>
@@ -5174,6 +5180,47 @@ function removeBomCompareFile(i) {
     bomCompareFiles.splice(i, 1);
     renderBomCompareList();
     document.getElementById('bomCompareResults').innerHTML = '';
+}
+
+function clearETRFCard() {
+    const fEtrf = document.getElementById('archivoPdf'); if (fEtrf) fEtrf.value = '';
+    const fPfas = document.getElementById('archivoInput-pfas'); if (fPfas) fPfas.value = '';
+    const fBom = document.getElementById('archivoInput-bom'); if (fBom) fBom.value = '';
+    const aEtrf = document.getElementById('alertaEtrf'); if (aEtrf) { aEtrf.style.display = 'none'; aEtrf.innerHTML = ''; }
+    const rEtrf = document.getElementById('resultados-etrf-container'); if (rEtrf) rEtrf.innerHTML = '';
+    const rPfas = document.getElementById('resultados-pfas-container'); if (rPfas) rPfas.innerHTML = '';
+    const rBom = document.getElementById('resultados-bom-container'); if (rBom) rBom.innerHTML = '';
+    const pFill = document.getElementById('progressFill'); if (pFill) pFill.style.width = '0%';
+    const pFillPfas = document.getElementById('progressFill-pfas'); if (pFillPfas) pFillPfas.style.width = '0%';
+    const pFillBom = document.getElementById('progressFill-bom'); if (pFillBom) pFillBom.style.width = '0%';
+    const pPages = document.getElementById('pdfPages'); if (pPages) pPages.innerHTML = '<p style="color:#767676;text-align:center;margin-top:40px;font-size:13px;">Select an ETRF to begin</p>';
+    const pText = document.getElementById('pdfTextView'); if (pText) pText.innerText = '';
+    const detBody = document.getElementById('det-body'); if (detBody) detBody.style.display = 'none';
+    const detPlaceholder = document.getElementById('det-placeholder'); if (detPlaceholder) detPlaceholder.style.display = 'block';
+    const tb = document.getElementById('trimBody'); if (tb) tb.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Trim reports detected</div>';
+    const fb = document.getElementById('fabricBody'); if (fb) fb.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Fabric reports detected</div>';
+    window.rdGlobalesETRF = [];
+    window.trimRdGlobalesETRF = [];
+    window.globalRawRdList = [];
+    window.globalRawTrimRdList = [];
+    window.globalTrimSuppliers = {};
+    window.globalCocSuppliers = {};
+    window.hasCocTable = false;
+    window.estilosGlobalesETRF = [];
+    const sbox = document.getElementById('campoBusqueda'); if (sbox) sbox.value = '';
+    const sinfo = document.getElementById('infoCoincidencias'); if (sinfo) sinfo.textContent = '';
+}
+
+function clearPREVSCard() {
+    const fPrev = document.getElementById('archivoPdf-prev'); if (fPrev) fPrev.value = '';
+    const aPrev = document.getElementById('alertaPrev'); if (aPrev) { aPrev.style.display = 'none'; aPrev.innerHTML = ''; }
+    const pFill = document.getElementById('progressFill-prev'); if (pFill) pFill.style.width = '0%';
+    const pPages = document.getElementById('pdfPages-prev'); if (pPages) pPages.innerHTML = '<p style="color:#767676;text-align:center;margin-top:40px;font-size:13px;">Select a PREVS report to begin</p>';
+    const pText = document.getElementById('pdfTextView-prev'); if (pText) pText.innerText = '';
+    const detBody = document.getElementById('det-body-prev'); if (detBody) detBody.style.display = 'none';
+    const detPlaceholder = document.getElementById('det-placeholder-prev'); if (detPlaceholder) detPlaceholder.style.display = 'block';
+    const sbox = document.getElementById('campoBusqueda-prev'); if (sbox) sbox.value = '';
+    const sinfo = document.getElementById('infoCoincidencias-prev'); if (sinfo) sinfo.textContent = '';
 }
 
 function clearBomCompare() {
