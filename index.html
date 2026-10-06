@@ -364,10 +364,7 @@ footer {
                         
                         <label class="visually-hidden" for="archivoPdf">Select ETRF PDF file</label>
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                            <input type="file" id="archivoPdf" accept="application/pdf,.pdf" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
-                            <button id="btnAnalizar" onclick="procesarPDF()" style="background: #2b2b2b; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; transition: background 0.2s;">
-                                Analyze ETRF
-                            </button>
+                            <input type="file" id="archivoPdf" accept="application/pdf,.pdf" onchange="procesarPDF()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
                         </div>
                         <div class="inline-alert" id="alertaEtrf" role="alert" style="margin-top: 8px;"></div>
                         <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
@@ -382,10 +379,7 @@ footer {
                         </div>
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                            <input type="file" id="archivoInput-pfas" accept=".pdf,.docx,.doc" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
-                            <button id="btnAnalizar-pfas" onclick="procesarArchivoPFAS()" style="background: #16a34a; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; transition: background 0.2s;">
-                                Analyze PFAS
-                            </button>
+                            <input type="file" id="archivoInput-pfas" accept=".pdf,.docx,.doc" onchange="procesarArchivoPFAS()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
                         </div>
                         
                         <!-- Disguised progress bar -->
@@ -404,10 +398,7 @@ footer {
                         </div>
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                            <input type="file" id="archivoInput-bom" accept=".pdf" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
-                            <button id="btnAnalizar-bom" onclick="procesarArchivoBOM()" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; transition: background 0.2s;">
-                                Analyze BOM
-                            </button>
+                            <input type="file" id="archivoInput-bom" accept=".pdf" onchange="procesarArchivoBOM()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
                         </div>
                         
                         <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
@@ -552,8 +543,7 @@ footer {
                 <div class="card-content">
                     <label class="visually-hidden" for="archivoPdf-prev">Select PREVS PDF file</label>
                     <div class="pdf-controls">
-                        <input type="file" id="archivoPdf-prev" accept="application/pdf,.pdf">
-                        <button class="btn-analizar" id="btnAnalizar-prev" onclick="procesarPDFPrev()">Analyze PREVS</button>
+                        <input type="file" id="archivoPdf-prev" accept="application/pdf,.pdf" onchange="procesarPDFPrev()">
                     </div>
                     <div class="inline-alert" id="alertaPrev" role="alert"></div>
                     <div class="progress-bar"><div class="progress-fill" id="progressFill-prev"></div></div>
@@ -2105,15 +2095,15 @@ function renderComplementaryReports() {
                 if (t.rdNum) t.rdNum.split(/[,;\/&]/).forEach(r => existingRds.add(r.trim()));
             });
             const fallbackTrimDictionary = [
-                { normal: 'MAIN LABEL', regex: /MAIN\s*[-_]?\s*LABEL/i },
-                { normal: 'CARE LABEL', regex: /CARE\s*[-_]?\s*LABEL/i },
-                { normal: 'RFID', regex: /RFID/i },
-                { normal: 'HEAT TRANSFER', regex: /HEAT\s*[-_]?\s*TRANSFER|HTF/i },
-                { normal: 'T-LABEL', regex: /T\s*[-_]?\s*LABEL/i },
-                { normal: 'JOKER LABEL', regex: /JOKER\s*[-_]?\s*LABEL/i },
-                { normal: 'PO LABEL', regex: /PO\s*[-_]?\s*LABEL/i },
-                { normal: 'MOBILON', regex: /MOBILON/i },
-                { normal: 'WOVEN LABEL', regex: /WOVEN\s*[-_]?\s*(LABEL|END\s*[-_]?\s*FOLD)/i }
+                { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
+                { normal: 'CARE LABEL', regex: /\bCARE\b/i },
+                { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
+                { normal: 'RFID', regex: /\bRFID\b/i },
+                { normal: 'HEAT TRANSFER', regex: /\b(HEAT\s*[-_]?\s*TRANSFER|HEAT\s*[-_]?\s*SEAL|HTF)\b/i },
+                { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
+                { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
+                { normal: 'MOBILON', regex: /\bMOBILON\b/i },
+                { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i }
             ];
 
             window.trimRdGlobalesETRF.forEach(rd => {
@@ -2147,9 +2137,7 @@ function renderComplementaryReports() {
                         } catch (e) {}
                     }
                     let upperTrim = trimDesc.toUpperCase();
-                    if (upperTrim.includes('HTF') || upperTrim.includes('HEAT TRANSFER') || upperTrim.includes('HEAT SEAL')) {
-                        trimDesc = 'HEAT TRANSFER';
-                    } else if (upperTrim.includes('MAIN')) {
+                    if (upperTrim.includes('MAIN')) {
                         trimDesc = 'MAIN LABEL';
                     } else if (upperTrim.includes('CARE')) {
                         trimDesc = 'CARE LABEL';
@@ -2157,6 +2145,8 @@ function renderComplementaryReports() {
                         trimDesc = 'JOKER LABEL';
                     } else if (upperTrim.includes('RFID')) {
                         trimDesc = 'RFID';
+                    } else if (upperTrim.includes('HTF') || upperTrim.includes('HEAT TRANSFER') || upperTrim.includes('HEAT SEAL')) {
+                        trimDesc = 'HEAT TRANSFER';
                     } else if (upperTrim.includes('PO LABEL')) {
                         trimDesc = 'PO LABEL';
                     } else if (upperTrim.includes('MOBILON')) {
@@ -2323,15 +2313,15 @@ function extractComplementaryReportsData() {
     };
 
     const trimDictionary = [
-        { normal: 'MAIN LABEL', regex: /MAIN\s*[-_]?\s*LABEL/i },
-        { normal: 'CARE LABEL', regex: /CARE\s*[-_]?\s*LABEL/i },
-        { normal: 'RFID', regex: /RFID/i },
-        { normal: 'HEAT TRANSFER', regex: /HEAT\s*[-_]?\s*TRANSFER|HTF/i },
-        { normal: 'T-LABEL', regex: /T\s*[-_]?\s*LABEL/i },
-        { normal: 'JOKER LABEL', regex: /JOKER\s*[-_]?\s*LABEL/i },
-        { normal: 'PO LABEL', regex: /PO\s*[-_]?\s*LABEL/i },
-        { normal: 'MOBILON', regex: /MOBILON/i },
-        { normal: 'WOVEN LABEL', regex: /WOVEN\s*[-_]?\s*(LABEL|END\s*[-_]?\s*FOLD)/i }
+        { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
+        { normal: 'CARE LABEL', regex: /\bCARE\b/i },
+        { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
+        { normal: 'RFID', regex: /\bRFID\b/i },
+        { normal: 'HEAT TRANSFER', regex: /\b(HEAT\s*[-_]?\s*TRANSFER|HEAT\s*[-_]?\s*SEAL|HTF)\b/i },
+        { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
+        { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
+        { normal: 'MOBILON', regex: /\bMOBILON\b/i },
+        { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i }
     ];
 
     const fabricDictionary = [
@@ -2846,9 +2836,7 @@ function extractComplementaryReportsData() {
                 
                 if (targetSection === 'TRIM') {
                     let upperFinal = finalDesc.toUpperCase();
-                    if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
-                        finalDesc = 'HEAT TRANSFER';
-                    } else if (upperFinal.includes('MAIN')) {
+                    if (upperFinal.includes('MAIN')) {
                         finalDesc = 'MAIN LABEL';
                     } else if (upperFinal.includes('CARE')) {
                         finalDesc = 'CARE LABEL';
@@ -2856,6 +2844,8 @@ function extractComplementaryReportsData() {
                         finalDesc = 'JOKER LABEL';
                     } else if (upperFinal.includes('RFID')) {
                         finalDesc = 'RFID';
+                    } else if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
+                        finalDesc = 'HEAT TRANSFER';
                     } else if (upperFinal.includes('PO LABEL')) {
                         finalDesc = 'PO LABEL';
                     } else if (upperFinal.includes('MOBILON')) {
@@ -2925,7 +2915,9 @@ async function procesarPDF() {
     if (!archivo) { mostrarAlerta('alertaEtrf', 'Please select a PDF first.', 'error'); return; }
 
     const btn = document.getElementById('btnAnalizar');
-    btn.disabled = true; btn.textContent = 'Processing...';
+    if (btn) {
+        btn.disabled = true; btn.textContent = 'Processing...';
+    }
     debugLog = []; setProgress(3);
     document.getElementById('pdfPages').innerHTML = '<p style="color:#767676;text-align:center;padding:30px;font-size:13px;">Loading...</p>';
     document.getElementById('pdfTextView').innerText = '';
@@ -3154,7 +3146,9 @@ async function procesarPDF() {
         console.error(e);
         mostrarAlerta('alertaEtrf', 'An error occurred while processing the PDF: ' + e.message, 'error');
     } finally {
-        btn.disabled = false; btn.textContent = 'Analyze ETRF';
+        if (btn) {
+            btn.disabled = false; btn.textContent = 'Analyze ETRF';
+        }
         setProgress(0);
     }
 }
@@ -3771,7 +3765,7 @@ async function procesarPDFPrev() {
     if (!archivo) { mostrarAlerta('alertaPrev', 'Please select a PREVS PDF first.', 'error'); return; }
 
     const btn = document.getElementById('btnAnalizar-prev');
-    btn.disabled = true; btn.textContent = 'Processing...';
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
     document.getElementById('progressFill-prev').style.width = '3%';
     debugLogPrev = [];
 
@@ -4028,7 +4022,8 @@ async function procesarArchivoBOM() {
                         
                         let wt = windowText;
                         let labelType = null;
-                        if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|main[\s\-]*label)\b/i.test(wt)) labelType = "Heat Transfer";
+                        if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|htf)\b/i.test(wt)) labelType = "Heat Transfer";
+                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label";
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
@@ -5268,7 +5263,8 @@ async function startBomCompare() {
                         
                         let wt = windowText;
                         let labelType = null;
-                        if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|main[\s\-]*label)\b/i.test(wt)) labelType = "Heat Transfer";
+                        if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|htf)\b/i.test(wt)) labelType = "Heat Transfer";
+                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label";
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
