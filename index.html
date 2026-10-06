@@ -3736,6 +3736,7 @@ async function procesarArchivoBOM() {
         const elBom = document.getElementById('d-bom-num');
         const etrfBom = elBom ? elBom.textContent.trim() : '--';
         
+        
         let matchText = '';
         if (etrfBom === '--' || etrfBom === '') {
             matchText = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0;">BOM No.</div><div style="flex: 1;"><span style="background:#fff3cd; color:#856404; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-exclamation-triangle"></i>No ETRF BOM</span></div></div>`;
@@ -3749,7 +3750,7 @@ async function procesarArchivoBOM() {
         }
 
         let rdMatchHtml = '';
-        let bomFabricRds = [];
+        let bomFabricRds = []; const elStyleTop = document.getElementById('d-style-no'); const styleNum = elStyleTop ? elStyleTop.textContent.trim() : '';
         let rdsToCheck = [];
         if (window.rdGlobalesETRF) rdsToCheck = [...window.rdGlobalesETRF];
 
@@ -3811,7 +3812,7 @@ async function procesarArchivoBOM() {
                         let descItems = [];
                         // Look forwards until next RD or 30 items
                         for (let j = i + 1; j < items.length && j < i + 80; j++) {
-                            if (/^\d{6,9}$/.test(items[j].str.trim())) break;
+                            const txtNum = items[j].str.trim(); if (/^\d{6,9}$/.test(txtNum) && txtNum !== styleNum && txtNum !== etrfBom) break;
                             descItems.push(items[j].str);
                         }
                         let windowText = descItems.join(" ").toLowerCase();
@@ -3822,7 +3823,7 @@ async function procesarArchivoBOM() {
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
-                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)/i.test(wt)) labelType = "Woven Label";
+                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end|woven.*fold)/i.test(wt)) labelType = "Woven Label";
                         else if (/\b(fleece|jersey|twill|denim|mesh|interlock|rib|lining|canvas)\b/i.test(wt)) labelType = "Fabric";
                         else if (/\b(centric|adopted|wash|hangtag|ticket|sticker|pin|clip|size[\s\-]*label|size[\s\-]*strip|upc|price[\s\-]*ticket|packaging|polybag|carton)\b/i.test(wt)) {
                             // Absolute ignores
@@ -3848,8 +3849,7 @@ async function procesarArchivoBOM() {
             let missingInBom = [];
             
             // Filter out Style and BOM numbers from the display to avoid confusion
-            const elStyle = document.getElementById('d-style-no');
-            const styleNum = elStyle ? elStyle.textContent.trim() : '';
+            
             
             bomFabricRds = bomFabricRds.filter(rd => rd !== styleNum && rd !== etrfBom);
 
@@ -4996,7 +4996,7 @@ async function startBomCompare() {
             const pdfData = new Uint8Array(arr);
             const pdf = await pdfjsLib.getDocument({data: pdfData}).promise;
             
-            let rds = [];
+            let rds = []; const elBom = document.getElementById('d-bom-num'); const etrfBom = elBom ? elBom.textContent.trim() : '--'; const elStyle = document.getElementById('d-style-no'); const styleNum = elStyle ? elStyle.textContent.trim() : '';
             let trimDetails = {};
             let globalIgnoreRds = new Set();
 
@@ -5052,7 +5052,7 @@ async function startBomCompare() {
                         let descItems = [];
                         // Look forwards until next RD or 30 items
                         for (let j = i + 1; j < items.length && j < i + 80; j++) {
-                            if (/^\d{6,9}$/.test(items[j].str.trim())) break;
+                            const txtNum = items[j].str.trim(); if (/^\d{6,9}$/.test(txtNum) && txtNum !== styleNum && txtNum !== etrfBom) break;
                             descItems.push(items[j].str);
                         }
                         let windowText = descItems.join(" ").toLowerCase();
@@ -5063,7 +5063,7 @@ async function startBomCompare() {
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
-                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)/i.test(wt)) labelType = "Woven Label";
+                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end|woven.*fold)/i.test(wt)) labelType = "Woven Label";
                         else if (/\b(fleece|jersey|twill|denim|mesh|interlock|rib|lining|canvas)\b/i.test(wt)) labelType = "Fabric";
                         else if (/\b(centric|adopted|wash|hangtag|ticket|sticker|pin|clip|size[\s\-]*label|size[\s\-]*strip|upc|price[\s\-]*ticket|packaging|polybag|carton)\b/i.test(wt)) {
                             // Absolute ignores
@@ -5210,6 +5210,11 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
