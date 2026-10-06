@@ -2101,7 +2101,6 @@ function renderComplementaryReports() {
                 if (t.rdNum) t.rdNum.split(/[,;\/&]/).forEach(r => existingRds.add(r.trim()));
             });
             const fallbackTrimDictionary = [
-                { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
                 { normal: 'CARE LABEL', regex: /\bCARE\b/i },
                 { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
                 { normal: 'RFID', regex: /\bRFID\b/i },
@@ -2109,7 +2108,8 @@ function renderComplementaryReports() {
                 { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
                 { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
                 { normal: 'MOBILON', regex: /\bMOBILON\b/i },
-                { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i }
+                { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i },
+                { normal: 'MAIN LABEL', regex: /\bMAIN\b/i }
             ];
 
             window.trimRdGlobalesETRF.forEach(rd => {
@@ -2161,11 +2161,13 @@ function renderComplementaryReports() {
                         trimDesc = 'WOVEN LABEL';
                     }
 
-                    compData.trims.push({
-                        desc: trimDesc,
-                        report: 'N/A',
-                        rdNum: rd
-                    });
+                    if (trimDesc !== 'Trim Component' || !rd.startsWith('TRM-')) {
+                        compData.trims.push({
+                            desc: trimDesc,
+                            report: 'N/A',
+                            rdNum: rd
+                        });
+                    }
                 }
             });
         }
@@ -2319,7 +2321,6 @@ function extractComplementaryReportsData() {
     };
 
     const trimDictionary = [
-        { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
         { normal: 'CARE LABEL', regex: /\bCARE\b/i },
         { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
         { normal: 'RFID', regex: /\bRFID\b/i },
@@ -2327,7 +2328,8 @@ function extractComplementaryReportsData() {
         { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
         { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
         { normal: 'MOBILON', regex: /\bMOBILON\b/i },
-        { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i }
+        { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i },
+        { normal: 'MAIN LABEL', regex: /\bMAIN\b/i }
     ];
 
     const fabricDictionary = [
@@ -2842,22 +2844,22 @@ function extractComplementaryReportsData() {
                 
                 if (targetSection === 'TRIM') {
                     let upperFinal = finalDesc.toUpperCase();
-                    if (upperFinal.includes('MAIN')) {
-                        finalDesc = 'MAIN LABEL';
+                    if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
+                        finalDesc = 'HEAT TRANSFER';
                     } else if (upperFinal.includes('CARE')) {
                         finalDesc = 'CARE LABEL';
                     } else if (upperFinal.includes('JOKER')) {
                         finalDesc = 'JOKER LABEL';
                     } else if (upperFinal.includes('RFID')) {
                         finalDesc = 'RFID';
-                    } else if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
-                        finalDesc = 'HEAT TRANSFER';
                     } else if (upperFinal.includes('PO LABEL')) {
                         finalDesc = 'PO LABEL';
                     } else if (upperFinal.includes('MOBILON')) {
                         finalDesc = 'MOBILON';
                     } else if (upperFinal.includes('WOVEN')) {
                         finalDesc = 'WOVEN LABEL';
+                    } else if (upperFinal.includes('MAIN')) {
+                        finalDesc = 'MAIN LABEL';
                     }
                 }
 
