@@ -2098,6 +2098,22 @@ function renderComplementaryReports() {
         fabricBody.innerHTML = naHtml;
     } else {
         const compData = extractComplementaryReportsData();
+        
+        if (window.trimRdGlobalesETRF && window.trimRdGlobalesETRF.length > 0) {
+            const existingRds = new Set();
+            compData.trims.forEach(t => {
+                if (t.rdNum) t.rdNum.split(/[,;\/&]/).forEach(r => existingRds.add(r.trim()));
+            });
+            window.trimRdGlobalesETRF.forEach(rd => {
+                if (!existingRds.has(rd)) {
+                    compData.trims.push({
+                        desc: 'Trim Component',
+                        report: 'N/A',
+                        rdNum: rd
+                    });
+                }
+            });
+        }
         let intendedAge = document.getElementById('d-intended-age') ? document.getElementById('d-intended-age').textContent.trim() : '';
         let requiresCoc = intendedAge === 'Kids' || intendedAge === 'Baby & Toddler';
 
@@ -2335,9 +2351,9 @@ function extractComplementaryReportsData() {
             colorMinX = activeMaxX - 150; // Look leftwards from the next column
         }
 
-        let hRD = items.find(i => /fabric\s*article|article\s*\(rd|trim\s*item|rd\s*#/i.test(i.str.trim()));
+        let hRD = items.find(i => /fabric\s*article|article\s*\(rd|trim\s*item|id\s*number|rd\s*#/i.test(i.str.trim()));
         if (!hRD && hDesc) {
-            hRD = items.find(i => Math.abs(i.y - hDesc.y) < 30 && (/article/i.test(i.str.trim()) || /^rd\b/i.test(i.str.trim())));
+            hRD = items.find(i => Math.abs(i.y - hDesc.y) < 30 && (/article/i.test(i.str.trim()) || /^rd\b|id\s*number/i.test(i.str.trim())));
         }
         if (hRD) {
             rdMinX = hRD.x - 40;
@@ -2361,13 +2377,20 @@ function extractComplementaryReportsData() {
         let cocHeadersY = [];
         for (const item of sortedItems) {
             const txt = item.str.trim();
-            if (/trim\s*certif(ier|er)\s*test|vendor\s*sourced/i.test(txt)) {
+            if (/trim\s*certif(ier|er)|vendor\s*sourced|certificates\s*of\s*compliance/i.test(txt)) {
                 currentSection = 'TRIM';
             } else if (/fabric\s*test|reports\s*for\s*fabrics/i.test(txt)) {
                 currentSection = 'FABRIC';
             // =? ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
-            } else if (/\bcoc['s]*\b|attestation|compliance|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
+            } else if (/attestation|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
                 if (item.x < 280) {
+                    currentSection = 'OTHER';
+                }
+                cocHeadersY.push(item.y);
+            } else if (/\bcoc['s]*\b/i.test(txt)) {
+                // Ignore "COC" standalone if it's part of the Trim Certifier COC header, 
+                // but push to cocHeadersY for boundary limiting if it's an independent header
+                if (item.x < 280 && currentSection !== 'TRIM') {
                     currentSection = 'OTHER';
                 }
                 cocHeadersY.push(item.y);
@@ -2377,7 +2400,7 @@ function extractComplementaryReportsData() {
 
         // =? EXTRACCI?N SEGURA: Permite n?meros unidos a guiones bajos (ej. \d{10,12}_)
         let rawAnchors = items
-            .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_)/i.test(it.str))
+            .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_|COC|SML|R[- ]?PAC|AVERY|VENDOR|N\/A)/i.test(it.str))
             .sort((a, b) => a.y - b.y);
 
         let reportAnchors = [];
@@ -2417,11 +2440,11 @@ function extractComplementaryReportsData() {
 
             let topLimitY = 50;
             if (idx === 0) {
-                if (typeof hDesc !== 'undefined' && hDesc) topLimitY = hDesc.y + 5;
-                else if (typeof hColor !== 'undefined' && hColor) topLimitY = hColor.y + 5;
-                else topLimitY = item.y - 60;
+                if (typeof hDesc !== 'undefined' && hDesc) topLimitY = Math.max(hDesc.y + 5, item.y - 30);
+                else if (typeof hColor !== 'undefined' && hColor) topLimitY = Math.max(hColor.y + 5, item.y - 30);
+                else topLimitY = item.y - 30;
             } else {
-                topLimitY = reportAnchors[idx - 1].y + 5;
+                topLimitY = Math.max(reportAnchors[idx - 1].y + 5, item.y - 25);
             }
             
             let bottomLimitY = item.y + 25;
@@ -2450,7 +2473,7 @@ function extractComplementaryReportsData() {
                 .replace(/(TRM-[A-Z0-9_]+)\s+(?=[A-Z0-9_])/ig, '$1'); 
 
             // =? EXTRACCI?N SEGURA: Captura el n?mero incluso si est? pegado a un guion bajo `_`
-            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_)))/i);
+            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_))|(?:[A-Z0-9_-]*COC[A-Z0-9_-]*)|(?:(?:SML|R[- ]?PAC|AVERY|VENDOR[- ]?SOURCED)[A-Z0-9_-]+)|N\/A)/i);
             if (!match) continue;
             let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
 
@@ -2465,21 +2488,21 @@ function extractComplementaryReportsData() {
             let rdNum = '';
             const rdItems = items.filter(it => 
                 it.y >= topLimitY && it.y <= bottomLimitY &&
-                /^\d{6,9}$/.test(it.str.trim()) &&
+                /^(?:RD#?|Article\s*)?\s*\d{6,9}$/i.test(it.str.trim()) &&
                 it.x < item.x
             );
             if (rdMaxX > 0) {
                 const exactRd = rdItems.find(it => it.x >= rdMinX && it.x <= rdMaxX);
-                if (exactRd) rdNum = exactRd.str.trim();
+                if (exactRd) rdNum = exactRd.str.replace(/[^\d]/g, '').trim();
             }
             if (!rdNum && rdItems.length > 0) {
                 let plausibleRd = rdItems.filter(it => it.x > 80 && it.x < activeMinX - 30);
                 if (plausibleRd.length > 0) {
                     plausibleRd.sort((a, b) => a.x - b.x);
-                    rdNum = plausibleRd[0].str.trim();
+                    rdNum = plausibleRd[0].str.replace(/[^\d]/g, '').trim();
                 } else {
                     rdItems.sort((a, b) => b.x - a.x);
-                    rdNum = rdItems[0].str.trim();
+                    rdNum = rdItems[0].str.replace(/[^\d]/g, '').trim();
                 }
             }
 
@@ -2896,8 +2919,13 @@ async function procesarPDF() {
                           if (inFabricTable || inTrimTable || inCocTable) {
                                 if (/form\s*no|page\s*\d|rev\d|barcode/i.test(r.text)) { /* skip footer rows */ }
                                 else r.items.forEach(it => {
-                                  const matches = it.str.match(/\b\d{6,9}\b/g);
-                                  if (matches) {
+                                  const matchesRegex = /\b(?:RD#?|Article\s*)?(\d{6,9})\b/ig;
+                                  let matchArr;
+                                  let matches = [];
+                                  while ((matchArr = matchesRegex.exec(it.str)) !== null) {
+                                      matches.push(matchArr[1]);
+                                  }
+                                  if (matches.length > 0) {
                                       let searchOffset = 0;
                                       matches.forEach(txt => {
                                           const idx = it.str.indexOf(txt, searchOffset);
@@ -2951,6 +2979,7 @@ async function procesarPDF() {
                                                   }
                                               }
                                               if (isCoc) {
+                                                  trimRdList.push(txt);
                                                   let targetX = cocSupplierColX !== null ? cocSupplierColX : 150;
                                                   let supplierItems = [];
                                                   r.items.forEach(sit => {
