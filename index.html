@@ -2124,17 +2124,25 @@ function renderComplementaryReports() {
                             const cleanRd = rd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                             const regex = new RegExp(cleanRd, 'gi');
                             let match;
+                            let bestDistance = Infinity;
                             while ((match = regex.exec(textoExtraido)) !== null) {
+                                const rdCenter = match.index + (rd.length / 2);
                                 const start = Math.max(0, match.index - 120);
                                 const end = Math.min(textoExtraido.length, match.index + 120);
                                 const windowText = textoExtraido.substring(start, end);
+                                
                                 for (const entry of fallbackTrimDictionary) {
-                                    if (entry.regex.test(windowText)) {
-                                        trimDesc = entry.normal;
-                                        break;
+                                    const localRegex = new RegExp(entry.regex.source, entry.regex.flags + (entry.regex.flags.includes('g') ? '' : 'g'));
+                                    let keywordMatch;
+                                    while ((keywordMatch = localRegex.exec(windowText)) !== null) {
+                                        const keywordCenter = start + keywordMatch.index + (keywordMatch[0].length / 2);
+                                        const dist = Math.abs(rdCenter - keywordCenter);
+                                        if (dist < bestDistance) {
+                                            bestDistance = dist;
+                                            trimDesc = entry.normal;
+                                        }
                                     }
                                 }
-                                if (trimDesc !== 'Trim Component') break;
                             }
                         } catch (e) {}
                     }
@@ -2726,10 +2734,32 @@ function extractComplementaryReportsData() {
                 }
 
                 if (!descText && targetSection === 'TRIM') {
-                    for (const entry of trimDictionary) {
-                        if (entry.regex.test(stitchedText)) {
-                            descText = entry.normal;
-                            break;
+                    let bestDistance = Infinity;
+                    let rdIndex = stitchedText.indexOf(rdNum);
+                    if (rdIndex === -1 && rdNum) {
+                        const digits = rdNum.replace(/[^\d]/g, '');
+                        if (digits) rdIndex = stitchedText.indexOf(digits);
+                    }
+                    if (rdIndex !== -1) {
+                        const rdCenter = rdIndex + (rdNum ? rdNum.length / 2 : 0);
+                        for (const entry of trimDictionary) {
+                            const localRegex = new RegExp(entry.regex.source, entry.regex.flags + (entry.regex.flags.includes('g') ? '' : 'g'));
+                            let match;
+                            while ((match = localRegex.exec(stitchedText)) !== null) {
+                                const keywordCenter = match.index + (match[0].length / 2);
+                                const dist = Math.abs(rdCenter - keywordCenter);
+                                if (dist < bestDistance) {
+                                    bestDistance = dist;
+                                    descText = entry.normal;
+                                }
+                            }
+                        }
+                    } else {
+                        for (const entry of trimDictionary) {
+                            if (entry.regex.test(stitchedText)) {
+                                descText = entry.normal;
+                                break;
+                            }
                         }
                     }
                 }
