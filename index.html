@@ -2222,7 +2222,8 @@ function extractComplementaryReportsData() {
         { normal: 'T-LABEL', regex: /T\s*[-_]?\s*LABEL/i },
         { normal: 'JOKER LABEL', regex: /JOKER\s*[-_]?\s*LABEL/i },
         { normal: 'PO LABEL', regex: /PO\s*[-_]?\s*LABEL/i },
-        { normal: 'MOBILON', regex: /MOBILON/i }
+        { normal: 'MOBILON', regex: /MOBILON/i },
+        { normal: 'WOVEN LABEL', regex: /WOVEN\s*[-_]?\s*(LABEL|END\s*[-_]?\s*FOLD)/i }
     ];
 
     const fabricDictionary = [
@@ -2803,6 +2804,8 @@ async function procesarPDF() {
                   let millList = [];
                   let inTrimTable = false;
                   let trimRdColX = null;
+                  let trimSupplierColX = null;
+                  window.globalTrimSuppliers = {};
                     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
                       const items = pageItems[pageIdx];
                       
@@ -2842,6 +2845,7 @@ async function procesarPDF() {
                               if (rdColX === null && /article|rd\s*#/i.test(r.text)) { let rdItem = r.items.find(it => /article|rd/i.test(it.str)); if (rdItem) { let strL = rdItem.str.toLowerCase(); let idx = strL.indexOf("article"); if (idx === -1) idx = strL.indexOf("rd"); rdColX = rdItem.x + (idx / strL.length) * (rdItem.width || (strL.length * 6)); } } if (millColX === null && /mill/i.test(r.text) && !/vendor|nominated/i.test(r.text)) { let millItem = r.items.find(it => /mill/i.test(it.str)); if (millItem) { let strL = millItem.str.toLowerCase(); let idx = strL.indexOf("mill"); millColX = millItem.x + (idx / strL.length) * (millItem.width || (strL.length * 6)); } }
                           } else if (inTrimTable) {
                               if (trimRdColX === null && /id\s*number/i.test(r.text) && !/vendor-sourced/i.test(r.text)) { let tItem = r.items.find(it => /id\s*number/i.test(it.str)); if (tItem) { let strL = tItem.str.toLowerCase(); let idx = strL.indexOf("id number"); trimRdColX = tItem.x + (idx / strL.length) * (tItem.width || (strL.length * 6)); } }
+                              if (trimSupplierColX === null && /certifier/i.test(r.text)) { let sItem = r.items.find(it => /certifier/i.test(it.str)); if (sItem) { let strL = sItem.str.toLowerCase(); let idx = strL.indexOf("certifier"); trimSupplierColX = sItem.x + (idx / strL.length) * (sItem.width || (strL.length * 6)); } }
                           }
   
                           if (inFabricTable || inTrimTable) {
@@ -2874,13 +2878,34 @@ async function procesarPDF() {
                                               }
                                           } else if (inTrimTable) {
                                               window.debugCoords.push(`TRIM:${txt} aX:${Math.round(approxX)} trX:${trimRdColX?Math.round(trimRdColX):"N"}`);
+                                              let isTrim = false;
                                               if (trimRdColX !== null) {
                                                   if (Math.abs(approxX - trimRdColX) < 150) {
                                                       trimRdList.push(txt);
+                                                      isTrim = true;
                                                   }
                                               } else {
                                                   if (approxX > 200 && approxX < 400) {
                                                       trimRdList.push(txt);
+                                                      isTrim = true;
+                                                  }
+                                              }
+                                              
+                                              if (isTrim) {
+                                                  let supplier = '';
+                                                  let targetX = trimSupplierColX !== null ? trimSupplierColX : 150;
+                                                  let supplierItems = [];
+                                                  r.items.forEach(sit => {
+                                                      let approxS = sit.x;
+                                                      if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) {
+                                                          supplierItems.push(sit);
+                                                      }
+                                                  });
+                                                  supplierItems.sort((a,b) => a.x - b.x);
+                                                  supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim();
+                                                  
+                                                  if (supplier) {
+                                                      window.globalTrimSuppliers[txt] = supplier;
                                                   }
                                               }
                                           }
@@ -3713,14 +3738,13 @@ async function procesarArchivoBOM() {
         
         let matchText = '';
         if (etrfBom === '--' || etrfBom === '') {
-            matchText = '<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px;"><i class="fas fa-exclamation-triangle"></i> ETRF is missing BOM Number to compare</div>';
+            matchText = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0;">BOM No.</div><div style="flex: 1;"><span style="background:#fff3cd; color:#856404; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-exclamation-triangle"></i>No ETRF BOM</span></div></div>`;
         } else {
-            // Check if BOM Number from ETRF is in the BOM file text
             const bomRegex = new RegExp(etrfBom.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
             if (bomRegex.test(textoExtraidoBom)) {
-                matchText = '<div style="padding:6px; background:#e0f2fe; color:#0369a1; font-size:11px; border-radius:4px;"><i class="fas fa-check-circle"></i> BOM NUMBER MATCH (PASS)</div>';
+                matchText = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0;">BOM No.</div><div style="flex: 1;"><span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-check-circle"></i>MATCH</span></div></div>`;
             } else {
-                matchText = '<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px;"><i class="fas fa-times-circle"></i> BOM NUMBER MISMATCH (FAIL)</div>';
+                matchText = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0;">BOM No.</div><div style="flex: 1;"><span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i>MISMATCH</span></div></div>`;
             }
         }
 
@@ -3786,7 +3810,7 @@ async function procesarArchivoBOM() {
 
                         let descItems = [];
                         // Look forwards until next RD or 30 items
-                        for (let j = i + 1; j < items.length && j < i + 30; j++) {
+                        for (let j = i + 1; j < items.length && j < i + 80; j++) {
                             if (/^\d{6,9}$/.test(items[j].str.trim())) break;
                             descItems.push(items[j].str);
                         }
@@ -3798,7 +3822,7 @@ async function procesarArchivoBOM() {
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
-                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)\b/i.test(wt)) labelType = "Woven Label";
+                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)/i.test(wt)) labelType = "Woven Label";
                         else if (/\b(fleece|jersey|twill|denim|mesh|interlock|rib|lining|canvas)\b/i.test(wt)) labelType = "Fabric";
                         else if (/\b(centric|adopted|wash|hangtag|ticket|sticker|pin|clip|size[\s\-]*label|size[\s\-]*strip|upc|price[\s\-]*ticket|packaging|polybag|carton)\b/i.test(wt)) {
                             // Absolute ignores
@@ -3863,30 +3887,62 @@ async function procesarArchivoBOM() {
             </div>`;
 
                                     rdMatchHtml = '';
-            if (matchedRds.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#dcfce7; color:#166534; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> FABRIC RD MATCH (PASS): ` + matchedRds.join(', ') + `</div>`;
-            } else if (rdsToCheck.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF FABRIC RDs FOUND IN BOM (FAIL)</div>`;
-            }
             
-            if (matchedTrims.length > 0) {
-                let displayTrims = matchedTrims.map(rd => {
-                    return bomTrimDetails[rd] ? `${bomTrimDetails[rd]} (${rd})` : rd;
-                });
-                rdMatchHtml += `<div style="padding:6px; background:#f3e8ff; color:#6b21a8; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-check-circle"></i> TRIM MATCH (PASS): ` + displayTrims.join(', ') + `</div>`;
-            } else if (trimsToCheck.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> NO ETRF TRIM RDs FOUND IN BOM (FAIL)</div>`;
-            }
+            // Fabric Row
+            let fabricHtml = '';
+            let fabricPills = [];
+            matchedRds.forEach(rd => {
+                fabricPills.push(`<span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-check-circle"></i>${rd}</span>`);
+            });
+            missingInBom.forEach(rd => {
+                fabricPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i>${rd}</span>`);
+            });
             
-            if (missingInBom.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF FABRIC RD MISSING IN BOM: ` + missingInBom.join(', ') + `</div>`;
-            }
-            
-            if (missingTrimInBom.length > 0) {
-                rdMatchHtml += `<div style="padding:6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-exclamation-triangle"></i> ETRF TRIM RD MISSING IN BOM: ` + missingTrimInBom.join(', ') + `</div>`;
+            if (fabricPills.length > 0) {
+                fabricHtml = `<div style="display: flex; align-items: flex-start; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0; padding-top: 2px;">Fabrics</div><div style="flex: 1; display:flex; flex-wrap:wrap; gap:4px;">` + fabricPills.join('') + `</div></div>`;
             }
 
-            rdMatchHtml += debugHtml;
+            // Trims Row
+            let trimHtml = '';
+            let trimPills = [];
+            const whitelistConfig = [
+                { match: /avery\s*dennison/i, clean: "Avery Dennison (AD)" },
+                { match: /sml/i, clean: "SML" },
+                { match: /r\s*[\-\.]?\s*pac/i, clean: "R-pac International" }
+            ];
+
+            matchedTrims.forEach(rd => {
+                let text = bomTrimDetails[rd] ? `${bomTrimDetails[rd]} (${rd})` : rd;
+                let rawSupplier = window.globalTrimSuppliers && window.globalTrimSuppliers[rd] ? window.globalTrimSuppliers[rd] : '';
+                
+                let isAllowed = false;
+                let cleanSupplier = rawSupplier;
+
+                if (rawSupplier) {
+                    for (let w of whitelistConfig) {
+                        if (w.match.test(rawSupplier)) {
+                            isAllowed = true;
+                            cleanSupplier = w.clean;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isAllowed) {
+                    trimPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Invalid Trim Supplier!"><i class="fas fa-exclamation-circle"></i>${text} - Invalid/Missing Supplier</span>`);
+                } else {
+                    trimPills.push(`<span style="background:#f3e8ff; color:#6b21a8; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-check-circle"></i>${text} - ${cleanSupplier}</span>`);
+                }
+            });
+            missingTrimInBom.forEach(rd => {
+                trimPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i>${rd}</span>`);
+            });
+            
+            if (trimPills.length > 0) {
+                trimHtml = `<div style="display: flex; align-items: flex-start; gap: 8px;"><div style="width: 55px; font-weight: 600; font-size: 11px; color: #94a3b8; flex-shrink: 0; padding-top: 2px;">Trims</div><div style="flex: 1; display:flex; flex-wrap:wrap; gap:4px;">` + trimPills.join('') + `</div></div>`;
+            }
+
+            rdMatchHtml = fabricHtml + trimHtml + debugHtml;
         } else {
             let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
                 <strong style="color:#0f172a;">=? DEBUG INFO:</strong><br>
@@ -3899,10 +3955,10 @@ async function procesarArchivoBOM() {
 <div style="margin-top:5px;"><b>RAW TRIM LIST (Scanner):</b> <span style="font-family:monospace; color:#475569;">` + (window.globalRawTrimRdList ? window.globalRawTrimRdList.join(', ') : 'null') + `</span></div>
                 <div style="margin-top:5px;"><b>MILL LIST (Deleted):</b> <span style="font-family:monospace; color:#dc2626;">` + (window.globalMillList ? window.globalMillList.join(', ') : 'null') + `</span></div>
             </div>`;
-            rdMatchHtml = `<div style="padding:6px; background:#fee2e2; color:#b91c1c; font-size:11px; border-radius:4px; margin-top:5px;"><i class="fas fa-times-circle"></i> BOM could not be parsed for RDs (Ninguno)</div>` + debugHtml;
+            rdMatchHtml = `<div style="display: flex; align-items: flex-start; gap: 8px;"><div style="width: 70px; font-weight: bold; color: #64748b; flex-shrink: 0;"><i class="fas fa-exclamation-circle"></i> RDs</div><div style="flex: 1;"><span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i> No RDs extracted from BOM</span></div></div>` + debugHtml;
         }
         if (contenedor) {
-            contenedor.innerHTML = matchText + rdMatchHtml;
+            contenedor.innerHTML = `<div style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:6px;">` + matchText + rdMatchHtml + `</div>`;
         }
 
         if (progress) {
@@ -4995,7 +5051,7 @@ async function startBomCompare() {
 
                         let descItems = [];
                         // Look forwards until next RD or 30 items
-                        for (let j = i + 1; j < items.length && j < i + 30; j++) {
+                        for (let j = i + 1; j < items.length && j < i + 80; j++) {
                             if (/^\d{6,9}$/.test(items[j].str.trim())) break;
                             descItems.push(items[j].str);
                         }
@@ -5007,7 +5063,7 @@ async function startBomCompare() {
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
-                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)\b/i.test(wt)) labelType = "Woven Label";
+                        else if (/\b(woven[\s\-]*label|woven[\s\-]*end[\s\-]*fold)/i.test(wt)) labelType = "Woven Label";
                         else if (/\b(fleece|jersey|twill|denim|mesh|interlock|rib|lining|canvas)\b/i.test(wt)) labelType = "Fabric";
                         else if (/\b(centric|adopted|wash|hangtag|ticket|sticker|pin|clip|size[\s\-]*label|size[\s\-]*strip|upc|price[\s\-]*ticket|packaging|polybag|carton)\b/i.test(wt)) {
                             // Absolute ignores
@@ -5154,6 +5210,9 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
+
+
 
 
 
