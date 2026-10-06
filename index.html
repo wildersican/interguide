@@ -2797,10 +2797,14 @@ function extractComplementaryReportsData() {
                         descText = cleanFile.toUpperCase();
                         
                         if (targetSection === 'TRIM') {
-                            for (const entry of trimDictionary) {
-                                if (entry.regex.test(descText)) {
-                                    descText = entry.normal;
-                                    break;
+                            if (descText.includes('HTF')) {
+                                descText = 'HEAT TRANSFER';
+                            } else {
+                                for (const entry of trimDictionary) {
+                                    if (entry.regex.test(descText)) {
+                                        descText = entry.normal;
+                                        break;
+                                    }
                                 }
                             }
                         } else if (targetSection === 'FABRIC') {
