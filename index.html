@@ -354,10 +354,7 @@ footer {
             <div class="card">
                 <div class="card-header">
                     <div><i class="fas fa-file-alt title-icon"></i> ETRF Analyzer</div>
-                    <div style="display: flex; align-items: center;">
-                        <button onclick="clearETRFCard()" style="background:transparent; border:1px solid #dc2626; color:#dc2626; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-right:8px; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'" title="Clear all ETRF, PFAS, and BOM data"><i class="fas fa-trash-alt"></i> Clear</button>
-                        <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
-                    </div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
                 </div>
                 <div class="card-content">
                     <div style="margin: 0 0 15px 0; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #475569; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
@@ -433,6 +430,7 @@ footer {
                     <div class="zoom-hint" id="zoomHint" style="display:none;">Click on a page to zoom in</div>
                     <button class="debug-toggle" onclick="toggleDebug()">=' Debug</button>
                     <div id="debug-panel"></div>
+                    <button onclick="clearETRFCard()" style="width: 100%; padding: 8px; background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 15px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">Clear All Files</button>
                 </div>
             </div>
 
@@ -541,10 +539,7 @@ footer {
             <div class="card">
                 <div class="card-header">
                     <div><i class="fas fa-file-pdf title-icon"></i> Previous Report Analyzer</div>
-                    <div style="display: flex; align-items: center;">
-                        <button onclick="clearPREVSCard()" style="background:transparent; border:1px solid #dc2626; color:#dc2626; padding:2px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-right:8px; font-weight:bold; transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='transparent'" title="Clear PREVS data"><i class="fas fa-trash-alt"></i> Clear</button>
-                        <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
-                    </div>
+                    <i class="fas fa-ellipsis-h" style="color:#ccc;cursor:pointer;"></i>
                 </div>
                 <div class="card-content">
                     <label class="visually-hidden" for="archivoPdf-prev">Select PREVS PDF file</label>
@@ -569,6 +564,7 @@ footer {
                     <div class="zoom-hint" id="zoomHint-prev" style="display:none;">Click on a page to zoom in</div>
                     <button class="debug-toggle" onclick="toggleDebugPrev()">=' Debug</button>
                     <div id="debug-panel-prev"></div>
+                    <button onclick="clearPREVSCard()" style="width: 100%; padding: 8px; background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 15px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">Clear All Files</button>
                 </div>
             </div>
 
