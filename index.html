@@ -2146,6 +2146,25 @@ function renderComplementaryReports() {
                             }
                         } catch (e) {}
                     }
+                    let upperTrim = trimDesc.toUpperCase();
+                    if (upperTrim.includes('HTF') || upperTrim.includes('HEAT TRANSFER') || upperTrim.includes('HEAT SEAL')) {
+                        trimDesc = 'HEAT TRANSFER';
+                    } else if (upperTrim.includes('MAIN')) {
+                        trimDesc = 'MAIN LABEL';
+                    } else if (upperTrim.includes('CARE')) {
+                        trimDesc = 'CARE LABEL';
+                    } else if (upperTrim.includes('JOKER')) {
+                        trimDesc = 'JOKER LABEL';
+                    } else if (upperTrim.includes('RFID')) {
+                        trimDesc = 'RFID';
+                    } else if (upperTrim.includes('PO LABEL')) {
+                        trimDesc = 'PO LABEL';
+                    } else if (upperTrim.includes('MOBILON')) {
+                        trimDesc = 'MOBILON';
+                    } else if (upperTrim.includes('WOVEN')) {
+                        trimDesc = 'WOVEN LABEL';
+                    }
+
                     compData.trims.push({
                         desc: trimDesc,
                         report: 'N/A',
@@ -2824,6 +2843,27 @@ function extractComplementaryReportsData() {
 
                 finalDesc = descText || (targetSection === 'TRIM' ? 'Trim Component' : 'Fabric Component');
                 if (targetSection === 'FABRIC' && /trim/i.test(finalDesc)) finalDesc = 'Fabric Component';
+                
+                if (targetSection === 'TRIM') {
+                    let upperFinal = finalDesc.toUpperCase();
+                    if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
+                        finalDesc = 'HEAT TRANSFER';
+                    } else if (upperFinal.includes('MAIN')) {
+                        finalDesc = 'MAIN LABEL';
+                    } else if (upperFinal.includes('CARE')) {
+                        finalDesc = 'CARE LABEL';
+                    } else if (upperFinal.includes('JOKER')) {
+                        finalDesc = 'JOKER LABEL';
+                    } else if (upperFinal.includes('RFID')) {
+                        finalDesc = 'RFID';
+                    } else if (upperFinal.includes('PO LABEL')) {
+                        finalDesc = 'PO LABEL';
+                    } else if (upperFinal.includes('MOBILON')) {
+                        finalDesc = 'MOBILON';
+                    } else if (upperFinal.includes('WOVEN')) {
+                        finalDesc = 'WOVEN LABEL';
+                    }
+                }
 
             if (/special\s*claims|special\s*instructions/i.test(finalDesc) || /special\s*claims|special\s*instructions/i.test(stitchedText)) {
                 continue;
