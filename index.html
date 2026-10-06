@@ -2891,23 +2891,7 @@ async function procesarPDF() {
                                                   }
                                               }
                                               
-                                              if (isTrim) {
-                                                  let supplier = '';
-                                                  let targetX = trimSupplierColX !== null ? trimSupplierColX : 150;
-                                                  let supplierItems = [];
-                                                  r.items.forEach(sit => {
-                                                      let approxS = sit.x;
-                                                      if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) {
-                                                          supplierItems.push(sit);
-                                                      }
-                                                  });
-                                                  supplierItems.sort((a,b) => a.x - b.x);
-                                                  supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim();
-                                                  
-                                                  if (supplier) {
-                                                      window.globalTrimSuppliers[txt] = supplier;
-                                                  }
-                                              }
+                                              if (isTrim) { let supplier = ''; if (/vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
                                           }
                                       });
                                   }
@@ -3908,7 +3892,7 @@ async function procesarArchivoBOM() {
             const whitelistConfig = [
                 { match: /avery\s*dennison/i, clean: "Avery Dennison (AD)" },
                 { match: /sml/i, clean: "SML" },
-                { match: /r\s*[\-\.]?\s*pac/i, clean: "R-pac International" }
+                { match: /r\s*[\-\.]?\s*pac/i, clean: "R-pac International" }, { match: /vendor[\-\s]*sourced/i, clean: "Vendor-Sourced" }
             ];
 
             matchedTrims.forEach(rd => {
@@ -5210,6 +5194,9 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
+
+
 
 
 
