@@ -2098,18 +2098,51 @@ function renderComplementaryReports() {
         fabricBody.innerHTML = naHtml;
     } else {
         const compData = extractComplementaryReportsData();
-        
+        let intendedAge = document.getElementById('d-intended-age') ? document.getElementById('d-intended-age').textContent.trim() : '';
+        let requiresCoc = intendedAge === 'Kids' || intendedAge === 'Baby & Toddler';
+
         if (compData.trims.length > 0) {
-            trimBody.innerHTML = compData.trims.map(t => 
-                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
+            trimBody.innerHTML = compData.trims.map(t => {
+                let cocPill = '';
+                if (requiresCoc) {
+                    if (window.hasCocTable && t.rdNum && window.globalCocSuppliers && window.globalCocSuppliers[t.rdNum]) {
+                        let rawSupplier = window.globalCocSuppliers[t.rdNum];
+                        let isAllowed = false;
+                        let cleanSupplier = rawSupplier;
+                        
+                        const whitelistConfig = [
+                            { match: /avery|dennison|\bad\b/i, clean: "Avery Dennison" },
+                            { match: /sml/i, clean: "SML" },
+                            { match: /r\s*[\-\.]?\s*pac|international/i, clean: "R-pac International" },
+                            { match: /vendor|sourced/i, clean: "Vendor-Sourced" }
+                        ];
+
+                        for (let w of whitelistConfig) {
+                            if (w.match.test(rawSupplier)) {
+                                isAllowed = true;
+                                cleanSupplier = w.clean;
+                                break;
+                            }
+                        }
+
+                        if (!isAllowed) {
+                            cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;" title="Invalid Trim Supplier!"><i class="fas fa-exclamation-circle" style="margin-right:4px;"></i>COC: ${esc(rawSupplier)} - Invalid/Missing</span>`;
+                        } else {
+                            cocPill = `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">COC: ${esc(cleanSupplier)}</span>`;
+                        }
+                    } else {
+                        cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">COC: MISSING</span>`;
+                    }
+                }
+                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
                 `<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">` +
                 `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-tag" style="color:#888; margin-right:6px;"></i>${esc(t.desc)}</span>` +
                 (t.rdNum ? `<span style="background:#f5f5f5; color:#555; border:1px solid #ddd; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">RD Number: ${esc(t.rdNum)}</span>` : '') +
-                (t.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ${esc(t.color)}</span>` : '') +
+                cocPill +
                 `</div>` +
                 `<span style="background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(t.report)}</span>` +
-                `</div>`
-            ).join('');
+                `</div>`;
+            }).join('');
         } else {
             trimBody.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Trim reports detected</div>';
         }
@@ -2208,7 +2241,7 @@ function extractComplementaryReportsData() {
         
         // =? MIXTOS Y OTROS
         "TRM-0002145940": "JOKER LABEL & CARE LABEL", "77253380006": "JOKER LABEL & CARE LABEL",
-        "TRM-0002520854": "WOVEN LABEL", "GUAT26003442": "WOVEN LABEL",
+        "TRM-0002520854": "WOVEN LABEL", "GUAT26003442": "WOVEN LABEL", "291381": "WOVEN LABEL",
         "(9625)235-0143": "MOBILON TAPE",
         "(9626)021-0116": "MOBILON TAPE",
         "TRM-0002087728": "MAIN LABEL", "(5225)262-0045": "MAIN LABEL"
@@ -2807,13 +2840,19 @@ async function procesarPDF() {
                   let trimRdColX = null;
                   let trimSupplierColX = null;
                   window.globalTrimSuppliers = {};
+                  let lastSeenTrimSupplier = '';
+                  let inCocTable = false;
+                  window.globalCocSuppliers = {};
+                  window.hasCocTable = false;
+                  let cocRdColX = null;
+                  let cocSupplierColX = null;
                     for (let pageIdx = 0; pageIdx < pageItems.length; pageIdx++) {
                       const items = pageItems[pageIdx];
                       
                       let rows = [];
                       items.forEach(it => {
                           let added = false;
-                          for (let r of rows) {
+                    for (let r of rows) {
                               if (Math.abs(r.y - it.y) < 5) {
                                   r.items.push(it);
                                   added = true;
@@ -2827,40 +2866,37 @@ async function procesarPDF() {
                       rows.forEach(r => r.items.sort((a, b) => a.x - b.x));
                       rows.forEach(r => { r.text = r.items.map(it => it.str).join(" ").toLowerCase(); });
   
-                      for (let r of rows) {
+                    for (let r of rows) { if (inTrimTable) { if (/avery|dennison|\bad\b/i.test(r.text)) lastSeenTrimSupplier = 'Avery Dennison'; else if (/sml/i.test(r.text)) lastSeenTrimSupplier = 'SML'; else if (/r\s*[\-\.]?\s*pac|international/i.test(r.text)) lastSeenTrimSupplier = 'R-pac International'; else if (/vendor|sourced/i.test(r.text)) lastSeenTrimSupplier = 'Vendor-Sourced'; }
                           if (/fabric\s*test\s*report|fabric\s*details/i.test(r.text)) { 
-                              inFabricTable = true; 
-                              inTrimTable = false;
-                              rdColX = null; 
-                              millColX = null; 
+                              inFabricTable = true; inTrimTable = false; inCocTable = false;
                           } else if (/trim\s*certif.*test\s*report/i.test(r.text)) {
-                                inTrimTable = true;
-                                inFabricTable = false;
+                                inTrimTable = true; inFabricTable = false; inCocTable = false;
                                 isVendorSourcedTable = false;
-                                trimRdColX = null;
                             } else if (/vendor[-\s]*sourced\s*trims/i.test(r.text)) {
-                                inTrimTable = true;
-                                inFabricTable = false;
+                                inTrimTable = true; inFabricTable = false; inCocTable = false;
                                 isVendorSourcedTable = true;
-                              inTrimTable = true;
-                              inFabricTable = false;
-                              trimRdColX = null;
-                          } else if (/vendor\s*attestation|compliance|traceability/i.test(r.text)) {
+                          } else if (/trim\s*certifier\s*coc|certificates\s*of\s*compliance/i.test(r.text)) {
+                              inCocTable = true; inTrimTable = false; inFabricTable = false;
+                              window.hasCocTable = true;
+                          } else if (/vendor\s*attestation|traceability/i.test(r.text) && !/certificates\s*of\s*compliance/i.test(r.text)) {
                               inFabricTable = false;
                               inTrimTable = false;
+                              inCocTable = false;
                           }
   
                           if (inFabricTable) {
-                              if (rdColX === null && /article|rd\s*#/i.test(r.text)) { let rdItem = r.items.find(it => /article|rd/i.test(it.str)); if (rdItem) { let strL = rdItem.str.toLowerCase(); let idx = strL.indexOf("article"); if (idx === -1) idx = strL.indexOf("rd"); rdColX = rdItem.x + (idx / strL.length) * (rdItem.width || (strL.length * 6)); } } if (millColX === null && /mill/i.test(r.text) && !/vendor|nominated/i.test(r.text)) { let millItem = r.items.find(it => /mill/i.test(it.str)); if (millItem) { let strL = millItem.str.toLowerCase(); let idx = strL.indexOf("mill"); millColX = millItem.x + (idx / strL.length) * (millItem.width || (strL.length * 6)); } }
+                              let isHeaderRow = (/article|rd\s*#/i.test(r.text) && /mill|style/i.test(r.text)) || (/fabric\s*article/i.test(r.text)); if (isHeaderRow || (/article|rd\s*#/i.test(r.text) && !rdColX)) {                               if (/article|rd\s*#/i.test(r.text)) { let rdItem = r.items.find(it => /article|rd/i.test(it.str)); if (rdItem) { let strL = rdItem.str.toLowerCase(); let idx = strL.indexOf("article"); if (idx === -1) idx = strL.indexOf("rd"); rdColX = rdItem.x + (idx / strL.length) * (rdItem.width || (strL.length * 6)); } } if (/mill/i.test(r.text)) { let millItem = r.items.find(it => /mill/i.test(it.str) && !/vendor|nominated/i.test(it.str)); if (millItem) { let strL = millItem.str.toLowerCase(); let idx = strL.indexOf("mill"); millColX = millItem.x + (idx / strL.length) * (millItem.width || (strL.length * 6)); } } }
                           } else if (inTrimTable) {
-                              if (trimRdColX === null && /id\s*number/i.test(r.text) && !/vendor-sourced/i.test(r.text)) { let tItem = r.items.find(it => /id\s*number/i.test(it.str)); if (tItem) { let strL = tItem.str.toLowerCase(); let idx = strL.indexOf("id number"); trimRdColX = tItem.x + (idx / strL.length) * (tItem.width || (strL.length * 6)); } }
-                              if (trimSupplierColX === null && /certifier/i.test(r.text)) { let sItem = r.items.find(it => /certifier/i.test(it.str)); if (sItem) { let strL = sItem.str.toLowerCase(); let idx = strL.indexOf("certifier"); trimSupplierColX = sItem.x + (idx / strL.length) * (sItem.width || (strL.length * 6)); } }
+                              let isTrimHeaderRow = /id\s*number/i.test(r.text) && (/colorway/i.test(r.text) || /description/i.test(r.text) || /certifier|supplier/i.test(r.text)); if (isTrimHeaderRow || (/id\s*number/i.test(r.text) && !trimRdColX)) {                               if (/id\s*number/i.test(r.text) && !/vendor-sourced/i.test(r.text)) { let tItem = r.items.find(it => /id\s*number/i.test(it.str)); if (tItem) { let strL = tItem.str.toLowerCase(); let idx = strL.indexOf("id number"); trimRdColX = tItem.x + (idx / strL.length) * (tItem.width || (strL.length * 6)); } }
+                              if (/certifier|supplier/i.test(r.text)) { let sItem = r.items.find(it => /certifier|supplier/i.test(it.str)); if (sItem) { let strL = sItem.str.toLowerCase(); let idx = strL.indexOf("certifier") !== -1 ? strL.indexOf("certifier") : strL.indexOf("supplier"); trimSupplierColX = sItem.x + (idx / strL.length) * (sItem.width || (strL.length * 6)); } } }
+                          } else if (inCocTable) {
+                              let isCocHeaderRow = /id\s*number/i.test(r.text) && /certifier\s*name/i.test(r.text); if (isCocHeaderRow || (/id\s*number/i.test(r.text) && !cocRdColX)) { if (/id\s*number/i.test(r.text)) { let cItem = r.items.find(it => /id\s*number/i.test(it.str)); if (cItem) { let strL = cItem.str.toLowerCase(); let idx = strL.indexOf("id number"); cocRdColX = cItem.x + (idx / strL.length) * (cItem.width || (strL.length * 6)); } } if (/certifier\s*name/i.test(r.text)) { let sItem = r.items.find(it => /certifier\s*name/i.test(it.str)); if (sItem) { let strL = sItem.str.toLowerCase(); let idx = strL.indexOf("certifier name"); cocSupplierColX = sItem.x + (idx / strL.length) * (sItem.width || (strL.length * 6)); } } }
                           }
   
-                          if (inFabricTable || inTrimTable) {
+                          if (inFabricTable || inTrimTable || inCocTable) {
                                 if (/form\s*no|page\s*\d|rev\d|barcode/i.test(r.text)) { /* skip footer rows */ }
                                 else r.items.forEach(it => {
-                                  const matches = it.str.match(/\d{6,9}/g);
+                                  const matches = it.str.match(/\b\d{6,9}\b/g);
                                   if (matches) {
                                       let searchOffset = 0;
                                       matches.forEach(txt => {
@@ -2874,17 +2910,19 @@ async function procesarPDF() {
   
                                           if (inFabricTable) {
                                               window.debugCoords.push(`T:${txt} aX:${Math.round(approxX)} rX:${rdColX?Math.round(rdColX):"N"} mX:${millColX?Math.round(millColX):"N"}`);
-                                              if (millColX !== null && Math.abs(approxX - millColX) < 60) {
-                                                  millList.push(txt);
-                                              } else if (rdColX !== null) {
-                                                  if (Math.abs(approxX - rdColX) < 150) {
-                                                      rdList.push(txt);
-                                                  }
-                                              } else {
-                                                  if (approxX > 120 && approxX < 450) {
-                                                      rdList.push(txt);
-                                                  }
-                                              }
+                                              if (millColX !== null && rdColX !== null) {
+                                                if (Math.abs(approxX - millColX) < Math.abs(approxX - rdColX)) {
+                                                    millList.push(txt);
+                                                } else {
+                                                    if (Math.abs(approxX - rdColX) < 100) rdList.push(txt);
+                                                }
+                                            } else if (millColX !== null && Math.abs(approxX - millColX) < 100) {
+                                                millList.push(txt);
+                                            } else if (rdColX !== null) {
+                                                if (Math.abs(approxX - rdColX) < 100) {
+                                                    rdList.push(txt);
+                                                }
+                                            }
                                           } else if (inTrimTable) {
                                               window.debugCoords.push(`TRIM:${txt} aX:${Math.round(approxX)} trX:${trimRdColX?Math.round(trimRdColX):"N"}`);
                                               let isTrim = false;
@@ -2900,7 +2938,33 @@ async function procesarPDF() {
                                                   }
                                               }
                                               
-                                              if (isTrim) { let supplier = ''; if (isVendorSourcedTable || /vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
+                                              if (isTrim) { let supplier = ''; if (isVendorSourcedTable || /vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (!supplier || supplier.length < 2) { supplier = lastSeenTrimSupplier; } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
+                                          } else if (inCocTable) {
+                                              let isCoc = false;
+                                              if (cocRdColX !== null) {
+                                                  if (Math.abs(approxX - cocRdColX) < 150) {
+                                                      isCoc = true;
+                                                  }
+                                              } else {
+                                                  if (approxX > 200 && approxX < 400) {
+                                                      isCoc = true;
+                                                  }
+                                              }
+                                              if (isCoc) {
+                                                  let targetX = cocSupplierColX !== null ? cocSupplierColX : 150;
+                                                  let supplierItems = [];
+                                                  r.items.forEach(sit => {
+                                                      let approxS = sit.x;
+                                                      if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 150) {
+                                                          supplierItems.push(sit);
+                                                      }
+                                                  });
+                                                  supplierItems.sort((a,b) => a.x - b.x);
+                                                  let supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim();
+                                                  if (supplier) {
+                                                      window.globalCocSuppliers[txt] = supplier;
+                                                  }
+                                              }
                                           }
                                       });
                                   }
@@ -2931,7 +2995,7 @@ async function procesarPDF() {
         
  window.trimRdGlobalesETRF = [...new Set(trimRdList)].filter(x => { if (!x) return false; if (x === styleNumEtrf) return false; return true; });
 
-
+        renderComplementaryReports();
 
     } catch (e) {
         dbg('ERROR: ' + e.message);
@@ -3899,9 +3963,9 @@ async function procesarArchivoBOM() {
             let trimHtml = '';
             let trimPills = [];
             const whitelistConfig = [
-                { match: /avery\s*dennison/i, clean: "Avery Dennison (AD)" },
+                { match: /avery|dennison|\bad\b/i, clean: "Avery Dennison" },
                 { match: /sml/i, clean: "SML" },
-                { match: /r\s*[\-\.]?\s*pac/i, clean: "R-pac International" }, { match: /vendor[\-\s]*sourced/i, clean: "Vendor-Sourced" }
+                { match: /r\s*[\-\.]?\s*pac|international/i, clean: "R-pac International" }, { match: /vendor|sourced/i, clean: "Vendor-Sourced" }
             ];
 
             matchedTrims.forEach(rd => {
@@ -5203,6 +5267,23 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
