@@ -2795,6 +2795,22 @@ function extractComplementaryReportsData() {
 
                     if (cleanFile.length > 0) {
                         descText = cleanFile.toUpperCase();
+                        
+                        if (targetSection === 'TRIM') {
+                            for (const entry of trimDictionary) {
+                                if (entry.regex.test(descText)) {
+                                    descText = entry.normal;
+                                    break;
+                                }
+                            }
+                        } else if (targetSection === 'FABRIC') {
+                            for (const entry of fabricDictionary) {
+                                if (entry.regex.test(descText)) {
+                                    descText = entry.normal;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
 
