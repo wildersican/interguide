@@ -2104,10 +2104,42 @@ function renderComplementaryReports() {
             compData.trims.forEach(t => {
                 if (t.rdNum) t.rdNum.split(/[,;\/&]/).forEach(r => existingRds.add(r.trim()));
             });
+            const fallbackTrimDictionary = [
+                { normal: 'MAIN LABEL', regex: /MAIN\s*[-_]?\s*LABEL/i },
+                { normal: 'CARE LABEL', regex: /CARE\s*[-_]?\s*LABEL/i },
+                { normal: 'RFID', regex: /RFID/i },
+                { normal: 'HEAT TRANSFER', regex: /HEAT\s*[-_]?\s*TRANSFER/i },
+                { normal: 'T-LABEL', regex: /T\s*[-_]?\s*LABEL/i },
+                { normal: 'JOKER LABEL', regex: /JOKER\s*[-_]?\s*LABEL/i },
+                { normal: 'PO LABEL', regex: /PO\s*[-_]?\s*LABEL/i },
+                { normal: 'MOBILON', regex: /MOBILON/i },
+                { normal: 'WOVEN LABEL', regex: /WOVEN\s*[-_]?\s*(LABEL|END\s*[-_]?\s*FOLD)/i }
+            ];
+
             window.trimRdGlobalesETRF.forEach(rd => {
                 if (!existingRds.has(rd)) {
+                    let trimDesc = 'Trim Component';
+                    if (typeof textoExtraido !== 'undefined' && textoExtraido) {
+                        try {
+                            const cleanRd = rd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            const regex = new RegExp(cleanRd, 'gi');
+                            let match;
+                            while ((match = regex.exec(textoExtraido)) !== null) {
+                                const start = Math.max(0, match.index - 120);
+                                const end = Math.min(textoExtraido.length, match.index + 120);
+                                const windowText = textoExtraido.substring(start, end);
+                                for (const entry of fallbackTrimDictionary) {
+                                    if (entry.regex.test(windowText)) {
+                                        trimDesc = entry.normal;
+                                        break;
+                                    }
+                                }
+                                if (trimDesc !== 'Trim Component') break;
+                            }
+                        } catch (e) {}
+                    }
                     compData.trims.push({
-                        desc: 'Trim Component',
+                        desc: trimDesc,
                         report: 'N/A',
                         rdNum: rd
                     });
