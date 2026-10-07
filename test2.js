@@ -1,0 +1,1 @@
+const text = 'RD1034915 HTF LABEL MAIN NONE'; const regex = /HEAT\s*[-_]?\s*TRANSFER|HTF/i; console.log(regex.test(text));

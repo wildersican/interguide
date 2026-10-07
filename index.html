@@ -368,6 +368,7 @@ footer {
                         <label class="visually-hidden" for="archivoPdf">Select ETRF PDF file</label>
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="archivoPdf" accept="application/pdf,.pdf" onchange="procesarPDF()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
+                            <button onclick="document.getElementById('archivoPdf').value='';" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px; padding:0 4px;" title="Clear file"><i class="fas fa-times-circle"></i></button>
                         </div>
                         <div class="inline-alert" id="alertaEtrf" role="alert" style="margin-top: 8px;"></div>
                         <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
@@ -383,6 +384,7 @@ footer {
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="archivoInput-pfas" accept=".pdf,.docx,.doc" onchange="procesarArchivoPFAS()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
+                            <button onclick="document.getElementById('archivoInput-pfas').value='';" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px; padding:0 4px;" title="Clear file"><i class="fas fa-times-circle"></i></button>
                         </div>
                         
                         <!-- Disguised progress bar -->
@@ -402,6 +404,7 @@ footer {
                         
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="archivoInput-bom" accept=".pdf" onchange="procesarArchivoBOM()" style="flex: 1; font-size: 11px; min-width: 140px; color: #555;">
+                            <button onclick="document.getElementById('archivoInput-bom').value='';" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px; padding:0 4px;" title="Clear file"><i class="fas fa-times-circle"></i></button>
                         </div>
                         
                         <div style="width: 100%; background: #eee; height: 3px; border-radius: 2px; margin-top: 8px; overflow: hidden;">
@@ -550,6 +553,7 @@ footer {
                     <label class="visually-hidden" for="archivoPdf-prev">Select PREVS PDF file</label>
                     <div class="pdf-controls">
                         <input type="file" id="archivoPdf-prev" accept="application/pdf,.pdf" onchange="procesarPDFPrev()">
+                        <button onclick="document.getElementById('archivoPdf-prev').value='';" style="background:none; border:none; color:#999; cursor:pointer; font-size:14px; padding:0 4px;" title="Clear file"><i class="fas fa-times-circle"></i></button>
                     </div>
                     <div class="inline-alert" id="alertaPrev" role="alert"></div>
                     <div class="progress-bar"><div class="progress-fill" id="progressFill-prev"></div></div>
@@ -702,7 +706,7 @@ footer {
 
 <footer>
     <div class="footer-left">
-        <i class="fab fa-invision"></i> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By Wilder Sicán</span>
+        <i class="fab fa-invision"></i> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By Wilder SicÃ¡n</span>
     </div>
 </footer>
 
@@ -740,15 +744,15 @@ footer {
                     <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado Requerimientos</div>
                     <div style="display: flex; gap: 8px;">
                         <a href="https://gist.github.com/wildersican/b7384e89ba403177a35af28b6c5e261f/raw/modulo-y-llenado-requerimientos.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
-                        <button onclick="navigator.clipboard.writeText('https://gist.github.com/wildersican/b7384e89ba403177a35af28b6c5e261f/raw/modulo-y-llenado-requerimientos.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                        <button onclick="navigator.clipboard.writeText('https://gist.github.com/wildersican/b7384e89ba403177a35af28b6c5e261f/raw/modulo-y-llenado-requerimientos.user.js').then(() => alert('Â¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
                     </div>
                 </div>
                 
                 <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
-                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autodigitación</div>
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">AutodigitaciÃ³n</div>
                     <div style="display: flex; gap: 8px;">
                         <a href="https://gist.githubusercontent.com/wildersican/95464492e91a030ebeabb4eeb7bc3068/raw/auto-digitacion.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
-                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/95464492e91a030ebeabb4eeb7bc3068/raw/auto-digitacion.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/95464492e91a030ebeabb4eeb7bc3068/raw/auto-digitacion.user.js').then(() => alert('Â¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
                     </div>
                 </div>
                 
@@ -756,7 +760,7 @@ footer {
                     <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado BSF</div>
                     <div style="display: flex; gap: 8px;">
                         <a href="https://gist.githubusercontent.com/Boris-End/a74a799b6af8bf5175277784bf2f3436/raw/autollenado-etrf.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
-                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/Boris-End/a74a799b6af8bf5175277784bf2f3436/raw/autollenado-etrf.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/Boris-End/a74a799b6af8bf5175277784bf2f3436/raw/autollenado-etrf.user.js').then(() => alert('Â¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
                     </div>
                 </div>
                 
@@ -764,15 +768,15 @@ footer {
                     <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Autollenado Correos</div>
                     <div style="display: flex; gap: 8px;">
                         <a href="https://gist.githubusercontent.com/wildersican/7d5fd735a4c61d835469b6abd9cc4ec8/raw/selector-automatico-contactos.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
-                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/7d5fd735a4c61d835469b6abd9cc4ec8/raw/selector-automatico-contactos.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/7d5fd735a4c61d835469b6abd9cc4ec8/raw/selector-automatico-contactos.user.js').then(() => alert('Â¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
                     </div>
                 </div>
                 
                 <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
-                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Borrar comentarios en español</div>
+                    <div style="font-weight: bold; color: #334155; margin-bottom: 8px;">Borrar comentarios en espaÃ±ol</div>
                     <div style="display: flex; gap: 8px;">
                         <a href="https://gist.githubusercontent.com/wildersican/d07d30a892f8ff9b84ff8b21e759c600/raw/boton-clean-flotante.user.js" target="_blank" style="display: inline-block; padding: 5px 10px; background: #2b2b2b; color: white; text-decoration: none; border-radius: 4px; font-size: 11px; font-weight: bold;"><i class="fas fa-download"></i> Install Script</a>
-                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/d07d30a892f8ff9b84ff8b21e759c600/raw/boton-clean-flotante.user.js').then(() => alert('¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
+                        <button onclick="navigator.clipboard.writeText('https://gist.githubusercontent.com/wildersican/d07d30a892f8ff9b84ff8b21e759c600/raw/boton-clean-flotante.user.js').then(() => alert('Â¡Enlace copiado al portapapeles!'))" style="padding: 5px 10px; background: #e2e8f0; color: #333; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;"><i class="fas fa-copy"></i> Copy Link</button>
                     </div>
                 </div>
             </div>
@@ -2102,20 +2106,21 @@ function renderComplementaryReports() {
             });
             const fallbackTrimDictionary = [
                 { normal: 'CARE LABEL', regex: /\bCARE\b/i },
-                { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
+                { normal: 'JOKER LABEL', regex: /\b(JOKER|ID\s*[-_]?\s*LABEL)\b/i },
                 { normal: 'RFID', regex: /\bRFID\b/i },
                 { normal: 'HEAT TRANSFER', regex: /\b(HEAT\s*[-_]?\s*TRANSFER|HEAT\s*[-_]?\s*SEAL|HTF)\b/i },
                 { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
                 { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
                 { normal: 'MOBILON', regex: /\bMOBILON\b/i },
                 { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i },
-                { normal: 'MAIN LABEL', regex: /\bMAIN\b/i }
+                { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
+                { normal: 'CLAMP LABEL', regex: /\bCLAMP\b/i }
             ];
 
             window.trimRdGlobalesETRF.forEach(rd => {
                 if (!existingRds.has(rd)) {
-                    let trimDesc = 'Trim Component';
-                    if (typeof textoExtraido !== 'undefined' && textoExtraido) {
+                    let trimDesc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] : 'Trim Component';
+                    if (false && trimDesc === 'Trim Component' && typeof textoExtraido !== 'undefined' && textoExtraido) {
                         try {
                             const cleanRd = rd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                             const regex = new RegExp(cleanRd, 'gi');
@@ -2143,11 +2148,9 @@ function renderComplementaryReports() {
                         } catch (e) {}
                     }
                     let upperTrim = trimDesc.toUpperCase();
-                    if (upperTrim.includes('MAIN')) {
-                        trimDesc = 'MAIN LABEL';
-                    } else if (upperTrim.includes('CARE')) {
+                    if (upperTrim.includes('CARE')) {
                         trimDesc = 'CARE LABEL';
-                    } else if (upperTrim.includes('JOKER')) {
+                    } else if (upperTrim.includes('JOKER') || upperTrim.includes('ID LABEL') || upperTrim.includes('ID-LABEL')) {
                         trimDesc = 'JOKER LABEL';
                     } else if (upperTrim.includes('RFID')) {
                         trimDesc = 'RFID';
@@ -2159,12 +2162,16 @@ function renderComplementaryReports() {
                         trimDesc = 'MOBILON';
                     } else if (upperTrim.includes('WOVEN')) {
                         trimDesc = 'WOVEN LABEL';
+                    } else if (upperTrim.includes('MAIN')) {
+                        trimDesc = 'MAIN LABEL';
+                    } else if (upperTrim.includes('CLAMP')) {
+                        trimDesc = 'CLAMP LABEL';
                     }
 
-                    if (trimDesc !== 'Trim Component' || !rd.startsWith('TRM-')) {
+                    if (trimDesc !== 'Trim Component') {
                         compData.trims.push({
                             desc: trimDesc,
-                            report: 'N/A',
+                            report: 'MISSING',
                             rdNum: rd
                         });
                     }
@@ -2174,8 +2181,15 @@ function renderComplementaryReports() {
         let intendedAge = document.getElementById('d-intended-age') ? document.getElementById('d-intended-age').textContent.trim() : '';
         let requiresCoc = intendedAge === 'Kids' || intendedAge === 'Baby & Toddler';
 
+        compData.trims = compData.trims.filter(t => t.desc && t.desc !== 'Trim Component');
         if (compData.trims.length > 0) {
-            trimBody.innerHTML = compData.trims.map(t => {
+            let trimHeader = `<div style="display:grid; grid-template-columns: minmax(120px, 1.5fr) minmax(110px, 1fr) minmax(130px, 1.5fr) minmax(130px, 2fr); align-items:center; padding:4px 8px 8px 8px; border-bottom:2px solid #ccc; gap:10px; font-weight:bold; font-size:11px; color:#666; text-transform:uppercase;">
+                <div>Trim Name</div>
+                <div>RD Number</div>
+                <div>COC</div>
+                <div>Report Number</div>
+            </div>`;
+            trimBody.innerHTML = trimHeader + compData.trims.map(t => {
                 let cocPill = '';
                 if (requiresCoc) {
                     if (window.hasCocTable && t.rdNum && window.globalCocSuppliers && window.globalCocSuppliers[t.rdNum]) {
@@ -2199,21 +2213,31 @@ function renderComplementaryReports() {
                         }
 
                         if (!isAllowed) {
-                            cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;" title="Invalid Trim Supplier!"><i class="fas fa-exclamation-circle" style="margin-right:4px;"></i>COC: ${esc(rawSupplier)} - Invalid/Missing</span>`;
+                            cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;" title="Invalid Trim Supplier!"><i class="fas fa-exclamation-circle" style="margin-right:4px;"></i>${esc(rawSupplier)} - Invalid/Missing</span>`;
                         } else {
-                            cocPill = `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">COC: ${esc(cleanSupplier)}</span>`;
+                            cocPill = `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">${esc(cleanSupplier)}</span>`;
                         }
                     } else {
-                        cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">COC: MISSING</span>`;
+                        cocPill = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">MISSING</span>`;
                     }
+                } else {
+                    cocPill = `<span style="background:#f5f5f5; color:#888; border:1px solid #e0e0e0; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px; font-style:italic;">N/A</span>`;
                 }
-                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
-                `<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">` +
-                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-tag" style="color:#888; margin-right:6px;"></i>${esc(t.desc)}</span>` +
-                (t.rdNum ? `<span style="background:#f5f5f5; color:#555; border:1px solid #ddd; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">RD Number: ${esc(t.rdNum)}</span>` : '') +
-                cocPill +
-                `</div>` +
-                `<span style="background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">${esc(t.report)}</span>` +
+
+                let displayRd = t.rdNum ? t.rdNum : 'MISSING';
+                let rdStyle = displayRd === 'MISSING' ? 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;' : 'background:#f5f5f5; color:#555; border:1px solid #ddd;';
+                let rdHtml = `<span style="${rdStyle} padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">${esc(displayRd)}</span>`;
+
+                let repHtml = t.report.split('\n').map(r => {
+                    let rStyle = r === 'MISSING' ? 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;' : 'background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9;';
+                    return `<span style="${rStyle} padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace; width:fit-content;">${esc(r)}</span>`;
+                }).join('');
+
+                return `<div style="display:grid; grid-template-columns: minmax(120px, 1.5fr) minmax(110px, 1fr) minmax(130px, 1.5fr) minmax(130px, 2fr); align-items:center; padding:7px 0; border-bottom:1px dashed #eee; gap:10px;">` +
+                `<div style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-tag" style="color:#888; margin-right:6px;"></i>${esc(t.desc)}</div>` +
+                `<div>${rdHtml}</div>` +
+                `<div>${cocPill}</div>` +
+                `<div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">${repHtml}</div>` +
                 `</div>`;
             }).join('');
         } else {
@@ -2221,16 +2245,29 @@ function renderComplementaryReports() {
         }
 
         if (compData.fabrics.length > 0) {
-            fabricBody.innerHTML = compData.fabrics.map(f => 
-                `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed #eee; flex-wrap:wrap; gap:8px;">` +
-                `<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">` +
-                `<span style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>` + esc(f.desc) + `</span>` +
-                (f.rdNum ? `<span style="background:#f5f5f5; color:#555; border:1px solid #ddd; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">RD Number: ` + esc(f.rdNum) + `</span>` : '') +
-                (f.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">Color: ` + esc(f.color) + `</span>` : '') +
-                `</div>` +
-                `<span style="background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace;">` + esc(f.report) + `</span>` +
-                `</div>`
-            ).join('');
+            let fabricHeader = `<div style="display:grid; grid-template-columns: minmax(120px, 1.5fr) minmax(110px, 1fr) minmax(130px, 1.5fr) minmax(130px, 2fr); align-items:center; padding:4px 8px 8px 8px; border-bottom:2px solid #ccc; gap:10px; font-weight:bold; font-size:11px; color:#666; text-transform:uppercase;">
+                <div>Fabric Name</div>
+                <div>RD Number</div>
+                <div>Color</div>
+                <div>Report Number</div>
+            </div>`;
+            fabricBody.innerHTML = fabricHeader + compData.fabrics.map(f => {
+                let displayRd = f.rdNum ? f.rdNum : 'MISSING';
+                let rdStyle = displayRd === 'MISSING' ? 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;' : 'background:#f5f5f5; color:#555; border:1px solid #ddd;';
+                let rdHtml = `<span style="${rdStyle} padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">` + esc(displayRd) + `</span>`;
+                
+                let repHtml = f.report.split('\n').map(r => {
+                    let rStyle = r === 'MISSING' ? 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;' : 'background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb;';
+                    return `<span style="${rStyle} padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px; font-family:monospace; width:fit-content;">` + esc(r) + `</span>`;
+                }).join('');
+
+                return `<div style="display:grid; grid-template-columns: minmax(120px, 1.5fr) minmax(110px, 1fr) minmax(130px, 1.5fr) minmax(130px, 2fr); align-items:center; padding:7px 0; border-bottom:1px dashed #eee; gap:10px;">` +
+                `<div style="font-weight:600; color:#333; font-size:12px;"><i class="fas fa-layer-group" style="color:#888; margin-right:6px;"></i>` + esc(f.desc) + `</div>` +
+                `<div>${rdHtml}</div>` +
+                `<div>` + (f.color ? `<span style="background:#fff3e0; color:#ef6c00; border:1px solid #ffe0b2; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">` + esc(f.color) + `</span>` : '') + `</div>` +
+                `<div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">${repHtml}</div>` +
+                `</div>`;
+            }).join('');
         } else {
             fabricBody.innerHTML = '<div style="color:#767676; font-size:12px; padding:6px 0;">No previous Fabric reports detected</div>';
         }
@@ -2240,6 +2277,9 @@ function renderComplementaryReports() {
 function extractComplementaryReportsData() {
     let trimPairs = [];
     let fabricPairs = [];
+
+    window.localFabricDescByRD = {};
+    window.debugFabricExtract = [];
 
     let currentSection = 'OTHER';
 
@@ -2322,14 +2362,15 @@ function extractComplementaryReportsData() {
 
     const trimDictionary = [
         { normal: 'CARE LABEL', regex: /\bCARE\b/i },
-        { normal: 'JOKER LABEL', regex: /\bJOKER\b/i },
+        { normal: 'JOKER LABEL', regex: /\b(JOKER|ID\s*[-_]?\s*LABEL)\b/i },
         { normal: 'RFID', regex: /\bRFID\b/i },
         { normal: 'HEAT TRANSFER', regex: /\b(HEAT\s*[-_]?\s*TRANSFER|HEAT\s*[-_]?\s*SEAL|HTF)\b/i },
         { normal: 'T-LABEL', regex: /\bT\s*[-_]?\s*LABEL\b/i },
         { normal: 'PO LABEL', regex: /\bPO\s*[-_]?\s*LABEL\b/i },
         { normal: 'MOBILON', regex: /\bMOBILON\b/i },
         { normal: 'WOVEN LABEL', regex: /\bWOVEN\b/i },
-        { normal: 'MAIN LABEL', regex: /\bMAIN\b/i }
+        { normal: 'MAIN LABEL', regex: /\bMAIN\b/i },
+        { normal: 'CLAMP LABEL', regex: /\bCLAMP\b/i }
     ];
 
     const fabricDictionary = [
@@ -2391,24 +2432,20 @@ function extractComplementaryReportsData() {
             );
             rightNeighborsColor.sort((a, b) => a.x - b.x);
 
-            if (hDesc) {
-                colorMinX = activeMaxX;
-            } else {
-                colorMinX = hColor.x - 100;
-            }
+            // =? TIGHT BOUNDS PARA EVITAR BASURA (Ej. "140GSM 100% COTTON" o "PFAS Screen Apparel")
+            colorMinX = hColor.x - 50; // Margen suficiente a la izquierda para texto alineado a la izquierda
             
             if (rightNeighborsColor.length > 0) {
-                // Do not extend into the next column for Fabrics because tests are dense
-                colorMaxX = rightNeighborsColor[0].x - 5;
+                colorMaxX = rightNeighborsColor[0].x + 30;
             } else {
-                colorMaxX = hColor.x + 200;
+                colorMaxX = hColor.x + 120; // Conservador
             }
         } else if (hDesc) {
             colorMaxX = activeMaxX; // Right edge is the start of the next column
-            colorMinX = activeMaxX - 150; // Look leftwards from the next column
+            colorMinX = activeMaxX - 100; // Look leftwards from the next column
         }
 
-        let hRD = items.find(i => /fabric\s*article|article\s*\(rd|trim\s*item|id\s*number|rd\s*#/i.test(i.str.trim()));
+        let hRD = items.find(i => /fabric\s*article|article\s*\(rd|trim\s*item|trim\s*\/?\s*compone|(?:trim|component)[\s\/]*id|id\s*number|rd\s*#(?!\d)/i.test(i.str.trim()) && !/\.pdf|\.doc/i.test(i.str.trim()));
         if (!hRD && hDesc) {
             hRD = items.find(i => Math.abs(i.y - hDesc.y) < 30 && (/article/i.test(i.str.trim()) || /^rd\b|id\s*number/i.test(i.str.trim())));
         }
@@ -2436,7 +2473,7 @@ function extractComplementaryReportsData() {
             const txt = item.str.trim();
             if (/trim\s*certif(ier|er)|vendor\s*sourced|certificates\s*of\s*compliance/i.test(txt)) {
                 currentSection = 'TRIM';
-            } else if (/fabric\s*test|reports\s*for\s*fabrics/i.test(txt)) {
+            } else if (/fabric\s*test|reports\s*for\s*fabrics|fabric\s*report/i.test(txt)) {
                 currentSection = 'FABRIC';
             // =? ESCUDO: Forzar el cierre de la tabla si detecta Instrucciones Especiales
             } else if (/attestation|declaration|special\s*claims|submit\s*certificates|special\s*test\s*instructions|applicant\s*information/i.test(txt)) {
@@ -2455,9 +2492,31 @@ function extractComplementaryReportsData() {
         }
         cocHeadersY.sort((a, b) => a - b);
 
-        // =? EXTRACCI?N SEGURA: Permite n?meros unidos a guiones bajos (ej. \d{10,12}_)
+        // =G NUEVO ORDEN DE BÚSQUEDA: Buscar verticalmente los RDs en la columna
         let rawAnchors = items
-            .filter(it => it.str.length < 100 && /(?:GUAT|GUBT|KORT|JKTT|VNMT|\(\d{4}\)|TRM|\b\d{10,12}\b|\d{10,12}_|COC|SML|R[- ]?PAC|AVERY|VENDOR|N\/A)/i.test(it.str))
+            .filter(it => {
+                if (it.str.length >= 100) return false;
+                let txt = it.str.trim();
+                
+                let match = txt.match(/^(?:RD#?|Article\s*)?\s*(\d{6,9})(?:\b|[^0-9]|$)/i);
+                if (match && !/0{5,}/.test(txt)) {
+                    let num = match[1];
+                    let elStyleEtrf = document.getElementById('d-style-no');
+                    let styleNumEtrf = elStyleEtrf ? elStyleEtrf.textContent.trim() : '';
+                    if (num !== styleNumEtrf || styleNumEtrf === '') {
+                        if (rdMaxX > 0 && it.x >= rdMinX - 45 && it.x <= rdMaxX + 60) return true;
+                        if (it.x > 30 && it.x < 350) return true;
+                    }
+                }
+                
+                let reportMatch = txt.match(/((?:GUAT|GUBT|KORT|JKTT|VNMT|TRM[\-\_]?)\d{7,9})/i);
+                if (reportMatch) return true;
+                
+                let fabricMatch = txt.match(/^(?:JERSEY|RIB|INTERLOCK|PIQUE|FRENCH\s*TERRY|FLEECE|WAFFLE|THERMAL|DOUBLE\s*KNIT)$/i);
+                if (fabricMatch) return true;
+                
+                return false;
+            })
             .sort((a, b) => a.y - b.y);
 
         let reportAnchors = [];
@@ -2468,15 +2527,13 @@ function extractComplementaryReportsData() {
             if (/^\d{10,12}/.test(current.str.replace(/[^\d]/g, ''))) {
                 skip = reportAnchors.some(prev => 
                     /TRM/i.test(prev.str) && 
-                    Math.abs(current.y - prev.y) < 45 && 
-                    Math.abs(current.x - prev.x) < 100
+                    Math.abs(current.y - prev.y) < 45
                 );
             }
             
             if (!skip) {
                 skip = reportAnchors.some(prev => 
-                    Math.abs(current.y - prev.y) < 12 && 
-                    Math.abs(current.x - prev.x) < 100
+                    Math.abs(current.y - prev.y) < 15
                 );
             }
 
@@ -2497,14 +2554,17 @@ function extractComplementaryReportsData() {
 
             let topLimitY = 50;
             if (idx === 0) {
-                if (typeof hDesc !== 'undefined' && hDesc) topLimitY = Math.max(hDesc.y + 5, item.y - 30);
-                else if (typeof hColor !== 'undefined' && hColor) topLimitY = Math.max(hColor.y + 5, item.y - 30);
+                if (typeof hDesc !== 'undefined' && hDesc && hDesc.y < item.y + 20) topLimitY = Math.max(hDesc.y + 5, item.y - 30);
+                else if (typeof hColor !== 'undefined' && hColor && hColor.y < item.y + 20) topLimitY = Math.max(hColor.y + 5, item.y - 30);
                 else topLimitY = item.y - 30;
             } else {
                 topLimitY = Math.max(reportAnchors[idx - 1].y + 5, item.y - 25);
             }
             
-            let bottomLimitY = item.y + 25;
+            let bottomLimitY = item.y + 45;
+            if (idx < reportAnchors.length - 1) {
+                bottomLimitY = Math.min(bottomLimitY, reportAnchors[idx + 1].y - 2);
+            }
             
             const nextCocY = cocHeadersY.find(y => y > item.y + 10);
             if (nextCocY && (nextCocY - item.y) < 65) {
@@ -2515,53 +2575,77 @@ function extractComplementaryReportsData() {
             const rowText = rowItems.map(it => it.str).join(' ');
             
             // =? ESCUDO ANTI-FALSOS POSITIVOS: Si detecta estas palabras, ignora esta fila por completo
-            if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum|telephone|phone|fax|vendor\s*attestation|form\s*no|page\s*\d+\s*of\s*\d+/i.test(rowText)) continue;
+            // COMENTADO: Estaba matando filas válidas si rozaban el pie de página
+            // if (/certificado|certificate|special\s*test\s*instructions|special\s*instructions|special\s*claims|applicant\s*information|intertek\s*test\s*sum|telephone|phone|fax|vendor\s*attestation|form\s*no|page\s*\d+\s*of\s*\d+/i.test(rowText)) continue;
 
             const cellItems = items.filter(it => 
-                it.x > item.x - 25 && it.x < item.x + 200 && 
+                it.x > item.x - 25 && it.x < item.x + 800 && 
                 it.y >= topLimitY && it.y <= bottomLimitY
             );
             let cellText = cellItems.map(it => it.str.trim()).join(' ');
+
+            if (idx === reportAnchors.length - 1 && pageIdx < pageItems.length - 1) {
+                let nextItems = pageItems[pageIdx + 1];
+                let firstRD_Y = 200; 
+                let nextSorted = [...nextItems].sort((a,b) => a.y - b.y);
+                for (let ni of nextSorted) {
+                    if (rdMaxX > 0 && ni.x >= rdMinX - 15 && ni.x <= rdMaxX + 15) {
+                        let txt = ni.str.trim();
+                        if (/^(?:RD#?|Article\s*)?\s*\d{6,9}(?:\b|[^0-9]|$)/i.test(txt) && !/^(?:RD#?|Article\s*)?\s*0{5,}/i.test(txt)) {
+                            firstRD_Y = ni.y;
+                            break;
+                        }
+                    }
+                }
+                
+                let reportX = Math.max(...cellItems.map(it => it.x));
+                if (reportX < item.x + 300 || !isFinite(reportX)) reportX = item.x + 500;
+                
+                let bleedItems = nextItems.filter(it => it.y < firstRD_Y - 5 && it.x > reportX - 80);
+                if (bleedItems.length > 0) {
+                    bleedItems.sort((a,b) => {
+                        if (Math.abs(a.y - b.y) > 8) return a.y - b.y;
+                        return a.x - b.x;
+                    });
+                    let bleedText = bleedItems.map(it => it.str.trim()).join(' ');
+                    cellText += ' ' + bleedText;
+                }
+            }
             
             let stitchedText = cellText
+                .replace(/\s*-\s*/g, '-')
                 .replace(/(GUAT|GUBT|KORT|JKTT|VNMT)\s*(\d+)\s+(\d+)/ig, '$1$2$3')
                 .replace(/\(\s*(\d{4})\s*\)\s*(\d{3})\s*[-]?\s*(\d{4})/ig, '($1)$2-$3')
                 .replace(/TRM\s*[-_]?\s*/ig, 'TRM-')
                 .replace(/(TRM-[A-Z0-9_]+)\s+(?=[A-Z0-9_])/ig, '$1'); 
 
-            // =? EXTRACCI?N SEGURA: Captura el n?mero incluso si est? pegado a un guion bajo `_`
-            const match = stitchedText.match(/((?:(?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})|(?:\(\d{4}\)\d{3}-\d{4})|(?:TRM-[A-Z0-9_]+)|(?:\b\d{10,12}\b)|(?:\d{10,12}(?=_))|(?:[A-Z0-9_-]*COC[A-Z0-9_-]*)|(?:(?:SML|R[- ]?PAC|AVERY|VENDOR[- ]?SOURCED)[A-Z0-9_-]+)|N\/A)/i);
-            if (!match) continue;
-            let repNum = match[1].toUpperCase().replace(/_+$/, ''); 
+            // =? EXTRACCION SEGURA: Solo Nombres Oficiales o 11 digitos
+            let repNum = '';
+            
+            const matchOfficial = stitchedText.match(/((?:GUAT|GUBT|KORT|JKTT|VNMT)\d{7,9})/i);
+            const match11 = stitchedText.match(/(?<!\d)(\d{11})(?!\d)/);
+
+            if (matchOfficial) {
+                repNum = matchOfficial[1].toUpperCase();
+            } else if (match11) {
+                repNum = match11[1];
+            } else {
+                repNum = 'MISSING';
+            }
 
             let targetSection = currentSection;
-            if (/fabric|frd\-|jersey|rib|twill|fleece|interlock|cool\s*almond/i.test(rowText)) targetSection = 'FABRIC';
-            else if (/trim|label|button|zipper|thread|elastic|polybag/i.test(rowText)) targetSection = 'TRIM';
+            
+            if (repNum !== 'MISSING' || currentSection !== 'OTHER') {
+                if (/fabric|frd\-|jersey|rib|twill|fleece|interlock|cool\s*almond/i.test(rowText)) targetSection = 'FABRIC';
+                else if (/trim|label|button|zipper|thread|elastic|polybag/i.test(rowText)) targetSection = 'TRIM';
+            }
 
             if (targetSection !== 'TRIM' && targetSection !== 'FABRIC') continue;
 
             let finalDesc = '';
 
-            let rdNum = '';
-            const rdItems = items.filter(it => 
-                it.y >= topLimitY && it.y <= bottomLimitY &&
-                /^(?:RD#?|Article\s*)?\s*\d{6,9}$/i.test(it.str.trim()) &&
-                it.x < item.x
-            );
-            if (rdMaxX > 0) {
-                const exactRd = rdItems.find(it => it.x >= rdMinX && it.x <= rdMaxX);
-                if (exactRd) rdNum = exactRd.str.replace(/[^\d]/g, '').trim();
-            }
-            if (!rdNum && rdItems.length > 0) {
-                let plausibleRd = rdItems.filter(it => it.x > 80 && it.x < activeMinX - 30);
-                if (plausibleRd.length > 0) {
-                    plausibleRd.sort((a, b) => a.x - b.x);
-                    rdNum = plausibleRd[0].str.replace(/[^\d]/g, '').trim();
-                } else {
-                    rdItems.sort((a, b) => b.x - a.x);
-                    rdNum = rdItems[0].str.replace(/[^\d]/g, '').trim();
-                }
-            }
+            let rdMatch = item.str.match(/\d{6,9}/);
+            let rdNum = rdMatch ? rdMatch[0] : '';
 
             let extractedColorVal = '';
             const colorItems = items.filter(it => {
@@ -2585,6 +2669,11 @@ function extractComplementaryReportsData() {
                 .replace(/\s*-\s*/g, '-')
                 .replace(/\(COC's\)/ig, '')
                 .replace(/White\s+White\s+White\s+White\s+Fabric/ig, '')
+                // =? LIMPIEZA EXTRA: Remover composiciones o pesos que se hayan colado
+                .replace(/\b\d+(?:\.\d+)?\s*(?:GSM|OZ|YDS|M|MM|CM|INCH|%)\b/ig, '')
+                .replace(/\b(?:COTTON|POLYESTER|SPANDEX|ELASTANE|RAYON|NYLON|MODAL|VISCOSE|FLEECE|JERSEY|RIB|PIQUE|TERRY|WAFFLE|PFAS|SCREEN|APPAREL|TEST|REPORT|FABRIC|TRIM|IF|APPLICABLE|FLUORINE|TOTAL|MATERIAL|SECTION|END|USE)\b/ig, '')
+                .replace(/and\/?or/ig, '')
+                .replace(/\s{2,}/g, ' ')
                 .trim();
 
             let fileExtractedColor = '';
@@ -2671,10 +2760,7 @@ function extractComplementaryReportsData() {
                 }
             }
 
-            let historicalMatch = Object.keys(knownReports).find(key => repNum.includes(key));
-            if (historicalMatch) {
-                targetSection = 'TRIM';
-            }
+            let historicalMatch = null;
 
             const descItems = items.filter(it => {
                     const t = it.str.trim();
@@ -2715,16 +2801,6 @@ function extractComplementaryReportsData() {
                     }
                 }
 
-                let matchedDictionary = false;
-                if (descText && targetSection === 'FABRIC') {
-                    for (const entry of fabricDictionary) {
-                        if (entry.regex.test(descText)) {
-                            descText = entry.normal;
-                            matchedDictionary = true;
-                            break;
-                        }
-                    }
-                }
 
                 if (!descText && pageIdx > 0 && item.y < 230) {
                     const prevItems = pageItems[pageIdx - 1];
@@ -2750,130 +2826,120 @@ function extractComplementaryReportsData() {
                     }
                 }
 
-                if (!descText && targetSection === 'TRIM') {
-                    let bestDistance = Infinity;
-                    let rdIndex = stitchedText.indexOf(rdNum);
-                    if (rdIndex === -1 && rdNum) {
+                if (targetSection === 'TRIM') {
+                    let globalDesc = '';
+                    if (window.globalTrimDescriptions && window.globalTrimDescriptions[rdNum]) {
+                        globalDesc = window.globalTrimDescriptions[rdNum];
+                    } else if (rdNum) {
                         const digits = rdNum.replace(/[^\d]/g, '');
-                        if (digits) rdIndex = stitchedText.indexOf(digits);
+                        if (digits && window.globalTrimDescriptions && window.globalTrimDescriptions[digits]) {
+                            globalDesc = window.globalTrimDescriptions[digits];
+                        }
                     }
-                    if (rdIndex !== -1) {
-                        const rdCenter = rdIndex + (rdNum ? rdNum.length / 2 : 0);
-                        for (const entry of trimDictionary) {
-                            const localRegex = new RegExp(entry.regex.source, entry.regex.flags + (entry.regex.flags.includes('g') ? '' : 'g'));
-                            let match;
-                            while ((match = localRegex.exec(stitchedText)) !== null) {
-                                const keywordCenter = match.index + (match[0].length / 2);
-                                const dist = Math.abs(rdCenter - keywordCenter);
-                                if (dist < bestDistance) {
-                                    bestDistance = dist;
-                                    descText = entry.normal;
-                                }
-                            }
+                    if (globalDesc) {
+                        descText = globalDesc;
+                    }
+                } else if (targetSection === 'FABRIC') {
+                    let globalDesc = '';
+                    if (window.globalFabricDescriptions && window.globalFabricDescriptions[rdNum]) {
+                        globalDesc = window.globalFabricDescriptions[rdNum];
+                    } else if (rdNum) {
+                        const digits = rdNum.replace(/[^\d]/g, '');
+                        if (digits && window.globalFabricDescriptions && window.globalFabricDescriptions[digits]) {
+                            globalDesc = window.globalFabricDescriptions[digits];
                         }
-                    } else {
-                        for (const entry of trimDictionary) {
-                            if (entry.regex.test(stitchedText)) {
-                                descText = entry.normal;
-                                break;
-                            }
-                        }
+                    }
+                    if (globalDesc) {
+                        descText = globalDesc;
                     }
                 }
 
-                if (!matchedDictionary && targetSection === 'FABRIC') {
-                    for (const entry of fabricDictionary) {
-                        if (entry.regex.test(stitchedText)) {
-                            descText = entry.normal;
-                            matchedDictionary = true;
+
+                finalDesc = descText || (targetSection === 'TRIM' ? 'Trim Component' : 'Fabric Component');
+                
+                let isWhitelistMatch = false;
+                if (targetSection === 'TRIM') {
+                    let upperFinal = finalDesc.toUpperCase();
+                    if (upperFinal.includes('CARE')) {
+                        finalDesc = 'CARE LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('JOKER') || upperFinal.includes('ID LABEL') || upperFinal.includes('ID-LABEL')) {
+                        finalDesc = 'JOKER LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('RFID')) {
+                        finalDesc = 'RFID'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
+                        finalDesc = 'HEAT TRANSFER'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('T-LABEL') || upperFinal.includes('T LABEL')) {
+                        finalDesc = 'T-LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('PO LABEL')) {
+                        finalDesc = 'PO LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('MOBILON')) {
+                        finalDesc = 'MOBILON'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('WOVEN')) {
+                        finalDesc = 'WOVEN LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('MAIN')) {
+                        finalDesc = 'MAIN LABEL'; isWhitelistMatch = true;
+                    } else if (upperFinal.includes('CLAMP')) {
+                        finalDesc = 'CLAMP LABEL'; isWhitelistMatch = true;
+                    }
+                    if (!isWhitelistMatch) continue; // DE LO CONTRARIO LA IGNORARA
+                } else if (targetSection === 'FABRIC') {
+                    window.localFabricDescByRD = window.localFabricDescByRD || {};
+                    let foundFabric = '';
+                    let upperCell = typeof cellText !== 'undefined' ? cellText.toUpperCase() : finalDesc.toUpperCase();
+                    const fabricList = ['JERSEY', 'RIB', 'INTERLOCK', 'PIQUE', 'FRENCH TERRY', 'FLEECE', 'WAFFLE', 'THERMAL', 'DOUBLE KNIT'];
+                    for (let f of fabricList) {
+                        if (upperCell.includes(f)) {
+                            foundFabric = f;
                             break;
                         }
                     }
-                }
-                
-                if (targetSection === 'TRIM' && historicalMatch) {
-                    descText = knownReports[historicalMatch];
-                }
-
-                if (!descText) {
-                    let cleanFile = stitchedText
-                        .replace(/((?:GUAT|GUBT|KORT|JKTT|VNMT)[\d\-]+|\(\d{4}\)\s*\d{3}\s*[-]?\s*\d{4}|TRM-[A-Z0-9_]+|\b\d{10,12}\b)/ig, '')
-                        .replace(/\b(?:rd\s*#?|article\s*#?)?\s*\d{5,}\b/ig, '')
-                        .replace(/\(version\s*\d+\)/ig, '') 
-                        .replace(/\.pdf|\.doc|\.docx|\.xls|\.xlsx/ig, '')
-                        .replace(/\b[pP]\s*[dD]\s*[fF]\b|\b[dD]\s*[oO]\s*[cC]\s*[xX]?\b|\b[xX]\s*[lL]\s*[sS]\s*[xX]?\b/ig, '')
-                        .replace(/\b(?=[A-Z0-9]*\d)(?=[A-Z0-9]*[A-Z])[A-Z0-9]{6,}\b/ig, '')
-                        .replace(/\b\d+\b/g, '')
-                        .replace(/\b(type|file|name|document|form|no|r-pac|pac|sml|international|trim|trims|report|reports|rpt|certifier|certifiers|coc|cocs|test|testing|vendor|sourced|nom|nominated|mill|fabric|fabrics|rev|r\d+|v\d+|final|signed|approved|copy|certificado|cert|stamp|stamped|corresponding|address|must|be|indicated|review|without|section|upload|received|from|important|supplier|suppliers|accepted|party|submitted|certificate|certificates|compliance|pdf|doc|docx|xls|xlsx|none|n\/?a)\b/ig, '')
-                        .replace(/_/g, ' ')
-                        .replace(/^[\.\,\;\:\(\)\*\#\-\/]+|[\.\,\;\:\(\)\*\#\-\/\s]+$/g, '')
-                        .replace(/\s+/g, ' ')
-                        .trim();
-
-                    if (cleanFile.length > 0) {
-                        descText = cleanFile.toUpperCase();
-                        
-                        if (targetSection === 'TRIM') {
-                            if (descText.includes('HTF')) {
-                                descText = 'HEAT TRANSFER';
-                            } else {
-                                for (const entry of trimDictionary) {
-                                    if (entry.regex.test(descText)) {
-                                        descText = entry.normal;
-                                        break;
-                                    }
-                                }
-                            }
-                        } else if (targetSection === 'FABRIC') {
-                            for (const entry of fabricDictionary) {
-                                if (entry.regex.test(descText)) {
-                                    descText = entry.normal;
-                                    break;
-                                }
-                            }
-                        }
+                    if (foundFabric) {
+                        finalDesc = foundFabric;
+                        if (rdNum) window.localFabricDescByRD[rdNum] = foundFabric;
+                    } else if (rdNum && window.localFabricDescByRD[rdNum]) {
+                        finalDesc = window.localFabricDescByRD[rdNum];
+                    } else if (rdNum && window.globalFabricDescriptions && window.globalFabricDescriptions[rdNum]) {
+                        finalDesc = window.globalFabricDescriptions[rdNum];
+                    } else {
+                        window.debugFabricExtract.push(`Row RD: ${rdNum} - Skipped! foundFabric=${foundFabric}, localDesc=${window.localFabricDescByRD[rdNum]}, globalDesc=${window.globalFabricDescriptions?window.globalFabricDescriptions[rdNum]:'undef'} | upperCell=${upperCell}`);
+                        continue; // Skip if not in whitelist
                     }
+                    window.debugFabricExtract.push(`Row RD: ${rdNum} - SUCCESS! finalDesc=${finalDesc}`);
                 }
 
-                if (!descText && targetSection === 'FABRIC') {
-                    descText = baseColor;
-                }
-
-                finalDesc = descText || (targetSection === 'TRIM' ? 'Trim Component' : 'Fabric Component');
-                if (targetSection === 'FABRIC' && /trim/i.test(finalDesc)) finalDesc = 'Fabric Component';
-                
-                if (targetSection === 'TRIM') {
-                    let upperFinal = finalDesc.toUpperCase();
-                    if (upperFinal.includes('HTF') || upperFinal.includes('HEAT TRANSFER') || upperFinal.includes('HEAT SEAL')) {
-                        finalDesc = 'HEAT TRANSFER';
-                    } else if (upperFinal.includes('CARE')) {
-                        finalDesc = 'CARE LABEL';
-                    } else if (upperFinal.includes('JOKER')) {
-                        finalDesc = 'JOKER LABEL';
-                    } else if (upperFinal.includes('RFID')) {
-                        finalDesc = 'RFID';
-                    } else if (upperFinal.includes('PO LABEL')) {
-                        finalDesc = 'PO LABEL';
-                    } else if (upperFinal.includes('MOBILON')) {
-                        finalDesc = 'MOBILON';
-                    } else if (upperFinal.includes('WOVEN')) {
-                        finalDesc = 'WOVEN LABEL';
-                    } else if (upperFinal.includes('MAIN')) {
-                        finalDesc = 'MAIN LABEL';
-                    }
-                }
-
-            if (/special\s*claims|special\s*instructions/i.test(finalDesc) || /special\s*claims|special\s*instructions/i.test(stitchedText)) {
-                continue;
-            }
+            // if (/special\s*claims|special\s*instructions/i.test(finalDesc) || /special\s*claims|special\s*instructions/i.test(stitchedText)) {
+            //     continue;
+            // }
 
             if (targetSection === 'TRIM') {
-                if (!trimPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
+                let existing = null;
+                if (rdNum) {
+                    existing = trimPairs.find(p => p.rdNum === rdNum);
+                } else {
+                    existing = trimPairs.find(p => p.report === repNum && p.desc === finalDesc);
+                }
+                if (!existing) {
                     trimPairs.push({ desc: finalDesc, report: repNum, rdNum: rdNum, color: '', baseColor: baseColor, ccFinal: ccFinal, pageIdx: pageIdx });
+                } else {
+                    if (!existing.report.includes(repNum) && repNum !== 'MISSING') {
+                        if (existing.report === 'MISSING') existing.report = repNum;
+                        else existing.report += '\n' + repNum;
+                    }
                 }
             } else if (targetSection === 'FABRIC') {
-                if (!fabricPairs.some(p => p.report === repNum && p.desc === finalDesc)) {
+                let existing = null;
+                if (rdNum) {
+                    existing = fabricPairs.find(p => p.rdNum === rdNum);
+                } else {
+                    existing = fabricPairs.find(p => p.report === repNum && p.desc === finalDesc);
+                }
+                if (!existing) {
                     fabricPairs.push({ desc: finalDesc, report: repNum, rdNum: rdNum, color: '', baseColor: baseColor, ccFinal: '', pageIdx: pageIdx });
+                } else {
+                    if (!existing.report.includes(repNum) && repNum !== 'MISSING') {
+                        if (existing.report === 'MISSING') existing.report = repNum;
+                        else existing.report += '\n' + repNum;
+                    }
                 }
             }
         }
@@ -3061,24 +3127,40 @@ async function procesarPDF() {
   
                                           if (inFabricTable) {
                                               window.debugCoords.push(`T:${txt} aX:${Math.round(approxX)} rX:${rdColX?Math.round(rdColX):"N"} mX:${millColX?Math.round(millColX):"N"}`);
+                                              let isFabricRd = false;
                                               if (millColX !== null && rdColX !== null) {
                                                 if (Math.abs(approxX - millColX) < Math.abs(approxX - rdColX)) {
                                                     millList.push(txt);
                                                 } else {
-                                                    if (Math.abs(approxX - rdColX) < 100) rdList.push(txt);
+                                                    if (Math.abs(approxX - rdColX) < 100) { rdList.push(txt); isFabricRd = true; }
                                                 }
                                             } else if (millColX !== null && Math.abs(approxX - millColX) < 100) {
                                                 millList.push(txt);
                                             } else if (rdColX !== null) {
                                                 if (Math.abs(approxX - rdColX) < 100) {
                                                     rdList.push(txt);
+                                                    isFabricRd = true;
+                                                }
+                                            }
+                                            if (isFabricRd) {
+                                                let rowContextItems = items.filter(otherIt => Math.abs(otherIt.y - it.y) < 15);
+                                                rowContextItems.sort((a,b) => a.x - b.x);
+                                                let rowContextText = rowContextItems.map(otherIt => otherIt.str).join(' ').toLowerCase();
+                                                
+                                                window.globalFabricDescriptions = window.globalFabricDescriptions || {};
+                                                const fabricList = ['jersey', 'rib', 'interlock', 'pique', 'french terry', 'fleece', 'waffle', 'thermal', 'double knit'];
+                                                for (let f of fabricList) {
+                                                    if (rowContextText.includes(f)) {
+                                                        window.globalFabricDescriptions[txt] = f.toUpperCase();
+                                                        break;
+                                                    }
                                                 }
                                             }
                                           } else if (inTrimTable) {
                                               window.debugCoords.push(`TRIM:${txt} aX:${Math.round(approxX)} trX:${trimRdColX?Math.round(trimRdColX):"N"}`);
                                               let isTrim = false;
                                               if (trimRdColX !== null) {
-                                                  if (Math.abs(approxX - trimRdColX) < 150) {
+                                                  if (Math.abs(approxX - trimRdColX) < 60) {
                                                       trimRdList.push(txt);
                                                       isTrim = true;
                                                   }
@@ -3089,7 +3171,42 @@ async function procesarPDF() {
                                                   }
                                               }
                                               
-                                              if (isTrim) { let supplier = ''; if (isVendorSourcedTable || /vendor[-\s]*sourced/i.test(r.text)) { supplier = 'Vendor-Sourced'; } else { let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; let supplierItems = []; r.items.forEach(sit => { let approxS = sit.x; if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { supplierItems.push(sit); } }); supplierItems.sort((a,b) => a.x - b.x); supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); } if (!supplier || supplier.length < 2) { supplier = lastSeenTrimSupplier; } if (supplier) { window.globalTrimSuppliers[txt] = supplier; } }
+                                              if (isTrim) { 
+                                                  let supplier = ''; 
+                                                  if (isVendorSourcedTable || /vendor[-\s]*sourced/i.test(r.text)) { 
+                                                      supplier = 'Vendor-Sourced'; 
+                                                  } else { 
+                                                      let targetX = trimSupplierColX !== null ? trimSupplierColX : 150; 
+                                                      let supplierItems = []; 
+                                                      r.items.forEach(sit => { 
+                                                          let approxS = sit.x; 
+                                                          if (!/\d{6,}/.test(sit.str) && Math.abs(approxS - targetX) < 100) { 
+                                                              supplierItems.push(sit); 
+                                                          } 
+                                                      }); 
+                                                      supplierItems.sort((a,b) => a.x - b.x); 
+                                                      supplier = supplierItems.map(s => s.str).join(' ').replace(/\s+/g, ' ').trim(); 
+                                                  } 
+                                                  if (!supplier || supplier.length < 2) { supplier = lastSeenTrimSupplier; } 
+                                                  if (supplier) { window.globalTrimSuppliers[txt] = supplier; } 
+
+                                                  let rowContextItems = items.filter(otherIt => Math.abs(otherIt.y - it.y) < 15);
+                                                  rowContextItems.sort((a,b) => a.x - b.x);
+                                                  let rowContextText = rowContextItems.map(otherIt => otherIt.str).join(' ').toLowerCase();
+                                                  let rowContextTextNoSpace = rowContextItems.map(otherIt => otherIt.str).join('').replace(/\s+/g, '').toLowerCase();
+
+                                                  window.globalTrimDescriptions = window.globalTrimDescriptions || {};
+                                                  if (/care/i.test(rowContextText) || /care/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'CARE LABEL';
+                                                  else if (/joker/i.test(rowContextText) || /joker/i.test(rowContextTextNoSpace) || /id\s*[-_]?\s*label/i.test(rowContextText) || /idlabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'JOKER LABEL';
+                                                  else if (/rfid/i.test(rowContextText) || /rfid/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'RFID';
+                                                  else if (/htf|heat\s*[-_]?\s*transfer|heat\s*[-_]?\s*seal/i.test(rowContextText) || /htf|heattransfer|heatseal/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'HEAT TRANSFER';
+                                                  else if (/t\s*[-_]?\s*label/i.test(rowContextText) || /tlabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'T-LABEL';
+                                                  else if (/po\s*[-_]?\s*label/i.test(rowContextText) || /polabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'PO LABEL';
+                                                  else if (/mobilon/i.test(rowContextText) || /mobilon/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'MOBILON';
+                                                  else if (/woven/i.test(rowContextText) || /woven/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'WOVEN LABEL';
+                                                  else if (/main/i.test(rowContextText) || /main/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'MAIN LABEL';
+                                                  else if (/clamp/i.test(rowContextText) || /clamp/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'CLAMP LABEL';
+                                              } 
                                           } else if (inCocTable) {
                                               let isCoc = false;
                                               if (cocRdColX !== null) {
@@ -3139,7 +3256,7 @@ async function procesarPDF() {
             Raw trimRdList: <br>
           Raw millList: ${window.globalMillList ? window.globalMillList.join(', ') : 'null'}<br>
           StyleNumEtrf: ${styleNumEtrf}
-        </div>`;
+        </div><div style="margin-top:10px; font-size:10px; color:#555; background:#eee; padding:5px; border-radius:4px;"><b>FABRIC EXTRACT DEBUG:</b><br>` + (window.debugFabricExtract ? window.debugFabricExtract.join('<br>') : 'null') + `</div>`;
         const resultsDiv = document.getElementById('resultados-etrf-container');
         if (resultsDiv) resultsDiv.innerHTML += debugEtrfHtml;
 
@@ -4031,7 +4148,7 @@ async function procesarArchivoBOM() {
                         let wt = windowText;
                         let labelType = null;
                         if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|htf)\b/i.test(wt)) labelType = "Heat Transfer";
-                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label";
+                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label"; else if (/\b(clamp[\s\-]*label)\b/i.test(wt)) labelType = "Clamp Label";
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
@@ -5313,7 +5430,7 @@ async function startBomCompare() {
                         let wt = windowText;
                         let labelType = null;
                         if (/\b(heat[\s\-]*transfer|heat[\s\-]*seal|htf)\b/i.test(wt)) labelType = "Heat Transfer";
-                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label";
+                        else if (/\b(main[\s\-]*label)\b/i.test(wt)) labelType = "Main Label"; else if (/\b(clamp[\s\-]*label)\b/i.test(wt)) labelType = "Clamp Label";
                         else if (/\b(care[\s\-]*label|care[\s\-]*instrucctions|care[\s\-]*instructions|care\s*\/?\s*content)\b/i.test(wt)) labelType = "Care Label";
                         else if (/\b(joker[\s\-]*label|joker[\s\-]*tag|po[\s\-]*label|purchase[\s\-]*order[\s\-]*label|traceability[\s\-]*label|id[\s\-]*label|t[\s\-]*label)\b/i.test(wt)) labelType = "Joker Label";
                         else if (/\b(rfid)\b/i.test(wt) && !/\b(price[\s\-]*ticket|price[\s\-]*tkt|ticket[\s\-]*price)\b/i.test(wt)) labelType = "RFID Label";
@@ -5464,6 +5581,7 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
 
 
 
