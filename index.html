@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INTERGUIDE 2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <!-- Importamos la librer?a pdf-lib desde CDN -->
@@ -330,7 +331,13 @@ footer {
 <body>
 
 <header class="top-bar">
-    <div class="logo">INTERGUIDE <span>2.0</span></div>
+    <div style="display: flex; align-items: center;">
+        <div class="logo-container" style="display: flex; align-items: center; cursor: default; user-select: none; margin-right: 80px;">
+            <img src="logo.png" alt="Logo" style="height: 60px; object-fit: contain; transform: scale(2.2); transform-origin: left center; margin-top: 12px;">
+        </div>
+        <div style="width: 1px; height: 35px; background-color: rgba(0,0,0,0.25);"></div>
+        <img src="gap.png" alt="GAP" style="height: 28px; width: auto; flex-shrink: 0; margin-left: 20px; object-fit: contain; transform: scaleX(1.15); transform-origin: left center;">
+    </div>
     <div class="top-links">
         <button onclick="openTipsModal()" style="background: none; border: none; text-decoration: none; color: #333; display: flex; align-items: center; cursor: pointer; font-size: 14px; font-weight: 500; padding: 0;">
             <i class="fas fa-code"></i> TIPS Scripts
@@ -706,7 +713,7 @@ footer {
 
 <footer>
     <div class="footer-left">
-        <i class="fab fa-invision"></i> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By Wilder SicÃ¡n</span>
+        <img src="footer_icon.png" alt="in" style="height: 2.2em; vertical-align: middle; margin-right: 5px; position: relative; top: -3px;"> <span style="color:#ccc;">&copy; 2026 INTERGUIDE | By Wilder Sic&aacute;n</span>
     </div>
 </footer>
 

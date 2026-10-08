@@ -1,4 +1,4 @@
-﻿const motivosManuales = [
+const motivosManuales = [
     // --- Empty Fields ---
     "Producto Stage Campo Vacío (Stage Product - Empty Field)",
     "Type Of testáing Campo Vacío (Type of Testáing - Empty Field)",
@@ -321,10 +321,12 @@ function openRejectionModal() {
     if (!manualSelect.hasAttribute('data-listener-attached')) {
         manualSelect.addEventListener('change', function() {
             if (this.value) {
-                const val = '- ' + this.value;
-                if (!currentRejectionReasons.includes(val)) {
-                    currentRejectionReasons.push(val);
-                    renderRejectionReasons();
+                if (motivosManuales.includes(this.value)) {
+                    const val = '- ' + this.value;
+                    if (!currentRejectionReasons.includes(val)) {
+                        currentRejectionReasons.push(val);
+                        renderRejectionReasons();
+                    }
                 }
                 this.value = '';
             }
