@@ -1,0 +1,75 @@
+﻿                    // --- TORQUE / SPIRALITY ---
+                    } else if (testSeleccionado.includes("TORQUE")) {
+                        let averageVal = null;
+                        
+                        // Agrupar por Y para leer por lineas y evitar desorden
+                        let linesY = {};
+                        itemsAvanzados.forEach(item => {
+                            let y = Math.round(item.y / 5) * 5; // agrupar con tolerancia de 5px
+                            if (!linesY[y]) linesY[y] = [];
+                            linesY[y].push(item);
+                        });
+                        
+                        let sortedY = Object.keys(linesY).sort((a, b) => parseFloat(b) - parseFloat(a));
+                        let fullTextOrdered = "";
+                        
+                        sortedY.forEach(y => {
+                            let itemsLine = linesY[y].sort((a, b) => a.x - b.x);
+                            fullTextOrdered += itemsLine.map(x => x.str.trim()).join(" ") + " \n ";
+                        });
+                        
+                        fullTextOrdered = fullTextOrdered.toUpperCase();
+
+                        let matchAvg = fullTextOrdered.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
+                        if (matchAvg) {
+                            let val = matchAvg[1].replace(/\s/g, "");
+                            averageVal = val.includes("%") ? val : val + "%";
+                        }
+
+                        if (e.shiftKey) {
+                            let txt = document.createElement('textarea');
+                            txt.value = "=== TORQUE LOG ===\nAVG: " + averageVal + "\n\nTEXT:\n" + fullTextOrdered;
+                            txt.style.width = '100%';
+                            txt.style.height = '400px';
+                            txt.style.border = '2px solid orange';
+                            txt.style.position = 'relative';
+                            txt.style.zIndex = '9999';
+                            document.body.prepend(txt);
+                            txt.scrollIntoView();
+                            setTimeout(() => { btnResults.innerText = originalText; }, 5000);
+                            return;
+                        }
+
+                        if (!averageVal) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque)';
+                            setTimeout(() => { btnResults.innerText = originalText; }, 4000);
+                            return;
+                        }
+
+                        let camposLlenados = 0;
+                        let piezasActivas = obtenerPiezasActivasUI();
+
+                        const filas = document.querySelectorAll('tr');
+                        filas.forEach(fila => {
+                            if (fila.querySelector('table')) return;
+                            let rowText = fila.innerText.toUpperCase();
+
+                            if (rowText.includes("SPIRALITY")) {
+                                let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                    let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                    return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                });
+
+                                for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                    inputs[k].value = averageVal;
+                                    let ev = new Event('change', { bubbles: true });
+                                    inputs[k].dispatchEvent(ev);
+                                    camposLlenados++;
+                                }
+                            }
+                        });
+
+                        if (camposLlenados > 0) btnResults.innerText = '\u2705 (' + camposLlenados + ')';
+                        else btnResults.innerText = '\u26A0\uFE0F Nada inyectado';
+                        setTimeout(() => { btnResults.innerText = originalText; }, 3000);
+                        return;

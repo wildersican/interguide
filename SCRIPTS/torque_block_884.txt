@@ -1,0 +1,105 @@
+﻿                    // --- TORQUE / SPIRALITY ---
+                    } else if (testSeleccionado.includes("TORQUE")) {
+                        let averageVal = null;
+                        
+                        // Agrupar por Pagina y luego por Y para leer en orden exacto
+                        let linesByPage = {};
+                        itemsAvanzados.forEach(item => {
+                            if (!linesByPage[item.page]) linesByPage[item.page] = {};
+                            let linesY = linesByPage[item.page];
+                            let y = Math.round(item.y * 10) / 10;
+                            let foundY = Object.keys(linesY).find(k => Math.abs(parseFloat(k) - y) < 8.0);
+                            if (foundY) { linesY[foundY].push(item); }
+                            else { linesY[y] = [item]; }
+                        });
+                        
+                        let rowsOrdered = [];
+                        let pages = Object.keys(linesByPage).sort((a, b) => parseInt(a) - parseInt(b));
+                        pages.forEach(p => {
+                            let linesY = linesByPage[p];
+                            let sortedY = Object.keys(linesY).sort((a, b) => parseFloat(b) - parseFloat(a));
+                            sortedY.forEach(y => {
+                                let itemsLine = linesY[y].sort((a, b) => a.x - b.x);
+                                rowsOrdered.push(itemsLine.map(x => x.str.trim()).join(" ").toUpperCase());
+                            });
+                        });
+                        
+                        let foundTitle = false;
+                        let textLogged = "";
+
+                        for (let i = 0; i < rowsOrdered.length; i++) {
+                            let rowText = rowsOrdered[i];
+                            textLogged += rowText + "\n";
+                            
+                            if (!foundTitle) {
+                                // Buscamos el título de la prueba
+                                if (rowText.includes("SKEWING AND TORQUE") || rowText.includes("SESGO Y TORQUE")) {
+                                    foundTitle = true;
+                                }
+                            } else {
+                                // Una vez encontrado el título, buscamos el primer AVERAGE
+                                let matchAvg = rowText.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
+                                if (matchAvg) {
+                                    let val = matchAvg[1].replace(/\s/g, "");
+                                    averageVal = val.includes("%") ? val : val + "%";
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Fallback por si la palabra no es exacta
+                        if (!averageVal) {
+                            let matchAvgFallback = rowsOrdered.join(" ").match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
+                            if (matchAvgFallback) {
+                                let val = matchAvgFallback[1].replace(/\s/g, "");
+                                averageVal = val.includes("%") ? val : val + "%";
+                            }
+                        }
+
+                        if (e.shiftKey) {
+                            let txt = document.createElement('textarea');
+                            txt.value = "=== TORQUE LOG ===\nTITLE FOUND: " + foundTitle + "\nAVG: " + averageVal + "\n\nTEXT:\n" + textLogged;
+                            txt.style.width = '100%';
+                            txt.style.height = '400px';
+                            txt.style.border = '2px solid orange';
+                            txt.style.position = 'relative';
+                            txt.style.zIndex = '9999';
+                            document.body.prepend(txt);
+                            txt.scrollIntoView();
+                            setTimeout(() => { btnResults.innerText = originalText; }, 5000);
+                            return;
+                        }
+
+                        if (!averageVal) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque)';
+                            setTimeout(() => { btnResults.innerText = originalText; }, 4000);
+                            return;
+                        }
+
+                        let camposLlenados = 0;
+                        let piezasActivas = obtenerPiezasActivasUI();
+
+                        const filas = document.querySelectorAll('tr');
+                        filas.forEach(fila => {
+                            if (fila.querySelector('table')) return;
+                            let rowText = fila.innerText.toUpperCase();
+
+                            if (rowText.includes("SPIRALITY")) {
+                                let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                    let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                    return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                });
+
+                                for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                    inputs[k].value = averageVal;
+                                    let ev = new Event('change', { bubbles: true });
+                                    inputs[k].dispatchEvent(ev);
+                                    camposLlenados++;
+                                }
+                            }
+                        });
+
+                        if (camposLlenados > 0) btnResults.innerText = '\u2705 (' + camposLlenados + ')';
+                        else btnResults.innerText = '\u26A0\uFE0F Nada inyectado';
+                        setTimeout(() => { btnResults.innerText = originalText; }, 3000);
+                        return;

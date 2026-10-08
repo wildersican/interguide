@@ -75,7 +75,28 @@ const motivosManuales = [
     "Actualizar Versión de PFAS (Update PFAS Version)",
     "Actualizar Certificado de Fibra - Vencido (Update Fiber Certificate - Expired)",
     "BOM Number no coincide con la ETRF (BOM Number Does Not Match ETRF)",
-    "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)"
+    "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)",
+    
+    // --- Warnings / Próximos Rechazos ---
+    "Número de BOM en ETRF no coincide con archivo adjunto / BOM number in ETRF does not match the attached file",
+    "Archivo BOM no adjunto / BOM file not attached",
+    "RD Fabric no coincide al descrito en ETRF / RD Fabric does not match the description in ETRF",
+    "RD de CARE LABEL en ETRF no coincide con el archivo BOM / CARE LABEL RD in ETRF does not match the BOM file",
+    "RD de JOKER LABEL en ETRF no coincide con el archivo BOM / JOKER LABEL RD in ETRF does not match the BOM file",
+    "RD de RFID en ETRF no coincide con el archivo BOM / RFID RD in ETRF does not match the BOM file",
+    "RD de HEAT TRANSFER en ETRF no coincide con el archivo BOM / HEAT TRANSFER RD in ETRF does not match the BOM file",
+    "RD de MOBILON en ETRF no coincide con el archivo BOM / MOBILON RD in ETRF does not match the BOM file",
+    "RD de WOVEN LABEL en ETRF no coincide con el archivo BOM / WOVEN LABEL RD in ETRF does not match the BOM file",
+    "RD de MAIN LABEL en ETRF no coincide con el archivo BOM / MAIN LABEL RD in ETRF does not match the BOM file",
+    "RD de CLAMP LABEL en ETRF no coincide con el archivo BOM / CLAMP LABEL RD in ETRF does not match the BOM file",
+    "Supplier de CARE LABEL no válido o en blanco / CARE LABEL Supplier invalid or blank",
+    "Supplier de JOKER LABEL no válido o en blanco / JOKER LABEL Supplier invalid or blank",
+    "Supplier de RFID no válido o en blanco / RFID Supplier invalid or blank",
+    "Supplier de HEAT TRANSFER no válido o en blanco / HEAT TRANSFER Supplier invalid or blank",
+    "Supplier de MOBILON no válido o en blanco / MOBILON Supplier invalid or blank",
+    "Supplier de WOVEN LABEL no válido o en blanco / WOVEN LABEL Supplier invalid or blank",
+    "Supplier de MAIN LABEL no válido o en blanco / MAIN LABEL Supplier invalid or blank",
+    "Supplier de CLAMP LABEL no válido o en blanco / CLAMP LABEL Supplier invalid or blank"
 ];
 
 let currentRejectionReasons = [];
@@ -192,6 +213,15 @@ function openRejectionModal() {
                 if (!currentRejectionReasons.includes(rdBomReason)) currentRejectionReasons.push(rdBomReason);
             }
         }
+        
+        const etrfBomEl = document.getElementById('d-bom-num');
+        const etrfBom = etrfBomEl ? etrfBomEl.textContent.trim() : '--';
+        const bomInput = document.getElementById('archivoInput-bom');
+        
+        if (etrfBom !== '--' && etrfBom !== '' && bomInput && !bomInput.files[0]) {
+            const noBomReason = "Archivo BOM no adjunto / BOM file not attached";
+            if (!currentRejectionReasons.includes(noBomReason)) currentRejectionReasons.push(noBomReason);
+        }
 
         const alertMapping = {
             'MISSING Season / Year': 'Season Campo Vacío (Season - Empty Field)',
@@ -214,7 +244,8 @@ function openRejectionModal() {
             'MISSING Channel': 'Channel Campo Vacío (Channel - Empty Field)',
             'MISSING Destáination Country': 'Campo Vacío Destáination Country (Destáination Country - Empty Field)',
             'MISSING Ship to Country': 'Campo Vacío Ship to Country (Ship-to Country - Empty Field)',
-            'MISSING PFAS Certification': 'Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)'
+            'MISSING PFAS Certification': 'Falta Documento de PFAS (PFAS Document - Not Uploaded to the platform)',
+            'MISSING BOM File': 'Archivo BOM no adjunto / BOM file not attached'
         };
 
         // Check Rejection Alerts panel
@@ -222,6 +253,13 @@ function openRejectionModal() {
         if (alertBox && alertBox.style.display !== 'none') {
             const lis = alertBox.querySelectorAll('li');
             lis.forEach(li => {
+                if (li.dataset.fullReason) {
+                    if (!currentRejectionReasons.includes(li.dataset.fullReason)) {
+                        currentRejectionReasons.push(li.dataset.fullReason);
+                    }
+                    return;
+                }
+
                 const txt = li.textContent.trim();
                 let matchedReason = null;
                 
@@ -366,8 +404,48 @@ async function submitRejectionToPA(skipAuth = false) {
         statusDiv.innerHTML = '<span style="color:#ef4444;">Error: The "Detected Emails" field is empty. Please enter at least one email address.</span>';
         return;
     }
-    // Reemplazamos el "- " inicial por nada para que Excel guarde solo el texto limpio
-    const allReasons = currentRejectionReasons.map(r => '\u2022 ' + r.replace(/^- /, '')).join('<br>');
+    const warningKeywords = [
+        "Número de BOM en ETRF no coincide con archivo",
+        "Archivo BOM no adjunto",
+        "RD Fabric no coincide al descrito en ETRF",
+        "RD de CARE LABEL en ETRF no coincide",
+        "RD de JOKER LABEL en ETRF no coincide",
+        "RD de RFID en ETRF no coincide",
+        "RD de HEAT TRANSFER en ETRF no coincide",
+        "RD de MOBILON en ETRF no coincide",
+        "RD de WOVEN LABEL en ETRF no coincide",
+        "RD de MAIN LABEL en ETRF no coincide",
+        "RD de CLAMP LABEL en ETRF no coincide",
+        "Supplier de CARE LABEL no válido",
+        "Supplier de JOKER LABEL no válido",
+        "Supplier de RFID no válido",
+        "Supplier de HEAT TRANSFER no válido",
+        "Supplier de MOBILON no válido",
+        "Supplier de WOVEN LABEL no válido",
+        "Supplier de MAIN LABEL no válido",
+        "Supplier de CLAMP LABEL no válido"
+    ];
+
+    let trueRejections = [];
+    let warnings = [];
+
+    currentRejectionReasons.forEach(r => {
+        const cleanReason = r.replace(/^- /, '');
+        const isWarning = warningKeywords.some(keyword => cleanReason.includes(keyword));
+        if (isWarning) {
+            warnings.push('\u2022 ' + cleanReason);
+        } else {
+            trueRejections.push('\u2022 ' + cleanReason);
+        }
+    });
+
+    if (warnings.length > 0) {
+        const note = '<span style="color: #666666; font-size: 13px;"><i><b>Note:</b> Please be aware that these alerts will soon become formal rejection reasons.<br>(Por favor tome en cuenta que próximamente estas alertas se convertirán en motivos de rechazo formales.)</i></span>';
+        warnings.push('<br>' + note);
+    }
+
+    const allReasons = trueRejections.join('<br>');
+    const allWarnings = warnings.join('<br>');
 
         const payload = {
         fechaRechazo: new Date().toLocaleDateString('en-GB'),
@@ -379,6 +457,7 @@ async function submitRejectionToPA(skipAuth = false) {
         description: document.getElementById('rej-desc').value || 'N/A',
         vendor: document.getElementById('rej-vendor').value || 'N/A',
         reason: allReasons.trim() || 'N/A',
+        warnings: allWarnings.trim() || '', // Nuevo campo separado
         correos: document.getElementById('rej-emails').value || 'N/A'
     };
 

@@ -1474,6 +1474,12 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
         alerts.push('MISSING <strong>PFAS Certification</strong> <br><span style="font-size: 10px; font-weight: normal; color: #555;">(Please verify if PFAS is uploaded in INTERLINK before rejecting) <i class="fas fa-info-circle" style="color:#e53935; font-size:13px; margin-left:2px; cursor:help;" title="Muchas veces los vendors cargan el documento PFAS en INTERLINK pero olvidan declararlo o no actualizan la ETRF. Verifica siempre el sistema antes de emitir un rechazo."></i></span>');
     }
 
+    const bomNum = getVal('d-bom-num');
+    const bomFileStr = getVal('d-bom-file');
+    if (bomNum && bomNum !== '--' && bomNum !== 'Missing' && (!bomFileStr || bomFileStr === '-' || bomFileStr.trim() === '')) {
+        alerts.push('MISSING <strong>BOM File</strong> <br><span style="font-size: 10px; font-weight: normal; color: #555;">(The client did not attach the BOM File in the ETRF)</span>');
+    }
+
     const alertBox = document.getElementById('rejection-alerts');
     const rejectionContainer = document.getElementById('rejection-container');
     if (alerts.length > 0) {
@@ -1486,6 +1492,18 @@ function evaluateRejections(chkCount, weightBefore, weightAfter, prodCharStr) {
         rejectionContainer.style.border = '1px solid #ef9a9a';
         rejectionContainer.style.padding = '12px';
         rejectionContainer.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+
+        if (alerts.every(a => a.includes('BOM File'))) {
+            const note = document.createElement('div');
+            note.className = 'bom-alert-note';
+            note.style.marginTop = '10px';
+            note.style.fontSize = '11px';
+            note.style.color = '#64748b';
+            note.style.fontWeight = 'normal';
+            note.style.whiteSpace = 'nowrap';
+            note.innerHTML = '<i class="fas fa-info-circle" style="cursor:help; color:#ef4444;" title="Puedes proceder con el ingreso, pero por favor registra este rechazo"></i> Note: You may proceed with registration, but please log this rejection.';
+            alertBox.appendChild(note);
+        }
     } else {
         alertBox.style.display = 'none';
         alertBox.innerHTML = '';
@@ -3228,8 +3246,8 @@ async function procesarPDF() {
                                                   else if (/joker/i.test(rowContextText) || /joker/i.test(rowContextTextNoSpace) || /id\s*[-_]?\s*label/i.test(rowContextText) || /idlabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'JOKER LABEL';
                                                   else if (/rfid/i.test(rowContextText) || /rfid/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'RFID';
                                                   else if (/htf|heat\s*[-_]?\s*transfer|heat\s*[-_]?\s*seal/i.test(rowContextText) || /htf|heattransfer|heatseal/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'HEAT TRANSFER';
-                                                  else if (/t\s*[-_]?\s*label/i.test(rowContextText) || /tlabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'T-LABEL';
-                                                  else if (/po\s*[-_]?\s*label/i.test(rowContextText) || /polabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'PO LABEL';
+                                                  else if (/t\s*[-_]?\s*label/i.test(rowContextText) || /tlabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'JOKER LABEL';
+                                                  else if (/po\s*[-_]?\s*label/i.test(rowContextText) || /polabel/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'JOKER LABEL';
                                                   else if (/mobilon/i.test(rowContextText) || /mobilon/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'MOBILON';
                                                   else if (/woven/i.test(rowContextText) || /woven/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'WOVEN LABEL';
                                                   else if (/main/i.test(rowContextText) || /main/i.test(rowContextTextNoSpace)) window.globalTrimDescriptions[txt] = 'MAIN LABEL';
@@ -4268,6 +4286,7 @@ async function procesarArchivoBOM() {
                 { match: /r\s*[\-\.]?\s*pac|international/i, clean: "R-pac International" }, { match: /vendor|sourced/i, clean: "Vendor-Sourced" }
             ];
 
+            let invalidSupplierTrims = [];
             matchedTrims.forEach(rd => {
                 let text = bomTrimDetails[rd] ? `${bomTrimDetails[rd]} (${rd})` : rd;
                 let rawSupplier = window.globalTrimSuppliers && window.globalTrimSuppliers[rd] ? window.globalTrimSuppliers[rd] : '';
@@ -4286,13 +4305,15 @@ async function procesarArchivoBOM() {
                 }
 
                 if (!isAllowed) {
+                    invalidSupplierTrims.push(rd);
                     trimPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;" title="Invalid Trim Supplier!"><i class="fas fa-exclamation-circle"></i>${text} - Invalid/Missing Supplier</span>`);
                 } else {
                     trimPills.push(`<span style="background:#f3e8ff; color:#6b21a8; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-check-circle"></i>${text} - ${cleanSupplier}</span>`);
                 }
             });
             missingTrimInBom.forEach(rd => {
-                trimPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i>${rd}</span>`);
+                let desc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] + ' ' : '';
+                trimPills.push(`<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:12px; font-weight:500; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-times-circle"></i>${desc}(${rd})</span>`);
             });
             
             if (trimPills.length > 0) {
@@ -4300,6 +4321,124 @@ async function procesarArchivoBOM() {
             }
 
             rdMatchHtml = fabricHtml + trimHtml + debugHtml;
+
+            // --- AUTO ADD BOM REJECTIONS ---
+            if (typeof currentRejectionReasons !== 'undefined' && typeof renderRejectionReasons === 'function') {
+                let shouldRender = false;
+                
+                if (matchText.includes('MISMATCH')) {
+                    const r = "Número de BOM en ETRF no coincide con archivo adjunto / BOM number in ETRF does not match the attached file";
+                    if (!currentRejectionReasons.includes(r)) { currentRejectionReasons.push(r); shouldRender = true; }
+                }
+
+                if (missingInBom && missingInBom.length > 0) {
+                    const r = "RD Fabric no coincide al descrito en ETRF / RD Fabric does not match the description in ETRF";
+                    if (!currentRejectionReasons.includes(r)) { currentRejectionReasons.push(r); shouldRender = true; }
+                }
+
+                if (missingTrimInBom && missingTrimInBom.length > 0) {
+                    missingTrimInBom.forEach(rd => {
+                        let desc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] : '';
+                        if (desc) {
+                            const r = `RD de ${desc} en ETRF no coincide con el archivo BOM / ${desc} RD in ETRF does not match the BOM file`;
+                            if (!currentRejectionReasons.includes(r)) { currentRejectionReasons.push(r); shouldRender = true; }
+                        }
+                    });
+                }
+
+                if (invalidSupplierTrims && invalidSupplierTrims.length > 0) {
+                    invalidSupplierTrims.forEach(rd => {
+                        let desc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] : 'TRIM';
+                        const r = `Supplier de ${desc} no válido o en blanco / ${desc} Supplier invalid or blank`;
+                        if (!currentRejectionReasons.includes(r)) { currentRejectionReasons.push(r); shouldRender = true; }
+                    });
+                }
+                
+                if (shouldRender) renderRejectionReasons();
+            }
+
+            // Pop-up in main rejection alerts box
+            let bomAlerts = [];
+            if (matchText.includes('MISMATCH')) {
+                bomAlerts.push({ text: "BOM number in ETRF does not match the attached file", reason: "Número de BOM en ETRF no coincide con archivo adjunto / BOM number in ETRF does not match the attached file" });
+            }
+            if (missingInBom && missingInBom.length > 0) {
+                bomAlerts.push({ text: "RD Fabric does not match the description in ETRF", reason: "RD Fabric no coincide al descrito en ETRF / RD Fabric does not match the description in ETRF" });
+            }
+            if (missingTrimInBom && missingTrimInBom.length > 0) {
+                missingTrimInBom.forEach(rd => {
+                    let desc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] : 'TRIM';
+                    bomAlerts.push({ text: `${desc} RD in ETRF does not match the BOM file`, reason: `RD de ${desc} en ETRF no coincide con el archivo BOM / ${desc} RD in ETRF does not match the BOM file` });
+                });
+            }
+            if (invalidSupplierTrims && invalidSupplierTrims.length > 0) {
+                invalidSupplierTrims.forEach(rd => {
+                    let desc = window.globalTrimDescriptions && window.globalTrimDescriptions[rd] ? window.globalTrimDescriptions[rd] : 'TRIM';
+                    bomAlerts.push({ text: `${desc} Supplier invalid or blank`, reason: `Supplier de ${desc} no válido o en blanco / ${desc} Supplier invalid or blank` });
+                });
+            }
+
+            const alertBox = document.getElementById('rejection-alerts');
+            const rejectionContainer = document.getElementById('rejection-container');
+            if (alertBox) {
+                // Clear previous BOM alerts
+                alertBox.querySelectorAll('.bom-alert-item, .bom-alert-note').forEach(e => e.remove());
+
+                if (bomAlerts.length > 0) {
+                    let existingUl = alertBox.querySelector('ul');
+                    if (!existingUl) {
+                        alertBox.style.display = 'block';
+                        alertBox.innerHTML = '<h4 style="color:#c62828; margin-bottom:8px; font-size:13px; font-weight:700;"><i class="fas fa-ban"></i> REJECTION GROUNDS DETECTED</h4>' +
+                            '<ul style="margin-left:24px; color:#b71c1c; font-size:12px; font-weight:600; line-height:1.6;"></ul>';
+                        if (rejectionContainer) {
+                            rejectionContainer.style.background = '#ffebee';
+                            rejectionContainer.style.border = '1px solid #ef9a9a';
+                            rejectionContainer.style.padding = '12px';
+                            rejectionContainer.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                        }
+                        existingUl = alertBox.querySelector('ul');
+                    }
+
+                    bomAlerts.forEach(a => {
+                        const li = document.createElement('li');
+                        li.className = 'bom-alert-item';
+                        li.dataset.fullReason = a.reason;
+                        li.innerHTML = `<strong>BOM ERROR:</strong> ${a.text}`;
+                        existingUl.appendChild(li);
+                    });
+
+                    let isOnlyBom = true;
+                    Array.from(existingUl.children).forEach(li => {
+                        if (!li.textContent.includes('BOM File') && !li.classList.contains('bom-alert-item')) {
+                            isOnlyBom = false;
+                        }
+                    });
+
+                    if (isOnlyBom && !alertBox.querySelector('.bom-alert-note')) {
+                        const note = document.createElement('div');
+                        note.className = 'bom-alert-note';
+                        note.style.marginTop = '10px';
+                        note.style.fontSize = '11px';
+                        note.style.color = '#64748b';
+                        note.style.fontWeight = 'normal';
+                        note.style.whiteSpace = 'nowrap';
+                        note.innerHTML = '<i class="fas fa-info-circle" style="cursor:help; color:#ef4444;" title="Puedes proceder con el ingreso, pero por favor registra este rechazo"></i> Note: You may proceed with registration, but please log this rejection.';
+                        alertBox.appendChild(note);
+                    }
+                } else if (alertBox.querySelectorAll('li').length === 0) {
+                    // Reset if totally empty
+                    alertBox.style.display = 'none';
+                    alertBox.innerHTML = '';
+                    if (rejectionContainer) {
+                        rejectionContainer.style.background = 'transparent';
+                        rejectionContainer.style.border = 'none';
+                        rejectionContainer.style.padding = '0';
+                        rejectionContainer.style.boxShadow = 'none';
+                    }
+                }
+            }
+
+
         } else {
             let debugHtml = `<div style="margin-top:10px; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; color:#334155; display:none;">
                 <strong style="color:#0f172a;">=? DEBUG INFO:</strong><br>
@@ -5609,6 +5748,7 @@ async function startBomCompare() {
 </script>
 </body>
 </html>
+
 
 
 
