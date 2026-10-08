@@ -67,6 +67,7 @@ const motivosManuales = [
     
     // --- System / Others ---
     "Muestára insuficiente para TEST (Insufficient sample for TEST)",
+    "Pruebas solicitadas no aplican a muestra / Requested tests do not apply to the sample",
     "Error de Sincronización/Remplazo de ETRF (Synchronization Error / ETRF Replacement)",
     "ETRF Duplicada (ETRF Duplicated)",
     "Archivos Previos Dañados Requieren Nueva Carga (Corrupted Previous Files - New Upload Required)",
