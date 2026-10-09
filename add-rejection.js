@@ -78,17 +78,17 @@
     "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)",
     
     // --- Warnings / Próximos Rechazos ---
-    "RD de Certificado de Care Label no coincide con la ETRF (Care Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Joker Label no coincide con la ETRF (Joker Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de RFID no coincide con la ETRF (RFID Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Heat Transfer no coincide con la ETRF (Heat Transfer Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Mobilon no coincide con la ETRF (Mobilon Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Woven Label no coincide con la ETRF (Woven Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Main Label no coincide con la ETRF (Main Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Clamp Label no coincide con la ETRF (Clamp Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de PO Label no coincide con la ETRF (PO Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Size Label no coincide con la ETRF (Size Label Certificate RD Does Not Match ETRF)",
-    "RD de Certificado de Trademark Label no coincide con la ETRF (Trademark Label Certificate RD Does Not Match ETRF)",
+    "RD Number de Certificado de Care Label no coincide con la ETRF (Care Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Joker Label no coincide con la ETRF (Joker Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de RFID no coincide con la ETRF (RFID Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Heat Transfer no coincide con la ETRF (Heat Transfer Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Mobilon no coincide con la ETRF (Mobilon Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Woven Label no coincide con la ETRF (Woven Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Main Label no coincide con la ETRF (Main Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Clamp Label no coincide con la ETRF (Clamp Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de PO Label no coincide con la ETRF (PO Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Size Label no coincide con la ETRF (Size Label Certificate of Compliance RD Number Does Not Match ETRF)",
+    "RD Number de Certificado de Trademark Label no coincide con la ETRF (Trademark Label Certificate of Compliance RD Number Does Not Match ETRF)",
     "Falta Certificado de Care Label (Care Label Certificate of Compliance - Not Uploaded to the platform)",
     "Falta Certificado de Joker Label (Joker Label Certificate of Compliance - Not Uploaded to the platform)",
     "Falta Certificado de RFID (RFID Certificate of Compliance - Not Uploaded to the platform)",
@@ -457,16 +457,16 @@ async function submitRejectionToPA(skipAuth = false) {
         "Falta Certificado de PO Label",
         "Falta Certificado de Size Label",
         "Falta Certificado de Trademark Label",
-        "RD de Certificado de Care Label",
-        "RD de Certificado de Joker Label",
-        "RD de Certificado de RFID",
-        "RD de Certificado de Heat Transfer",
-        "RD de Certificado de Mobilon",
-        "RD de Certificado de Woven Label",
-        "RD de Certificado de Main Label",
-        "RD de Certificado de Clamp Label",
-        "RD de Certificado de PO Label",
-        "RD de Certificado de Size Label",
+        "RD Number de Certificado de Care Label",
+        "RD Number de Certificado de Joker Label",
+        "RD Number de Certificado de RFID",
+        "RD Number de Certificado de Heat Transfer",
+        "RD Number de Certificado de Mobilon",
+        "RD Number de Certificado de Woven Label",
+        "RD Number de Certificado de Main Label",
+        "RD Number de Certificado de Clamp Label",
+        "RD Number de Certificado de PO Label",
+        "RD Number de Certificado de Size Label",
         "RD de Certificado de Trademark Label"
     ];
 
@@ -550,6 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
