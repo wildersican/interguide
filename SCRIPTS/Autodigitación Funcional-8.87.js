@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Autodigitación Funcional
 // @namespace    http://tampermonkey.net/
-// @version      8.84
+// @version      8.86
 // @description  Pruebas actualizadas
 // @author       Wilder Sicán
 // @match        *://tips-amer.intertek.com/Transactions/testpiecereq_xml.aspx*
@@ -1406,12 +1406,8 @@
                             }
                         }
 
+                        // Solo tomamos los de NE (Cotton Count) siempre, tal como solicitaste
                         let selectedVals = data["NE"];
-                        if (!selectedVals) {
-                            if (data["DENIER"]) selectedVals = data["DENIER"];
-                            else if (data["TEX"]) selectedVals = data["TEX"];
-                            else if (data["NM"]) selectedVals = data["NM"];
-                        }
 
                         if (e.shiftKey) {
                             let txt = document.createElement('textarea');
@@ -2485,9 +2481,12 @@
                         setTimeout(() => { btnResults.innerText = originalText; }, 3000);
                         return;
 
-                                                            // --- TORQUE / SPIRALITY ---
+                                                                                                                        // --- TORQUE / SPIRALITY (FABRIC & GARMENT) ---
                     } else if (testSeleccionado.includes("TORQUE")) {
+                        let isGarment = testSeleccionado.includes("GARMENT");
                         let averageVal = null;
+                        let afterRight = null;
+                        let afterLeft = null;
                         
                         // Agrupar por Pagina y luego por Y para leer en orden exacto
                         let linesByPage = {};
@@ -2513,6 +2512,7 @@
                         
                         let foundTitle = false;
                         let textLogged = "";
+                        let afterWashesFound = false;
 
                         for (let i = 0; i < rowsOrdered.length; i++) {
                             let rowText = rowsOrdered[i];
@@ -2520,22 +2520,36 @@
                             
                             if (!foundTitle) {
                                 // Buscamos el título de la prueba
-                                if (rowText.includes("SKEWING AND TORQUE") || rowText.includes("SESGO Y TORQUE")) {
+                                if (rowText.includes("SKEWING AND TORQUE") || rowText.includes("SESGO Y TORQUE") || rowText.includes("SEAM TWIST")) {
                                     foundTitle = true;
                                 }
                             } else {
-                                // Una vez encontrado el título, buscamos el primer AVERAGE
-                                let matchAvg = rowText.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
-                                if (matchAvg) {
-                                    let val = matchAvg[1].replace(/\s/g, "");
-                                    averageVal = val.includes("%") ? val : val + "%";
-                                    break;
+                                if (isGarment) {
+                                    if (rowText.includes("AFTER 3 WASH") || rowText.includes("AFTER WASH") || (rowText.includes("AFTER ") && rowText.includes("WASH"))) {
+                                        afterWashesFound = true;
+                                    }
+                                    
+                                    if (afterWashesFound && rowText.includes("CHANGE IN TWIST %")) {
+                                        let matchRight = rowText.match(/RIGHT CHANGE IN TWIST %\s*(-?[\d.]+)/);
+                                        let matchLeft = rowText.match(/LEFT CHANGE IN TWIST %\s*(-?[\d.]+)/);
+                                        if (matchRight) afterRight = matchRight[1];
+                                        if (matchLeft) afterLeft = matchLeft[1];
+                                        break;
+                                    }
+                                } else {
+                                    // Fabric: Una vez encontrado el título, buscamos el primer AVERAGE
+                                    let matchAvg = rowText.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
+                                    if (matchAvg) {
+                                        let val = matchAvg[1].replace(/\s/g, "");
+                                        averageVal = val.includes("%") ? val : val + "%";
+                                        break;
+                                    }
                                 }
                             }
                         }
 
-                        // Fallback por si la palabra no es exacta
-                        if (!averageVal) {
+                        // Fallback por si la palabra no es exacta (solo Fabric)
+                        if (!isGarment && !averageVal) {
                             let matchAvgFallback = rowsOrdered.join(" ").match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
                             if (matchAvgFallback) {
                                 let val = matchAvgFallback[1].replace(/\s/g, "");
@@ -2545,7 +2559,11 @@
 
                         if (e.shiftKey) {
                             let txt = document.createElement('textarea');
-                            txt.value = "=== TORQUE LOG ===\nTITLE FOUND: " + foundTitle + "\nAVG: " + averageVal + "\n\nTEXT:\n" + textLogged;
+                            if (isGarment) {
+                                txt.value = "=== TORQUE GARMENT LOG ===\nTITLE FOUND: " + foundTitle + "\nAFTER WASHES FOUND: " + afterWashesFound + "\nRIGHT: " + afterRight + "\nLEFT: " + afterLeft + "\n\nTEXT:\n" + textLogged;
+                            } else {
+                                txt.value = "=== TORQUE FABRIC LOG ===\nTITLE FOUND: " + foundTitle + "\nAVG: " + averageVal + "\n\nTEXT:\n" + textLogged;
+                            }
                             txt.style.width = '100%';
                             txt.style.height = '400px';
                             txt.style.border = '2px solid orange';
@@ -2557,31 +2575,79 @@
                             return;
                         }
 
-                        if (!averageVal) {
-                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque)';
+                        if (isGarment && (!afterRight || !afterLeft)) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque Garment)';
+                            setTimeout(() => { btnResults.innerText = originalText; }, 4000);
+                            return;
+                        }
+                        if (!isGarment && !averageVal) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque Fabric)';
                             setTimeout(() => { btnResults.innerText = originalText; }, 4000);
                             return;
                         }
 
                         let camposLlenados = 0;
                         let piezasActivas = obtenerPiezasActivasUI();
+                        if (piezasActivas.length === 0) { piezasActivas = ['A']; }
 
                         const filas = document.querySelectorAll('tr');
+                        let currentReading = "";
+
                         filas.forEach(fila => {
                             if (fila.querySelector('table')) return;
                             let rowText = fila.innerText.toUpperCase();
 
-                            if (rowText.includes("SPIRALITY")) {
-                                let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
-                                    let type = inp.type ? inp.type.toLowerCase() : 'text';
-                                    return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
-                                });
+                            if (isGarment) {
+                                if (rowText.includes("REQUIREMENT") || rowText.includes("[CATEGORY]")) return;
+                                if (rowText.includes("EXTRA CONCLUSION") || rowText.includes("PIECE DETAILS")) return;
 
-                                for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
-                                    inputs[k].value = averageVal;
-                                    let ev = new Event('change', { bubbles: true });
-                                    inputs[k].dispatchEvent(ev);
-                                    camposLlenados++;
+                                let rawHTML = fila.cells.length > 0 ? fila.cells[0].innerText.trim().toUpperCase() : "";
+                                if (rawHTML !== "") {
+                                    if (rawHTML.includes("BEFORE WASHED")) currentReading = "BEFORE WASHED";
+                                    else if (rawHTML.includes("AFTER WASHED")) currentReading = "AFTER WASHED";
+                                    else currentReading = "";
+                                }
+
+                                if (currentReading !== "BEFORE WASHED" && currentReading !== "AFTER WASHED") return;
+
+                                let parameter = null;
+                                if (rowText.includes("LEFT")) parameter = "LEFT";
+                                else if (rowText.includes("RIGHT")) parameter = "RIGHT";
+
+                                let valToInject = null;
+                                if (currentReading === "BEFORE WASHED") {
+                                    valToInject = "0.0";
+                                } else if (currentReading === "AFTER WASHED") {
+                                    if (parameter === "LEFT") valToInject = afterLeft;
+                                    else if (parameter === "RIGHT") valToInject = afterRight;
+                                }
+
+                                if (parameter && valToInject !== null) {
+                                    let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                        let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                        return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                    });
+
+                                    for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                        inputs[k].value = valToInject;
+                                        let ev = new Event('change', { bubbles: true });
+                                        inputs[k].dispatchEvent(ev);
+                                        camposLlenados++;
+                                    }
+                                }
+                            } else {
+                                if (rowText.includes("SPIRALITY")) {
+                                    let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                        let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                        return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                    });
+
+                                    for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                        inputs[k].value = averageVal;
+                                        let ev = new Event('change', { bubbles: true });
+                                        inputs[k].dispatchEvent(ev);
+                                        camposLlenados++;
+                                    }
                                 }
                             }
                         });
@@ -3248,6 +3314,8 @@
 
     }, 2500);
 })();
+
+
 
 
 

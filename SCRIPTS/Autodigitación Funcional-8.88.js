@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         Autodigitación Funcional
 // @namespace    http://tampermonkey.net/
-// @version      8.84
+// @version      8.86
 // @description  Pruebas actualizadas
 // @author       Wilder Sicán
 // @match        *://tips-amer.intertek.com/Transactions/testpiecereq_xml.aspx*
@@ -1339,46 +1339,49 @@
                             return;
                         }
 
-                    // --- YARN SIZE ---
+                                        // --- YARN SIZE ---
                     } else if (testSeleccionado.includes("YARN SIZE")) {
                         let linesByPage = {};
                         itemsAvanzados.forEach(item => {
                             if (!linesByPage[item.page]) linesByPage[item.page] = {};
                             let linesY = linesByPage[item.page];
                             let y = Math.round(item.y * 10) / 10;
-                            let foundY = Object.keys(linesY).find(k => Math.abs(parseFloat(k) - y) < 4.0);
+                            let foundY = Object.keys(linesY).find(k => Math.abs(parseFloat(k) - y) < 6.0);
                             if (foundY) { linesY[foundY].push(item); }
                             else { linesY[y] = [item]; }
                         });
 
-                        let rows = [];
+                        let rowsOrdered = [];
                         let pages = Object.keys(linesByPage).sort((a, b) => parseInt(a) - parseInt(b));
                         pages.forEach(p => {
                             let linesY = linesByPage[p];
                             let sortedY = Object.keys(linesY).sort((a, b) => parseFloat(b) - parseFloat(a));
                             sortedY.forEach(y => {
-                                let rowItems = linesY[y];
-                                rowItems.sort((a, b) => a.x - b.x);
-                                rows.push(rowItems);
+                                let rowItems = linesY[y].sort((a, b) => a.x - b.x);
+                                rowsOrdered.push(rowItems.map(x => x.str.trim()).join(" ").toUpperCase());
                             });
                         });
 
-                        let startRowIdx = -1;
-                        for (let i = 0; i < rows.length; i++) {
-                            let textFila = rows[i].map(x => x.str.trim()).join(" ").toUpperCase();
-                            if (textFila.includes("RESULTADOS") || textFila.includes("RESULTS")) {
-                                startRowIdx = i;
-                                break;
-                            }
-                        }
-
+                        let foundTitle = false;
+                        let foundResultados = false;
                         let data = { "TEX": null, "DENIER": null, "NE": null, "NM": null };
+                        let textLogged = "";
 
-                        if (startRowIdx !== -1) {
-                            for (let i = startRowIdx; i < Math.min(startRowIdx + 20, rows.length); i++) {
-                                let textFila = rows[i].map(x => x.str.trim()).join(" ").toUpperCase();
-                                if (textFila.includes("+")) {
-                                    let parts = textFila.split("+").map(p => p.trim());
+                        for (let i = 0; i < rowsOrdered.length; i++) {
+                            let rowText = rowsOrdered[i];
+                            textLogged += rowText + "\n";
+
+                            if (!foundTitle) {
+                                if (rowText.includes("YARN NUMBER") || rowText.includes("YARN SIZE")) {
+                                    foundTitle = true;
+                                }
+                            } else if (!foundResultados) {
+                                if (rowText.includes("RESULTADOS") || rowText.includes("RESULTS")) {
+                                    foundResultados = true;
+                                }
+                            } else {
+                                if (rowText.includes("+")) {
+                                    let parts = rowText.split("+").map(p => p.trim());
                                     if (parts.length >= 2) {
                                         let p0 = parts[0].match(/(\d+.*)$/);
                                         p0 = p0 ? p0[1] : parts[0];
@@ -1387,25 +1390,42 @@
 
                                         let vals = [p0, p1, p2];
 
-                                        if (textFila.includes("NE ") || textFila.includes("COTTON")) data["NE"] = vals;
-                                        else if (textFila.includes("D ") || textFila.includes("DENIER")) data["DENIER"] = vals;
-                                        else if (textFila.includes("TEX")) data["TEX"] = vals;
-                                        else if (textFila.includes("NM") || textFila.includes("METRIC")) data["NM"] = vals;
+                                        if (rowText.includes("NE") || rowText.includes("COTTON")) data["NE"] = vals;
+                                        else if (rowText.includes("D ") || rowText.includes("DENIER")) data["DENIER"] = vals;
+                                        else if (rowText.includes("TEX")) data["TEX"] = vals;
+                                        else if (rowText.includes("NM") || rowText.includes("METRIC")) data["NM"] = vals;
+                                    }
+                                }
+                                
+                                // Detenernos si llegamos a otra prueba (heuristica simple)
+                                if (rowText.includes("TIGHTNESS FACTOR") || rowText.includes("MÉTODO DE PRUEBA")) {
+                                    if (data["NE"] || data["DENIER"] || data["TEX"] || data["NM"]) {
+                                        break;
                                     }
                                 }
                             }
                         }
 
+                        // Solo tomamos los de NE (Cotton Count) siempre, tal como solicitaste
                         let selectedVals = data["NE"];
-                        if (!selectedVals) {
-                            if (data["DENIER"]) selectedVals = data["DENIER"];
-                            else if (data["TEX"]) selectedVals = data["TEX"];
-                            else if (data["NM"]) selectedVals = data["NM"];
+
+                        if (e.shiftKey) {
+                            let txt = document.createElement('textarea');
+                            txt.value = "=== YARN SIZE LOG ===\nTITLE FOUND: " + foundTitle + "\nRESULTS FOUND: " + foundResultados + "\nEXTRACTED: " + JSON.stringify(selectedVals) + "\n\nTEXT:\n" + textLogged;
+                            txt.style.width = '100%';
+                            txt.style.height = '400px';
+                            txt.style.border = '2px solid orange';
+                            txt.style.position = 'relative';
+                            txt.style.zIndex = '9999';
+                            document.body.prepend(txt);
+                            txt.scrollIntoView();
+                            setTimeout(() => { btnResults.innerText = originalText; }, 5000);
+                            return;
                         }
 
                         if (!selectedVals) {
                             btnResults.innerText = '\u26A0\uFE0F Sin resultado (Yarn)';
-                            setTimeout(() => { btnResults.innerText = originalText; }, 3000);
+                            setTimeout(() => { btnResults.innerText = originalText; }, 4000);
                             return;
                         }
 
@@ -1448,7 +1468,7 @@
                             }
                         });
 
-                        if (camposLlenados > 0) btnResults.innerText = `✅ (${camposLlenados})`;
+                        if (camposLlenados > 0) btnResults.innerText = '\u2705 (' + camposLlenados + ')';
                         else btnResults.innerText = '\u26A0\uFE0F Nada inyectado';
                         setTimeout(() => { btnResults.innerText = originalText; }, 3000);
                         return;
@@ -2461,9 +2481,12 @@
                         setTimeout(() => { btnResults.innerText = originalText; }, 3000);
                         return;
 
-                                                            // --- TORQUE / SPIRALITY ---
+                                                                                                                        // --- TORQUE / SPIRALITY (FABRIC & GARMENT) ---
                     } else if (testSeleccionado.includes("TORQUE")) {
+                        let isGarment = testSeleccionado.includes("GARMENT");
                         let averageVal = null;
+                        let afterRight = null;
+                        let afterLeft = null;
                         
                         // Agrupar por Pagina y luego por Y para leer en orden exacto
                         let linesByPage = {};
@@ -2489,6 +2512,7 @@
                         
                         let foundTitle = false;
                         let textLogged = "";
+                        let afterWashesFound = false;
 
                         for (let i = 0; i < rowsOrdered.length; i++) {
                             let rowText = rowsOrdered[i];
@@ -2496,22 +2520,36 @@
                             
                             if (!foundTitle) {
                                 // Buscamos el título de la prueba
-                                if (rowText.includes("SKEWING AND TORQUE") || rowText.includes("SESGO Y TORQUE")) {
+                                if (rowText.includes("SKEWING AND TORQUE") || rowText.includes("SESGO Y TORQUE") || rowText.includes("SEAM TWIST")) {
                                     foundTitle = true;
                                 }
                             } else {
-                                // Una vez encontrado el título, buscamos el primer AVERAGE
-                                let matchAvg = rowText.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
-                                if (matchAvg) {
-                                    let val = matchAvg[1].replace(/\s/g, "");
-                                    averageVal = val.includes("%") ? val : val + "%";
-                                    break;
+                                if (isGarment) {
+                                    if (rowText.match(/AFTER \d+ WASH/) || rowText.includes("AFTER WASHES")) {
+                                        afterWashesFound = true;
+                                    }
+                                    
+                                    if (afterWashesFound && rowText.includes("CHANGE IN TWIST %")) {
+                                        let matchRight = rowText.match(/RIGHT CHANGE IN TWIST %\s*(-?[\d.]+)/);
+                                        let matchLeft = rowText.match(/LEFT CHANGE IN TWIST %\s*(-?[\d.]+)/);
+                                        if (matchRight) afterRight = matchRight[1];
+                                        if (matchLeft) afterLeft = matchLeft[1];
+                                        break;
+                                    }
+                                } else {
+                                    // Fabric: Una vez encontrado el título, buscamos el primer AVERAGE
+                                    let matchAvg = rowText.match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
+                                    if (matchAvg) {
+                                        let val = matchAvg[1].replace(/\s/g, "");
+                                        averageVal = val.includes("%") ? val : val + "%";
+                                        break;
+                                    }
                                 }
                             }
                         }
 
-                        // Fallback por si la palabra no es exacta
-                        if (!averageVal) {
+                        // Fallback por si la palabra no es exacta (solo Fabric)
+                        if (!isGarment && !averageVal) {
                             let matchAvgFallback = rowsOrdered.join(" ").match(/AVERAGE\s*:?\s*[%]?\s*(-?[\d.]+)/);
                             if (matchAvgFallback) {
                                 let val = matchAvgFallback[1].replace(/\s/g, "");
@@ -2521,7 +2559,11 @@
 
                         if (e.shiftKey) {
                             let txt = document.createElement('textarea');
-                            txt.value = "=== TORQUE LOG ===\nTITLE FOUND: " + foundTitle + "\nAVG: " + averageVal + "\n\nTEXT:\n" + textLogged;
+                            if (isGarment) {
+                                txt.value = "=== TORQUE GARMENT LOG ===\nTITLE FOUND: " + foundTitle + "\nAFTER WASHES FOUND: " + afterWashesFound + "\nRIGHT: " + afterRight + "\nLEFT: " + afterLeft + "\n\nTEXT:\n" + textLogged;
+                            } else {
+                                txt.value = "=== TORQUE FABRIC LOG ===\nTITLE FOUND: " + foundTitle + "\nAVG: " + averageVal + "\n\nTEXT:\n" + textLogged;
+                            }
                             txt.style.width = '100%';
                             txt.style.height = '400px';
                             txt.style.border = '2px solid orange';
@@ -2533,31 +2575,79 @@
                             return;
                         }
 
-                        if (!averageVal) {
-                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque)';
+                        if (isGarment && (!afterRight || !afterLeft)) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque Garment)';
+                            setTimeout(() => { btnResults.innerText = originalText; }, 4000);
+                            return;
+                        }
+                        if (!isGarment && !averageVal) {
+                            btnResults.innerText = '\u26A0\uFE0F Sin resultado (Torque Fabric)';
                             setTimeout(() => { btnResults.innerText = originalText; }, 4000);
                             return;
                         }
 
                         let camposLlenados = 0;
                         let piezasActivas = obtenerPiezasActivasUI();
+                        if (piezasActivas.length === 0) { piezasActivas = ['A']; }
 
                         const filas = document.querySelectorAll('tr');
+                        let currentReading = "";
+
                         filas.forEach(fila => {
                             if (fila.querySelector('table')) return;
                             let rowText = fila.innerText.toUpperCase();
 
-                            if (rowText.includes("SPIRALITY")) {
-                                let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
-                                    let type = inp.type ? inp.type.toLowerCase() : 'text';
-                                    return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
-                                });
+                            if (isGarment) {
+                                if (rowText.includes("REQUIREMENT") || rowText.includes("[CATEGORY]")) return;
+                                if (rowText.includes("EXTRA CONCLUSION") || rowText.includes("PIECE DETAILS")) return;
 
-                                for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
-                                    inputs[k].value = averageVal;
-                                    let ev = new Event('change', { bubbles: true });
-                                    inputs[k].dispatchEvent(ev);
-                                    camposLlenados++;
+                                let rawHTML = fila.cells.length > 0 ? fila.cells[0].innerText.trim().toUpperCase() : "";
+                                if (rawHTML !== "") {
+                                    if (rawHTML.includes("BEFORE WASHED")) currentReading = "BEFORE WASHED";
+                                    else if (rawHTML.includes("AFTER WASHED")) currentReading = "AFTER WASHED";
+                                    else currentReading = "";
+                                }
+
+                                if (currentReading !== "BEFORE WASHED" && currentReading !== "AFTER WASHED") return;
+
+                                let parameter = null;
+                                if (rowText.includes("LEFT")) parameter = "LEFT";
+                                else if (rowText.includes("RIGHT")) parameter = "RIGHT";
+
+                                let valToInject = null;
+                                if (currentReading === "BEFORE WASHED") {
+                                    valToInject = "0.0";
+                                } else if (currentReading === "AFTER WASHED") {
+                                    if (parameter === "LEFT") valToInject = afterLeft;
+                                    else if (parameter === "RIGHT") valToInject = afterRight;
+                                }
+
+                                if (parameter && valToInject !== null) {
+                                    let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                        let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                        return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                    });
+
+                                    for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                        inputs[k].value = valToInject;
+                                        let ev = new Event('change', { bubbles: true });
+                                        inputs[k].dispatchEvent(ev);
+                                        camposLlenados++;
+                                    }
+                                }
+                            } else {
+                                if (rowText.includes("SPIRALITY")) {
+                                    let inputs = Array.from(fila.querySelectorAll('input, textarea')).filter(inp => {
+                                        let type = inp.type ? inp.type.toLowerCase() : 'text';
+                                        return !(type === 'hidden' || type === 'submit' || type === 'button' || type === 'checkbox' || type === 'radio' || inp.style.display === 'none' || inp.readOnly || inp.disabled);
+                                    });
+
+                                    for (let k = 0; k < inputs.length && k < piezasActivas.length; k++) {
+                                        inputs[k].value = averageVal;
+                                        let ev = new Event('change', { bubbles: true });
+                                        inputs[k].dispatchEvent(ev);
+                                        camposLlenados++;
+                                    }
                                 }
                             }
                         });
@@ -3224,6 +3314,10 @@
 
     }, 2500);
 })();
+
+
+
+
 
 
 

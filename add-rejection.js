@@ -1,4 +1,4 @@
-const motivosManuales = [
+﻿const motivosManuales = [
     // --- Empty Fields ---
     "Producto Stage Campo Vacío (Stage Product - Empty Field)",
     "Type Of testing Campo Vacío (Type of Testing - Empty Field)",
@@ -78,6 +78,28 @@ const motivosManuales = [
     "BOM RD Number no se encuentra en la ETRF (BOM RD Number Not Found in ETRF)",
     
     // --- Warnings / Próximos Rechazos ---
+    "RD de Certificado de Care Label no coincide con la ETRF (Care Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Joker Label no coincide con la ETRF (Joker Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de RFID no coincide con la ETRF (RFID Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Heat Transfer no coincide con la ETRF (Heat Transfer Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Mobilon no coincide con la ETRF (Mobilon Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Woven Label no coincide con la ETRF (Woven Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Main Label no coincide con la ETRF (Main Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Clamp Label no coincide con la ETRF (Clamp Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de PO Label no coincide con la ETRF (PO Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Size Label no coincide con la ETRF (Size Label Certificate RD Does Not Match ETRF)",
+    "RD de Certificado de Trademark Label no coincide con la ETRF (Trademark Label Certificate RD Does Not Match ETRF)",
+    "Falta Certificado de Care Label (Care Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Joker Label (Joker Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de RFID (RFID Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Heat Transfer (Heat Transfer Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Mobilon (Mobilon Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Woven Label (Woven Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Main Label (Main Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Clamp Label (Clamp Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de PO Label (PO Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Size Label (Size Label Certificate of Compliance - Not Uploaded to the platform)",
+    "Falta Certificado de Trademark Label (Trademark Label Certificate of Compliance - Not Uploaded to the platform)",
     "Número de BOM en ETRF no coincide con archivo adjunto / BOM number in ETRF does not match the attached file",
     "Archivo BOM no adjunto / BOM file not attached",
     "RD Fabric no coincide al descrito en ETRF / RD Fabric does not match the description in ETRF",
@@ -423,7 +445,29 @@ async function submitRejectionToPA(skipAuth = false) {
         "Supplier de MOBILON no válido",
         "Supplier de WOVEN LABEL no válido",
         "Supplier de MAIN LABEL no válido",
-        "Supplier de CLAMP LABEL no válido"
+        "Supplier de CLAMP LABEL no válido",
+        "Falta Certificado de Care Label",
+        "Falta Certificado de Joker Label",
+        "Falta Certificado de RFID",
+        "Falta Certificado de Heat Transfer",
+        "Falta Certificado de Mobilon",
+        "Falta Certificado de Woven Label",
+        "Falta Certificado de Main Label",
+        "Falta Certificado de Clamp Label",
+        "Falta Certificado de PO Label",
+        "Falta Certificado de Size Label",
+        "Falta Certificado de Trademark Label",
+        "RD de Certificado de Care Label",
+        "RD de Certificado de Joker Label",
+        "RD de Certificado de RFID",
+        "RD de Certificado de Heat Transfer",
+        "RD de Certificado de Mobilon",
+        "RD de Certificado de Woven Label",
+        "RD de Certificado de Main Label",
+        "RD de Certificado de Clamp Label",
+        "RD de Certificado de PO Label",
+        "RD de Certificado de Size Label",
+        "RD de Certificado de Trademark Label"
     ];
 
     let trueRejections = [];
@@ -506,6 +550,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
 
 
 
